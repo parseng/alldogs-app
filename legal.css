@@ -1,0 +1,16 @@
+/* Pagine privacy e condizioni d'uso: stessi colori dell'app (DESIGN.md) */
+:root{--bg:#eef0ec;--surface:#fbfcfa;--ink:#18201c;--muted:#5a6660;--line:#d8ddd6;--accent:#1d4f3c;--warn-bg:#f6ebc6}
+@media (prefers-color-scheme:dark){:root{--bg:#121714;--surface:#1a201c;--ink:#e8ece9;--muted:#a3ada7;--line:#2c3530;--accent:#8fd1ae;--warn-bg:#3a3215}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 "Albert Sans","Segoe UI",system-ui,sans-serif}
+main{max-width:720px;margin:0 auto;padding:20px 16px 48px}
+h1{font:600 30px/1.2 "Newsreader",Georgia,serif;margin:8px 0 12px}
+h2{font:600 21px/1.25 "Newsreader",Georgia,serif;margin:28px 0 8px}
+a{color:var(--accent)}
+.top{margin:0}
+.note{background:var(--warn-bg);border-radius:12px;padding:10px 14px;font-size:14px}
+.small{font-size:14px;color:var(--muted);margin-top:28px}
+ul{padding-left:20px}li{margin:4px 0}
+table{width:100%;border-collapse:collapse;font-size:14px;background:var(--surface);border-radius:12px;overflow:hidden;display:block;overflow-x:auto}
+th,td{text-align:left;vertical-align:top;padding:8px 10px;border-bottom:1px solid var(--line)}
+th{font-weight:600}
