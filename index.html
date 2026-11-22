@@ -1573,7 +1573,11 @@ function breedFit(d){const b=String(d.breed||"").toLowerCase(),w=+d.weight;
   if(!wg)return null;
   return {id:wg[0],txt:wg[0]==="mini"?"un meticcio di taglia piccola":wg[0]==="molosso"?"un meticcio di taglia gigante":"un meticcio di taglia media",t:wg[3],mix:true}}
 // Cucciolo: le ossa crescono fino a 1 anno nelle taglie piccole e medie, fino a 18 mesi in quelle grandi (da 25 kg in su da adulto).
-function puppyAge(d){let r=null;try{r=breedRange(d)}catch(e){}const g=breedFit(d);return (r&&(r.min+r.max)/2>=25)||(g&&g.id==="molosso")||(!r&&d.weight>=25)?1.5:1}
+// età da anziano per taglia (ricerca 23/11/2026, AAHA: ultimo quarto della vita attesa)
+function seniorAge(d){const w=+d.weight||15;return w>=45?6:w>=25?7:w>=10?8:10}
+// fine crescita: inizio dell'allenamento di resistenza (cartilagini chiuse ~7-9 mesi piccoli, 10-14 grandi, fino a 18 giganti)
+function puppyAge(d){const w=+d.weight||15;let r=null;try{r=breedRange(d)}catch(e){}const g=breedFit(d),m=r?(r.min+r.max)/2:w;
+  if(m>=45||(g&&g.id==="molosso"))return 1.5;if(m>=25)return 1.25;if(m>=10)return 1;return .84}
 // Allenamento VERO: le passeggiate registrate nelle ultime 6 settimane. Con almeno 3 uscite in cui il cane non è tornato stanco,
 // i limiti salgono fino a 1,2 volte la media delle sue 3 uscite più lunghe, ma mai oltre +50% rispetto al punto di partenza.
 // Se nelle ultime uscite è tornato spesso stanco o ha avuto problemi, i limiti scendono del 15%.
@@ -1585,14 +1589,14 @@ function trained(d){const A=S&&S.acts||[],id=d.id||null,k=(id||"")+"|"+A.length+
   trC.k=k;return trC.v={km:top(good.map(x=>x.dist/1000)),up:top(good.map(x=>x.up||0)),n:good.length,tired}}
 function capacity(d){
   const g=breedFit(d),T=(g?g.t:BASE_FIT)[d.train]||(g?g.t:BASE_FIT).medio;
-  let k=T[0],up=T[1],f=1,fu=1,heat=0;const notes=[],plus=[],senior=d.weight>=25?7:9,p=d.pat||{};
+  let k=T[0],up=T[1],f=1,fu=1,heat=0;const notes=[],plus=[],senior=seniorAge(d),p=d.pat||{};
   // allenamento registrato nell'app
   const tr=trained(d);
   if(tr.km>=k*.8){const nk=Math.min(k*1.5,Math.max(k,tr.km*1.2));if(nk>k+.05){plus.push(`nelle ultime settimane ha fatto uscite fino a circa ${kmN(Math.round(tr.km*10)/10)} km senza stancarsi troppo`);k=nk}}
   if(tr.up>=up*.8){const nu=Math.min(up*1.5,Math.max(up,tr.up*1.2));if(nu>up+5){if(!plus.length)plus.push(`nelle ultime settimane ha fatto salite fino a circa ${Math.round(tr.up)} m`);up=nu}}
   if(tr.tired){f*=.85;notes.push("nelle ultime uscite è tornato stanco")}
   const puppy=d.age<puppyAge(d);
-  if(puppy){k=Math.min(k,4);up=Math.min(up,200);notes.push(puppyAge(d)>1?"è un cucciolo di taglia grande, con le ossa in crescita fino a 18 mesi":"è un cucciolo, con le articolazioni ancora in crescita")}
+  if(puppy){k=Math.min(k,4);up=Math.min(up,200);notes.push(puppyAge(d)>1?`è un cucciolo di taglia grande, con le ossa in crescita fino a circa ${Math.round(puppyAge(d)*12)} mesi`:"è un cucciolo, con le articolazioni ancora in crescita")}
   else if(d.age>=senior){f*=.6;notes.push("è anziano per la sua taglia")}
   if(!g&&d.weight<8){f*=.7;notes.push("è di taglia piccola")}
   if(!g&&d.weight>40){f*=.8;notes.push("è di taglia gigante")}
@@ -1609,7 +1613,7 @@ function capacity(d){
   const brachy=!!d.brachy||!!(g&&(g.id==="brachy"||g.brachy));
   const sensitive=brachy||d.caldo||d.coat==="lungo"||puppy||d.age>=senior||d.weight>35||p.cuore||p.resp||p.peso;
   const agil=p.art||p.conv?"bassa":d.agil;
-  return {km:Math.max(1,Math.round(k*f*10)/10),up:Math.max(50,Math.round(up*f*fu/10)*10),notes,plus,heat:(sensitive?21:24)+heat,sensitive,agil,health:pats(d).length>0,
+  return {km:Math.max(1,Math.round(k*f*10)/10),up:Math.max(50,Math.round(up*f*fu/10)*10),notes,plus,heat:(sensitive?19:22)+heat,sensitive,agil,health:pats(d).length>0,
     breed:g?g.id:null,brachy,puppy,longback:!!(g&&(g.id==="schiena"||g.longback)),heart:!!p.cuore,strict:puppy||!!p.conv,breath:brachy||!!p.resp};
 }
 const dogStep=w=>w<10?.3:w<25?.45:w<40?.6:.7;
@@ -3643,8 +3647,8 @@ const fmtDay=t=>new Date(t).toLocaleDateString("it-IT",{day:"numeric",month:"lon
 const r1=x=>Math.round(x*10)/10;
 // che tipo di cane è: serve per scegliere esercizi e ritmo di allenamento
 function dogKind(d){
-  const b=(d.breed||"").toLowerCase(),p=d.pat||{},senior=d.age>=(d.weight>=25?7:9);
-  return {p,senior,young:d.age<1,puppy:d.age<(d.weight>=25?1.5:1),small:d.weight<8,
+  const b=(d.breed||"").toLowerCase(),p=d.pat||{},senior=d.age>=seniorAge(d);
+  return {p,senior,young:d.age<1,puppy:d.age<puppyAge(d),small:d.weight<8,
     giant:d.weight>40||/alano|san bernardo|terranova|mastino|leonberger|cane corso|bovaro|dogue|caucaso/.test(b),
     longback:/bassott|corgi|basset/.test(b),sight:/levrier|greyhound|whippet|galgo|saluki|borzoi/.test(b),
     energy:/border|pastore|malinois|husky|labrador|retriever|setter|pointer|bracco|jack russell|spinone|segugio|kurzhaar|weimaraner|vizsla|dalmata|australian|kelpie|malamute|epagneul|springer|cocker/.test(b),
@@ -3824,7 +3828,7 @@ const kmIn=(a,b)=>actsIn(a,b).reduce((m,x)=>m+x.dist/1000,0);
 // quanto può crescere la passeggiata lunga ogni settimana (prudente; 0 = niente programma)
 function goalRate(d,k){
   if(k.p.conv||k.puppy)return 0;
-  if(k.heart)return .05;
+  if(k.heart||k.p.resp)return 0; // cuore: nessuna fonte per un ritmo sicuro, prima il veterinario (ricerca 23/11/2026)
   if(k.senior||k.brachy||k.giant||k.joint||k.p.peso||k.p.diab||k.p.epi||k.p.altro||weightState(d).s>=1)return .07;
   if(d.train==="molto"&&k.energy)return .15;
   return k.energy||d.train==="molto"?.12:.10;
@@ -3842,7 +3846,7 @@ function buildCal(g,r){
   const q=grow?Math.pow(ratio,1/stepsFor(K)):1,longs=[];let st=0;
   // programma verso un sentiero: anche la salita della lunga cresce piano, nella stessa proporzione, fino a quella del sentiero
   const S0=stepsFor(K),uq=g.up1>0?Math.pow(Math.max(1,g.up1/Math.max(20,g.up0||20)),1/Math.max(1,S0)):1;
-  for(let j=0;j<K;j++){const cons=grow&&consAt(j,K);if(!cons)st++;longs.push({t:addDays(f0,j*7),L:j===K-1?g.target:r1(g.from*Math.pow(q,st)),cons,
+  for(let j=0;j<K;j++){const cons=grow&&consAt(j,K);if(!cons)st++;longs.push({t:addDays(f0,j*7),L:j===K-1?g.target:r1(g.from*Math.pow(q,st)*(cons?.8:1)),cons,
     up:g.up1>0?(j===K-1?g.up1:Math.round(Math.min(g.up1,Math.max(20,g.up0||20)*Math.pow(uq,st))/10)*10):undefined})}
   const days=[];let li=0;
   for(let t=day0(g.start);t<=end;t=addDays(t,1)){
