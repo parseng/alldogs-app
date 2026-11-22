@@ -15,7 +15,7 @@
 <h2>In breve</h2>
 <ul>
 <li>Puoi usare AllDogs <b>senza account</b>: i dati tuoi e del tuo cane restano <b>solo nel tuo telefono</b>. Se <b>crei un account</b> (email e password), una copia viene salvata anche nel tuo account privato, così non la perdi se cambi telefono. La vedi solo tu, tranne recensioni e segnalazioni di pericoli, che sono pubbliche.</li>
-<li>Per mostrarti mappe, meteo, percorsi e risposte dell'assistente, l'app chiede le informazioni ad alcuni servizi esterni (elencati sotto). A loro arrivano solo i dati che servono, per esempio un punto sulla mappa.</li>
+<li>Per mostrarti mappe, meteo e percorsi, l'app chiede le informazioni ad alcuni servizi esterni (elencati sotto). A loro arrivano solo i dati che servono, per esempio un punto sulla mappa.</li>
 <li>Non vendiamo dati, non mostriamo pubblicità, non usiamo strumenti di analisi o di profilazione e non ti tracciamo tra app e siti di altri.</li>
 <li>Puoi cancellare tutto quando vuoi: togliendo il cane o l'uscita dall'app, disinstallando l'app, e per l'account dalla <b>pagina del tuo cane (ultima voce del menu in basso) → Il tuo account → Elimina l'account</b>.</li>
 </ul>
@@ -37,7 +37,7 @@
 <tr><td>Proposte di luoghi e sentieri (nome, posizione, percorso, note)</td><td>Farli controllare e aggiungere alla mappa per tutti</td><td>Quando premi Invia partono per e-mail al titolare dal tuo programma di posta, con il tuo indirizzo, che usiamo solo per risponderti</td></tr>
 <tr><td>Account: email e password</td><td>Farti accedere e salvare i tuoi dati</td><td>Su Supabase (server nell'Unione europea, Irlanda). La password è salvata cifrata: nessuno può leggerla</td></tr>
 </table>
-<p>I dati sulla salute del cane non sono dati sanitari tuoi, ma li trattiamo con la stessa cura: non lasciano il telefono, salvo quando fai una domanda all'assistente (vedi sotto) o se hai un account (in quel caso sono nel tuo account privato, protetti in modo che li veda solo tu).</p>
+<p>I dati sulla salute del cane non sono dati sanitari tuoi, ma li trattiamo con la stessa cura: non lasciano il telefono, salvo se hai un account (in quel caso sono nel tuo account privato, protetti in modo che li veda solo tu).</p>
 <p>Notifiche e promemoria sono preparati dal telefono stesso: non usiamo un server per mandarti notifiche.</p>
 
 <h2>3. Servizi esterni usati dall'app</h2>
@@ -50,21 +50,19 @@
 <tr><td>Windy.com</td><td>Solo se accendi le webcam sulla mappa</td><td>Centro e ampiezza della zona che guardi (tramite la nostra funzione su Supabase)</td></tr>
 <tr><td>OpenStreetMap / Overpass, OpenTopoMap, EOX, NASA GIBS, AWS (Terrain Tiles), Wikimedia Commons</td><td>Fontanelle e posti vicini, mappe topografiche, satellite, rilievo, foto dei sentieri</td><td>Zona della mappa che guardi</td></tr>
 <tr><td>OpenRouteService (HeiGIT)</td><td>Crea giro, Lo disegno io</td><td>Punti del percorso da calcolare (tramite la nostra funzione su Supabase)</td></tr>
-<tr><td>Anthropic (Claude)</td><td>Solo se scrivi all'assistente «Chiedi a Gohan»</td><td>Il testo che scrivi e, per rispondere bene: nome e profilo del cane (razza, età, peso, allenamento, eventuali problemi di salute), i suoi limiti, l'andatura, il programma di allenamento, la zona della mappa, il meteo e i sentieri che l'assistente cerca. Non mandiamo microchip, veterinario né il diario completo delle uscite</td></tr>
-<tr><td>Google Gemini</td><td>Solo se usi la chat dell'allenatore negli Obiettivi o chiedi un giro a parole in Crea giro</td><td>Il testo che scrivi, il profilo del cane (senza veterinario né microchip), il meteo e i sentieri della zona</td></tr>
 <tr><td>ntfy.sh</td><td>Solo se attivi «Condividi la posizione in tempo reale»</td><td>La tua posizione durante il giro, su un canale con nome casuale che conosce solo chi ha il link. Dopo 12 ore non è più disponibile</td></tr>
 <tr><td>GitHub Pages (GitHub Inc.)</td><td>Solo chi apre un link «segui la passeggiata» o queste pagine</td><td>Richiesta della pagina</td></tr>
 <tr><td>cdnjs (Cloudflare)</td><td>Quando si apre la mappa</td><td>Richiesta della libreria della mappa</td></tr>
 <tr><td>Google Maps / Apple Mappe</td><td>Solo se tocchi «Portami lì»</td><td>Il punto di arrivo (si apre l'app di mappe)</td></tr>
 </table>
-<p>Le richieste ad Anthropic, Google Gemini, OpenRouteService e Windy passano dalle nostre funzioni su Supabase (Unione europea), che aggiungono la chiave del servizio e contano le richieste per evitare abusi: per questo conserviamo per al massimo 3 giorni un contatore legato al tuo account oppure a un'impronta non reversibile del tuo indirizzo IP. Il contenuto delle domande non viene salvato da noi. Anthropic e Google non usano i dati inviati tramite le loro API per addestrare i propri modelli e li conservano per un tempo limitato secondo le loro regole.</p>
+<p>Le richieste a OpenRouteService e Windy passano dalle nostre funzioni su Supabase (Unione europea), che aggiungono la chiave del servizio e contano le richieste per evitare abusi: per questo conserviamo per al massimo 3 giorni un contatore legato al tuo account oppure a un'impronta non reversibile del tuo indirizzo IP. Il contenuto delle domande non viene salvato da noi.</p>
 <p>Alcuni di questi servizi hanno sede fuori dall'Unione europea (per esempio negli Stati Uniti): il trasferimento avviene con le garanzie previste dal GDPR (clausole contrattuali standard o EU-US Data Privacy Framework). Le loro informative sono sui rispettivi siti.</p>
 
 <h2>4. Perché possiamo usare questi dati (base giuridica)</h2>
 <ul>
 <li>Per far funzionare l'app e l'account che hai scelto di usare (art. 6.1.b GDPR).</li>
 <li>La posizione GPS, il movimento, le foto e le notifiche solo con il tuo permesso, che puoi togliere dalle impostazioni del telefono (art. 6.1.a GDPR).</li>
-<li>La condivisione della posizione, l'assistente e la pubblicazione di recensioni e segnalazioni solo quando li usi tu.</li>
+<li>La condivisione della posizione e la pubblicazione di recensioni e segnalazioni solo quando li usi tu.</li>
 <li>Il contatore anti-abuso delle funzioni sul server per il nostro legittimo interesse a tenere il servizio disponibile e sicuro (art. 6.1.f GDPR).</li>
 </ul>
 
