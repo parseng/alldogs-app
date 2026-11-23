@@ -1432,7 +1432,7 @@ async function syncPush(sb,uid,st){
   // recensioni (le foto per ora restano sul telefono)
   const rh=st.rh||{},rNow={},rRows=[];
   for(const [id,r] of Object.entries(revs)){if(!r||!(r.stars||r.note||(r.tags&&r.tags.length)||(r.q&&Object.keys(r.q).length)))continue;const q=r.q||{};
-    const row={user_id:uid,trail_id:String(id),voto:r.stars>=1&&r.stars<=5?r.stars:null,testo:r.note?String(r.note).slice(0,2000):null,tag:(r.tags||[]).slice(0,20),domande:q,cani_ammessi:q.divieto===1?false:q.divieto===0?true:null};
+    const row={user_id:uid,trail_id:String(id),firma:String((dog()&&dog().name)||"").trim().slice(0,40)||null,voto:r.stars>=1&&r.stars<=5?r.stars:null,testo:r.note?String(r.note).slice(0,2000):null,tag:(r.tags||[]).slice(0,20),domande:q,cani_ammessi:q.divieto===1?false:q.divieto===0?true:null};
     rNow[id]=1;if(chg(rh,id,row))rRows.push(row)}
   await up("reviews",rRows,"user_id,trail_id");
   const goneR=Object.keys(rh).filter(k=>!rNow[k]);await del("reviews","trail_id",goneR);goneR.forEach(k=>delete rh[k]);st.rh=rh;
