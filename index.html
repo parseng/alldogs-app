@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="it">
 <head>
-<script>(function(){var D="https://xljgemccvkxlypxrtcbr.supabase.co/storage/v1/object/public/dati/",f=window.fetch.bind(window);window.fetch=function(u,o){if(typeof u==="string"&&/^\.?\/?data\//.test(u))u=D+u.replace(/^\.?\/?data\//,"");return f(u,o)}})();</script>
+<script>(function(){var D="https://alldogs-dati.pages.dev/",f=window.fetch.bind(window);window.fetch=function(u,o){if(typeof u==="string"&&/^\.?\/?data\//.test(u))u=D+u.replace(/^\.?\/?data\//,"");return f(u,o)}})();</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <!-- protezioni di base (GitHub Pages non permette intestazioni HTTP proprie): niente plugin, niente <base> esterni, indirizzo completo mai inviato ad altri siti -->
@@ -1491,7 +1491,7 @@ function accPaint(){const box=$("acc-box"),sub=$("acc-sub"),u=SY.user;
         try{localStorage.removeItem(SYK);localStorage.removeItem(SYD)}catch(x){}SY.user=null;SY.msg="Account eliminato. I dati sul telefono sono rimasti.";toast("Account eliminato")}
       catch(x){SY.msg="Non sono riuscito a eliminare l'account ("+((x&&x.message)||"errore")+"). Riprova tra poco."}btn.disabled=false;accPaint()};
     $("acc-out").onclick=async()=>{try{await SY.sb.auth.signOut()}catch(e){}SY.user=null;SY.msg="";accPaint();toast("Sei uscito dall'account")};return}
-  box.innerHTML=`<p class="small muted">Con un account i dati tuoi e dei tuoi cani restano al sicuro anche se cambi telefono. Senza account l'app funziona lo stesso, con i dati solo su questo telefono.</p>
+  box.innerHTML=`<p class="small muted">Con l'account i dati tuoi e dei tuoi cani restano al sicuro anche se cambi telefono. Se è la prima volta, scrivi email e password e tocca Registrati.</p>
     <div class="form" style="margin-top:10px"><label class="w">Email<input id="acc-mail" type="email" autocomplete="email" inputmode="email" autocapitalize="off" spellcheck="false" value="${esc(SY.mail)}"></label>
     <label class="w">Password<input id="acc-pw" type="password" autocomplete="current-password" minlength="8"></label></div>${msg}
     <div class="row" style="margin-top:10px;flex-wrap:wrap"><button class="btn sm pri" id="acc-in" type="button">Accedi</button><button class="btn sm" id="acc-up" type="button">Registrati</button><button class="btn sm" id="acc-forgot" type="button">Password dimenticata</button></div>`;
