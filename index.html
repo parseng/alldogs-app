@@ -940,7 +940,7 @@ body{font-size:17px;line-height:1.5}
   <div class="hscroll frow">
     <button class="fall" id="f-all" type="button" aria-label="Tutti i filtri"></button>
     <select id="f-day" aria-label="Giorno"></select>
-    <select id="f-dog" aria-label="Cani ammessi"><option value="all">Cani ammessi</option><option value="free">Senza limiti per i cani</option><option value="show">Anche dove sono vietati</option></select>
+    <select id="f-dog" aria-label="Cani ammessi"><option value="all">Cani: nascondi i vietati</option><option value="ver">Cani ammessi (regola verificata)</option><option value="free">Senza limiti per i cani</option><option value="show">Anche dove sono vietati</option></select>
     <select id="f-fit" aria-label="Adatti al cane"><option value="all">Per il cane: tutti</option><option value="0">Adatti al cane</option><option value="01">Adatti o con prudenza</option></select>
     <select id="f-type" aria-label="Tipo di percorso"><option value="all">Tipo di percorso</option><option value="loop">Ad anello</option><option value="lolli">Anello con un tratto da rifare</option><option value="line">Andata e ritorno</option><option value="walk">Giri in città</option><option value="cai">Sentieri segnati con un numero</option><option value="flat">Pianeggianti</option></select>
     <select id="f-len" aria-label="Lunghezza"><option value="all">Lunghezza</option><option value="0-5">Fino a 5 km</option><option value="5-10">Da 5 a 10 km</option><option value="10-99">Più di 10 km</option></select>
@@ -1418,7 +1418,7 @@ async function syncPush(sb,uid,st){
   for(const x of acts){if(!x||!x.t)continue;const cani=caniOf(x),dati=Object.assign({},x);delete dati.track;
     const r={user_id:uid,local_id:String(x.t),dog_id:map[cani[0]]||null,inizio:new Date(x.t).toISOString(),fine:x.dur?new Date(x.t+x.dur).toISOString():null,
       km:x.dist!=null?Math.round(x.dist)/1000:null,passi:x.steps||null,dislivello:x.up!=null?Math.round(x.up):null,
-      traccia:x.track&&x.track.length>1?{type:"LineString",coordinates:x.track.map(p=>[p[1],p[0]])}:null,trail_id:x.id!=null?String(x.id):null,nome:x.name||null,cani,dati};
+      traccia:x.track&&x.track.length>1?{type:"LineString",coordinates:tracciaLeggera(x.track).map(p=>[p[1],+p[0]])}:null,trail_id:x.id!=null?String(x.id):null,nome:x.name||null,cani,dati};
     wNow[r.local_id]=1;if(chg(wh,r.local_id,r))wRows.push(r)}
   await up("walks",wRows,"user_id,local_id");
   const goneW=Object.keys(wh).filter(k=>!wNow[k]);await del("walks","local_id",goneW);goneW.forEach(k=>delete wh[k]);st.wh=wh;
@@ -1438,13 +1438,26 @@ async function syncPush(sb,uid,st){
   const goneR=Object.keys(rh).filter(k=>!rNow[k]);await del("reviews","trail_id",goneR);goneR.forEach(k=>delete rh[k]);st.rh=rh;
 }
 // primo accesso su questo telefono: aggiunge i dati già nell'account che qui mancano (senza toccare quelli del telefono)
+// il server accetta percorsi fino a 300 KB: oltre ~9000 punti si semplifica di più (le curve restano), così si salva sempre
+function tracciaLeggera(t){let r=t,tol=3;while(r.length>9000&&tol<60){r=simplify(t,tol);tol*=2}return r.map(p=>[Math.round(p[0]*1e5)/1e5,Math.round(p[1]*1e5)/1e5])}
 async function syncPull(sb,uid){
-  const [a,b,c]=await Promise.all([sb.from("dogs").select("*").eq("owner_id",uid),sb.from("walks").select("*").eq("user_id",uid),sb.from("reviews").select("*").eq("user_id",uid)]);
+  // tutte le righe, a pagine da 500: il server ne restituisce al massimo 1000 per volta e le passeggiate non hanno limite
+  const tutte=async(t,col)=>{let out=[];for(let i=0;;i+=500){const r=await sb.from(t).select("*").eq(col,uid).order("id").range(i,i+499);if(r.error)return r;out=out.concat(r.data||[]);if(!r.data||r.data.length<500)return {data:out}}};
+  const [a,b,c]=await Promise.all([tutte("dogs","owner_id"),tutte("walks","user_id"),tutte("reviews","user_id")]);
   if(a.error||b.error||c.error)throw a.error||b.error||c.error;
   let n=0;const ren={},had=DOGS.list.length>0,put=(k,v)=>{try{if(v!=null&&localStorage.getItem(k)==null)localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
   for(const r of a.data){const D=r.dati||{},p=Object.assign({name:r.nome},D.profilo||{});let lid=r.local_id;
     const loc=lid&&DOGS.list.find(x=>x.id===lid);
     if(loc&&(loc.name||"").trim().toLowerCase()===(p.name||"").trim().toLowerCase())continue; // stesso cane, già qui
+    // telefono nuovo: il cane appena creato con le domande iniziali ha lo stesso nome di quello nell'account.
+    // Niente cane doppio: diventano lo stesso, e i dati dell'account riempiono quello che sul telefono manca (mai il contrario)
+    const stesso=!loc&&DOGS.list.find(x=>(x.name||"").trim().toLowerCase()===(p.name||"").trim().toLowerCase());
+    if(stesso){if(lid&&lid!==stesso.id)ren[lid]=stesso.id;
+      const {error}=await sb.from("dogs").update({local_id:stesso.id}).eq("id",r.id);if(error)throw error;
+      for(const k in p)if(stesso[k]==null||stesso[k]===""||(typeof stesso[k]==="object"&&!Object.keys(stesso[k]||{}).length))stesso[k]=p[k];
+      put(syK("alldogs-goal",stesso.id),D.obiettivo);put(syK("alldogs-train",stesso.id),D.lezioni);put(syK("alldogs-salute",stesso.id),D.salute);
+      if(DOGS.cur===stesso.id)try{localStorage.setItem("alldogs-dog",JSON.stringify(stesso))}catch(e){}
+      n++;continue}
     if(!lid||loc){const nid="d"+Date.now().toString(36)+Math.random().toString(36).slice(2,5);const {error}=await sb.from("dogs").update({local_id:nid}).eq("id",r.id);if(error)throw error;if(lid)ren[lid]=nid;lid=nid}
     DOGS.list.push(Object.assign({},p,{id:lid}));
     put(syK("alldogs-goal",lid),D.obiettivo);put(syK("alldogs-train",lid),D.lezioni);put(syK("alldogs-salute",lid),D.salute);n++}
@@ -1596,7 +1609,7 @@ function capacity(d){
   if(tr.up>=up*.8){const nu=Math.min(up*1.5,Math.max(up,tr.up*1.2));if(nu>up+5){if(!plus.length)plus.push(`nelle ultime settimane ha fatto salite fino a circa ${Math.round(tr.up)} m`);up=nu}}
   if(tr.tired){f*=.85;notes.push("nelle ultime uscite è tornato stanco")}
   const puppy=d.age<puppyAge(d);
-  if(puppy){k=Math.min(k,4);up=Math.min(up,200);notes.push(puppyAge(d)>1?`è un cucciolo di taglia grande, con le ossa in crescita fino a circa ${Math.round(puppyAge(d)*12)} mesi`:"è un cucciolo, con le articolazioni ancora in crescita")}
+  if(puppy){const P=puppyLimit(d);k=Math.min(k,P.km);up=Math.min(up,P.up);notes.push(P.mesi<4?"ha meno di 4 mesi: prima dei sentieri servono i vaccini completi (chiedi al veterinario)":`è un cucciolo di ${Math.round(P.mesi)} mesi: le articolazioni crescono fino a circa ${Math.round(puppyAge(d)*12)} mesi`);}
   else if(d.age>=senior){f*=.6;notes.push("è anziano per la sua taglia")}
   if(!g&&d.weight<8){f*=.7;notes.push("è di taglia piccola")}
   if(!g&&d.weight>40){f*=.8;notes.push("è di taglia gigante")}
@@ -1613,9 +1626,33 @@ function capacity(d){
   const brachy=!!d.brachy||!!(g&&(g.id==="brachy"||g.brachy));
   const sensitive=brachy||d.caldo||d.coat==="lungo"||puppy||d.age>=senior||d.weight>35||p.cuore||p.resp||p.peso;
   const agil=p.art||p.conv?"bassa":d.agil;
-  return {km:Math.max(1,Math.round(k*f*10)/10),up:Math.max(50,Math.round(up*f*fu/10)*10),notes,plus,heat:(sensitive?19:22)+heat,sensitive,agil,health:pats(d).length>0,
+  // limite teorico (razza, età, allenamento dichiarato, salute) = solo un tetto; forma attuale = il valore usato dai verdetti.
+  // Revisione del 23/11/2026: il profilo diceva "regge 15 km" a un cane che camminava 8 minuti al giorno.
+  // - con 3 o più uscite nelle ultime 4 settimane: fino a 1,5 volte la più lunga (mai sotto il 35% del teorico)
+  // - con meno dati: stima iniziale prudente, 35% del teorico (o 1,5 volte l'uscita più lunga, se è di più)
+  // - se l'ultima uscita è di più di 2 settimane fa: -15%; se non esce da 4 settimane ma aveva camminato: 70%
+  const kmT=Math.max(1,Math.round(k*f*10)/10),upT=Math.max(50,Math.round(up*f*fu/10)*10),R=recentForm(d);
+  let kmV,upV,fonte;
+  // con uscite vere il limite non supera mai il doppio dell'uscita più lunga (revisione 23/11/2026, punto 6)
+  const conUscite=(x,top,T)=>Math.min(T,Math.max(top*1.5,Math.min(T*.35,top*2)),Math.max(top*2,1));
+  if(puppy){fonte="cucciolo";kmV=kmT;upV=upT} // i limiti dei cuccioli sono già prudenti (tabella per età e taglia)
+  else if(R.n>=3){fonte="dati";kmV=conUscite(0,R.km,kmT);upV=Math.max(50,Math.min(upT,Math.max(R.up*1.5,Math.min(upT*.35,R.up*2)),Math.max(R.up*2,50)))}
+  else if(!R.n&&R.old){fonte="pausa";
+    // dopo una pausa: il 70% dell'ultima forma misurata, mai sopra la stima iniziale (35% del teorico)
+    kmV=Math.min(kmT*.35,Math.max(1,R.oldKm*1.5*.7));upV=Math.min(upT*.35,Math.max(50,R.oldUp*1.5*.7));notes.push("non esce con l'app da più di 4 settimane: si riparte piano")}
+  else if(R.n){fonte="stima";kmV=conUscite(0,R.km,kmT);upV=Math.max(50,Math.min(upT,Math.max(upT*.35,R.up*1.5),Math.max(R.up*2,50)))}
+  else{fonte="stima";kmV=kmT*.35;upV=upT*.35}
+  if(!puppy&&R.n&&R.giorni>14){kmV*=.85;upV*=.85;if(fonte==="dati")fonte="calo";notes.push("poche uscite nelle ultime 2 settimane")}
+  if(fonte==="dati"&&kmV<kmT-.05)notes.push(`nelle ultime 4 settimane l'uscita più lunga è stata di ${kmN(Math.round(R.km*10)/10)} km`);
+  return {km:Math.max(1,Math.round(kmV*10)/10),up:Math.max(50,Math.round(upV/10)*10),kmT,upT,fonte,forma:{n:R.n,tot:Math.round(R.tot*10)/10,max:Math.round(R.km*10)/10,giorni:R.giorni},notes,plus,heat:(sensitive?19:22)+heat,sensitive,agil,health:pats(d).length>0,
     breed:g?g.id:null,brachy,puppy,longback:!!(g&&(g.id==="schiena"||g.longback)),heart:!!p.cuore,strict:puppy||!!p.conv,breath:brachy||!!p.resp};
 }
+// uscite vere del cane nelle ultime 4 settimane (tutte, anche quelle in cui è tornato stanco): la sua forma attuale
+function recentForm(d){const A=(S&&S.acts)||[],id=d.id||null,mio=x=>!x.dogs||!id||x.dogs.includes(id),from=Date.now()-28*864e5;
+  const L=A.filter(x=>mio(x)&&x.t>=from&&(x.dist||0)>=300),ult=L.reduce((m,x)=>Math.max(m,x.t),0);
+  return {n:L.length,km:L.reduce((m,x)=>Math.max(m,(x.dist||0)/1000),0),up:L.reduce((m,x)=>Math.max(m,x.up||0),0),tot:L.reduce((s,x)=>s+(x.dist||0)/1000,0),
+    giorni:ult?Math.floor((Date.now()-ult)/864e5):null,old:!L.length&&A.some(x=>mio(x)&&x.t<from&&(x.dist||0)>=300),
+    oldKm:A.filter(x=>mio(x)&&x.t<from).slice(0,10).reduce((m,x)=>Math.max(m,(x.dist||0)/1000),0),oldUp:A.filter(x=>mio(x)&&x.t<from).slice(0,10).reduce((m,x)=>Math.max(m,x.up||0),0)}}
 const dogStep=w=>w<10?.3:w<25?.45:w<40?.6:.7;
 // lunghezza del TUO passo: media delle passeggiate in cui hai scritto i passi veri dell'app Salute (altrimenti 75 cm)
 function myStride(){let m=0,n=0;for(const x of S.acts||[]){if(!(x.steps>0)||!(x.dist>=300))continue;const st=x.dist/x.steps;if(st<.4||st>1.1)continue;m+=x.dist;n+=x.steps;if(n>200000)break}return n?m/n:.75}
@@ -1646,7 +1683,7 @@ function verdict(it,d,day){
   if(k<=cap.km)add(0,`${km(it.len)} km${ar}: dentro le possibilità di ${nm} (fino a circa ${kmN(cap.km)} km).`);
   else if(k<=cap.km*tol)add(1,`${km(it.len)} km${ar}: un po' oltre il limite consigliato di circa ${kmN(cap.km)} km. Prevedi pause lunghe.`);
   else add(2,`${km(it.len)} km${ar}: troppo lungo, il limite consigliato per ${nm} è circa ${kmN(cap.km)} km.`);
-  if(it.loop===false)why[why.length-1].txt+=it.shape==="lolli"?` È un anello con un tratto da rifare: ho contato anche i ${km(it.ret)} km del ritorno alla partenza.`:` Non è un anello: ho contato anche il ritorno alla partenza (${km(it.one||it.len/2)} km all'andata).`;
+  if(it.loop===false)why[why.length-1].txt+=it.shape==="lolli"?` Comprende il tratto da rifare per tornare alla partenza (${km(it.ret)} km).`:` Andata e ritorno sulla stessa strada (${km(it.one||it.len/2)} km all'andata).`;
   const up=it.up;
   if(up!=null){
     if(up<=cap.up)add(0,`${up} m di salita${ar}: va bene (fino a circa ${cap.up} m).`);
@@ -1654,7 +1691,7 @@ function verdict(it,d,day){
     else add(2,`${up} m di salita${ar}: troppo (limite consigliato circa ${cap.up} m).`);
     // al limite su tutte e due le cose insieme: la fatica si somma
     if(k<=cap.km&&up<=cap.up&&k>cap.km*.8&&up>cap.up*.8)add(1,`Al limite sia per i km sia per la salita: le due fatiche si sommano. Fate pause e tenetevi un margine per tornare.`);
-  } else add(-1,"Sto calcolando il dislivello…");
+  } else add(-1,"Dislivello in calcolo…");
   const s=it.scale;
   // schiena lunga (bassotto, corgi, basset): gradini e rocce spingono sulla schiena
   if(cap.longback){if(s==="EE"||s==="EEA"){}else if(s==="E"||(it.gr||0)>=.02)add(1,`Schiena lunga: ${s==="E"?"pietre e gradoni":"gradini lungo il percorso"} costringono ${nm} a saltare e pesano sulla schiena (rischio di ernia). Prendilo in braccio nei punti più alti.`)}
@@ -1672,23 +1709,31 @@ function verdict(it,d,day){
   const w=dayWx(it.start,day);let best=null;
   if(w){
     const need=Math.max(1,Math.ceil(hours)),lim=cap.heat;
-    const win=t=>{for(let h=Math.max(5,w.sr);h+need<=Math.min(22,w.ss+1);h++){let g=true;for(let i=0;i<need;i++)if(!(w.H[h+i]&&w.H[h+i].f<=t))g=false;if(g)return h}return null};
+    // oggi si cerca solo da adesso in avanti (revisione 23/11/2026: alle 15 di un giorno caldo diceva "parti alle 7")
+    const h0=day===0?Math.max(5,w.sr,new Date().getHours()+(new Date().getMinutes()>20?1:0)):Math.max(5,w.sr);
+    const win=t=>{for(let h=h0;h+need<=Math.min(22,w.ss+1);h++){let g=true;for(let i=0;i<need;i++)if(!(w.H[h+i]&&w.H[h+i].f<=t))g=false;if(g)return h}return null};
     const maxF=Math.max(...w.H.slice(w.sr,w.ss+1).map(x=>x.f));
-    const sens=cap.sensitive?` (${nm} soffre di più il caldo, quindi sono più severo)`:"";
+    const sens=cap.sensitive?` (${nm} soffre il caldo più di altri cani)`:"";
     let h=win(lim);
     if(h!=null){best=h;add(0,maxF>lim?`Caldo: nelle ore centrali si arriva a ${Math.round(maxF)}° percepiti. Parti verso le ${h}:00, quando sono ${Math.round(w.H[h].f)}°.`:`Temperatura buona tutto il giorno (massimo ${Math.round(maxF)}° percepiti).`)}
     else if((h=win(lim+(cap.breath?1:4)))!=null){best=h;add(1,`Caldo: anche nelle ore migliori si superano i ${lim}° percepiti${sens}. Se vai, parti verso le ${h}:00 e porta tanta acqua.`)}
+    else if(day===0&&h0>Math.max(5,w.sr)){const w1=dayWx(it.start,1);let hd=null;if(w1){for(let x=Math.max(5,w1.sr);x+need<=Math.min(22,w1.ss+1);x++){let g=true;for(let i=0;i<need;i++)if(!(w1.H[x+i]&&w1.H[x+i].f<=lim))g=false;if(g){hd=x;break}}}
+      // è davvero caldo o è solo tardi? Se nelle ore rimaste non si supera il limite, il problema è il buio, non il caldo
+      const caldoOra=w.H.slice(Math.min(h0,23),Math.min(24,w.ss+1)).some(x=>x&&x.f>lim);
+      if(caldoOra)add(2,`Oggi ormai non c'è una fascia abbastanza fresca per ${fmtH(hours)} di cammino: meglio domani${hd!=null?` verso le ${hd}:00`:""}.`);
+      else if(it.type!=="walk")add(1,`Il sole tramonta alle ${w.ssT}: per ${fmtH(hours)} di cammino oggi è tardi. Meglio domani${hd!=null?` dalle ${hd}:00`:""}, o porta una torcia.`)}
     else add(2,cap.breath?`Troppo caldo per ${nm}: respira con più fatica e rischia il colpo di calore già sopra i ${lim+1}° percepiti, e non c'è una finestra abbastanza fresca per ${fmtH(hours)} di cammino.`:`Troppo caldo per ${fmtH(hours)} di cammino: non c'è una finestra abbastanza fresca${sens}.`);
     const b=best??Math.max(8,w.sr),rain=Math.max(0,...w.H.slice(b,b+need).map(x=>x.rain));
     if(rain>=60)add(1,`Pioggia probabile (${rain}%): il fondo può diventare scivoloso.`);
     const minT=Math.min(...w.H.slice(w.sr,w.ss+1).map(x=>x.t));
     if(minT<3&&(d.weight<10||d.coat==="corto"))add(1,`Freddo: si scende a ${Math.round(minT)}°. Un cappottino può servire.`);
-  } else if(S.wxFail||Date.now()-(wxBad[wxKey(it.start)]||0)<5*60e3)add(0,"Meteo non disponibile in questo momento: controlla la temperatura prima di partire.");
-  else add(-1,"Sto caricando il meteo…");
+  } else if(S.wxFail||Date.now()-(wxBad[wxKey(it.start)]||0)<5*60e3)add(1,"Meteo non disponibile: controlla la temperatura prima di partire, il caldo è il rischio più grande per il cane.");
+  else add(-1,"Meteo in arrivo…");
   if(it.dg&&it.dg[0]==="no")add(2,"Cani non ammessi. "+esc(it.dg[1]));
   else if(it.dg&&it.dg[0]==="lim")add(1,"Cani ammessi solo in parte. "+esc(it.dg[1]));
   else if(it.dogs==="no")add(2,"Secondo i dati di OpenStreetMap i cani non sono ammessi su questo sentiero.");
   if(cap.health)add(0,`Limiti ridotti per la salute di ${nm}: in caso di dubbio chiedi al veterinario.`);
+  if(cap.puppy&&(+d.age||0)*12<4)add(1,`${nm} ha meno di 4 mesi: sui sentieri solo 1-2 settimane dopo l'ultimo vaccino, con il via libera del veterinario.`);
   const known=why.filter(x=>x.lvl>=0);
   const v=why.some(x=>x.lvl<0)&&!known.some(x=>x.lvl===2)?-1:Math.max(...known.map(x=>x.lvl));
   // impegno PER IL CANE: rispetto ai suoi limiti, non a quelli di una persona
@@ -1759,6 +1804,9 @@ function dnOf(tr,frac){const e=elev[tr.id];if(!e)return null;if(!e.p||e.p.length
 const totLen=tr=>tr.loop===false?tr.len+(tr.ret??tr.len):tr.len;
 function totUp(tr){const e=elev[tr.id];if(!e)return null;if(tr.loop!==false)return e.up;const dn=dnOf(tr,Math.min(1,(tr.ret??tr.len)/Math.max(1,tr.len)));return e.up+(dn??e.up)}
 // Cani ammessi (campo "dg" dei sentieri, da tools/build_dogs.py): [stato, testo, area]
+// stato dei cani su un sentiero, a tre valori (revisione 23/11/2026): "si" ammessi con una regola vera (anche al guinzaglio
+// o solo in parte), "no" vietati, "nv" non verificato (nessun dato, o solo "nessun divieto conosciuto": assenza di divieto non è un permesso)
+function dogState(tr){const g=tr&&tr.dg;if(!g)return tr&&tr.dogs==="no"?"no":"nv";if(g[0]==="no")return "no";if(g[0]==="ok"&&/nessun divieto/i.test(g[1]||""))return "nv";return "si"}
 const DGS={no:"Cani vietati",lim:"Cani: solo in parte",lea:"Al guinzaglio",ok:"Cani ammessi"},DGC={no:"c2",lim:"c1",lea:"c0",ok:"c0"};
 function dogBlock(tr){const g=tr.dg;if(!g)return `<div class="block"><h2>Cani ammessi?</h2><p class="muted">Per questa zona non ho ancora le regole sui cani. Porta il guinzaglio e guarda i cartelli all'ingresso.</p></div>`;
   return `<div class="block dogrule ${DGC[g[0]]}"><h2>${icon("paw")} ${DGS[g[0]]}</h2><p>${esc(g[1])}</p><p class="small muted" style="margin-top:6px">Fonti: regolamenti dei parchi e OpenStreetMap. Le regole possono cambiare: vale sempre il cartello all'ingresso.</p></div>`}
@@ -1890,13 +1938,16 @@ const wxKey=p=>(Math.round(p[0]*4)/4).toFixed(2)+","+(Math.round(p[1]*4)/4).toFi
 // Meteo: prima fonte Open-Meteo (una sola richiesta per tanti punti). Se è bloccata o non risponde, seconda fonte gratuita: MET Norway.
 // punti per cui il meteo non è arrivato: per 5 minuti il verdetto dice "meteo non disponibile" invece di "Sto valutando"
 const wxBad={};
+const wxT={}; // quando è stato scaricato il meteo di ogni punto
 async function loadWeather(points){
-  const keys=[...new Set(points.map(wxKey))].filter(k=>!wx[k]);
+  // previsioni vecchie di più di 3 ore, o di un altro giorno, si riscaricano (revisione 23/11/2026)
+  const fresco=k=>wx[k]&&wxT[k]&&Date.now()-wxT[k].t<3*36e5&&wxT[k].d===new Date().toDateString();
+  const keys=[...new Set(points.map(wxKey))].filter(k=>!fresco(k));
   if(!keys.length)return;
   try{await omLoad(keys)}
   catch(e){console.warn("Open-Meteo non disponibile, uso MET Norway",e.status||e);
     try{await metLoad(keys.filter(k=>!wx[k]))}catch(e2){keys.forEach(k=>{if(!wx[k])wxBad[k]=Date.now()});wxVer++;throw e2}}
-  keys.forEach(k=>{if(wx[k])delete wxBad[k];else wxBad[k]=Date.now()});
+  keys.forEach(k=>{if(wx[k]){delete wxBad[k];wxT[k]={t:Date.now(),d:new Date().toDateString()}}else wxBad[k]=Date.now()});
   {const ks=Object.keys(wx);if(ks.length>90)ks.slice(0,ks.length-90).forEach(k=>delete wx[k])} // non riempire la memoria del telefono (e non rallentare il salvataggio)
   wxVer++;store.set(WX_KEY,{t:Date.now(),d:new Date().toDateString(),wx});
 }
@@ -2634,7 +2685,7 @@ function filtered(){
     if(upf!=="all"){const u=totUp(tr);if(u==null)continue;const [a,b]=upf.split("-").map(Number);if(u<a||u>=b)continue} // salita di andata e ritorno, come nelle schede
     if(dif!=="all"&&tr.scale!==dif)continue;
     {const ty=$("f-type").value;if(ty!=="all"&&!(ty==="walk"?tr.type==="walk":ty==="cai"?tr.ref&&tr.type!=="walk":ty==="flat"?elev[tr.id]&&elev[tr.id].up<100*Math.max(1,tr.len/5000):tr.type!=="walk"&&tr.shape===ty))continue}
-    {const dg=tr.dg&&tr.dg[0],dv=$("f-dog").value;if(dg==="no"&&dv!=="show")continue;if(dv==="free"&&dg==="lim")continue} // di base i sentieri vietati ai cani non si mostrano
+    {const dg=tr.dg&&tr.dg[0],dv=$("f-dog").value;if(dg==="no"&&dv!=="show")continue;if(dv==="free"&&dg==="lim")continue;if(dv==="ver"&&dogState(tr)!=="si")continue} // di base i sentieri vietati ai cani non si mostrano
     if(zone!=="all"&&tr.zone!==zone)continue;
     if(S.feat.length){const f=FT[tr.id];if(!f||!S.feat.every(k=>f.f.includes(k)))continue}
     let dist;if(S.near){dist=Math.min(...sample(tr.path,20).map(p=>hav(p,S.near.c)));if(dist>6000)continue}else dist=hav(tr.start,S.view.c);
@@ -4019,6 +4070,15 @@ const BCS=[["Troppo magro","Costole, spina dorsale e ossa del bacino si vedono a
 const HK=dk("alldogs-salute");
 let HS=Object.assign({bcs:null,w:[]},store.get(HK)||{});
 const saveHS=()=>store.set(HK,HS);
+// limite per una passeggiata dei cuccioli, per età e taglia da adulto (ricerca del 23/11/2026, RICERCA-CUCCIOLI.md).
+// Nessun ente veterinario pubblica una tabella: questi numeri sono una stima prudente (regola del Kennel Club "5 minuti
+// per mese" come base, più tempo per le taglie piccole che crescono prima, meno per le giganti). Da far controllare a un veterinario.
+const PUP_KM={piccola:[[3,.5],[4,1],[5,1.5],[6,2],[8,3],[10,4.5],[12,6]],media:[[3,.5],[4,1],[5,1.2],[6,1.5],[8,2.2],[10,3],[12,4.5],[15,6]],
+  grande:[[3,.5],[4,1],[5,1.2],[6,1.5],[8,2],[10,2.5],[12,3],[15,4],[18,5.5]],gigante:[[3,.4],[4,.7],[5,1],[6,1.2],[8,1.5],[10,2],[12,2.5],[15,3],[18,4]]};
+function puppyLimit(d){let r=null;try{r=breedRange(d)}catch(e){}const adulto=r?(r.min+r.max)/2:Math.max(+d.weight||10,(+d.weight||10)*(d.age<.5?3:d.age<.8?1.6:1.2));
+  const t=adulto>=45?"gigante":adulto>=25?"grande":adulto>=10?"media":"piccola",T=PUP_KM[t],m=Math.max(0,(+d.age||0)*12);
+  let km=T[T.length-1][1];if(m<=T[0][0])km=T[0][1];else for(let i=1;i<T.length;i++)if(m<=T[i][0]){const a=T[i-1],b=T[i];km=a[1]+(b[1]-a[1])*(m-a[0])/(b[0]-a[0]);break}
+  return {km:Math.round(km*10)/10,up:m<6?100:250,mesi:m,taglia:t}}
 function breedRange(d){const b=(d.breed||"").toLowerCase(),x=BREEDS.find(r=>b.includes(r[0]));return x?{n:x[0],min:x[1],max:x[2]}:null}
 const sizeName=w=>w<10?"piccola":w<25?"media":w<40?"grande":"gigante";
 // -1 magro, 0 giusto, 1 sovrappeso, 2 obeso, null non si sa. La prova delle costole conta più del peso di razza.
@@ -4723,7 +4783,9 @@ function navTickFn(){
   // meteo: ricontrollo ogni 15 minuti e avviso se sta cambiando
   if(Date.now()-(nav.wxT||0)>15*60e3){nav.wxT=Date.now();navWeather()}
   // posizione condivisa: un aggiornamento ogni 40 secondi
-  if(nav.share&&nav.pos&&Date.now()-nav.share.last>=40e3){nav.share.last=Date.now();sharePub({k:"p",p:r5(nav.pos),t:Date.now(),d:Math.round(nav.dist),e:Math.round(el/1000),pa:nav.paused?1:0})}
+  // zona privacy (revisione 23/11/2026): entro 300 m dalla partenza, di solito casa, la posizione non viene condivisa
+  const p0=nav.o&&nav.o.free?(nav.track&&nav.track[0]):(nav.o&&nav.o.path&&nav.o.path[0]),vicinoCasa=p0&&nav.pos&&hav(nav.pos,p0)<300;
+  if(nav.share&&nav.pos&&!vicinoCasa&&Date.now()-nav.share.last>=40e3){nav.share.last=Date.now();sharePub({k:"p",p:r5(nav.pos),t:Date.now(),d:Math.round(nav.dist),e:Math.round(el/1000),pa:nav.paused?1:0})}
   if(Date.now()-navSaveT>15000)saveNav();
   paintNav();
 }
@@ -4835,7 +4897,7 @@ $("nav-end").onclick=()=>{
     const tr=trackToSave(nav.track);
     const stp=parseSteps($("ns-steps").value);if($("ns-steps").value.trim()&&!stp){toast("Il numero dei passi non sembra giusto");return}
     S.acts.unshift({dogs:DOGS.walk.slice(),t:nav.t0,name:o.name,kind:o.kind,id:o.id||null,dur:Math.round(el),dist,plan:full,up:Math.round((o.up||0)*(full/Math.max(1,o.len))*Math.min(1,dist/Math.max(1,full))),gps:useGps,track:tr,steps:stp,photos:(nav.photos||[]).length?nav.photos:undefined,...navPaceFix(useGps,el)});
-    S.acts=S.acts.slice(0,200);
+    // le passeggiate non si cancellano mai (revisione 23/11/2026: prima si tenevano solo le ultime 200)
     if(!store.set("alldogs-acts",S.acts)){S.acts.slice(5).forEach(x=>delete x.track);store.set("alldogs-acts",S.acts)}
     if(nav.share)sharePub({k:"e",t:Date.now(),d:dist,e:Math.round(el/1000)});
     stopNav();location.hash="attivita";toast("Passeggiata salvata nel diario");setTimeout(()=>diarySheet(0),500);
@@ -4857,7 +4919,7 @@ $("nav-share").onclick=()=>{
   if(!nav)return;const on=!!nav.share;
   openSheet(`<h2>Posizione in tempo reale</h2>
     <p style="margin-top:8px">${on?"<b>La condivisione è attiva.</b> ":""}Chi apre il link vede su una mappa dove siete, il percorso e quanta strada avete fatto. Si aggiorna circa ogni 40 secondi e si ferma quando chiudi l'attività.</p>
-    <p class="small muted" style="margin-top:8px">La posizione passa da un servizio pubblico gratuito (ntfy.sh) su un indirizzo casuale e segreto: la vede solo chi ha il link. Dopo 12 ore viene cancellata. Funziona finché l'app resta aperta con lo schermo acceso.</p>
+    <p class="small muted" style="margin-top:8px">La posizione passa da un servizio pubblico gratuito (ntfy.sh) su un indirizzo casuale e segreto: la vede solo chi ha il link. Dopo 12 ore viene cancellata. Per proteggere casa tua, entro 300 m dalla partenza la posizione non viene mostrata. Funziona finché l'app resta aperta con lo schermo acceso.</p>
     <div class="stack" style="margin-top:14px"><button class="btn pri wide" id="sh-go">${icon("share")}${on?"Manda di nuovo il link":"Attiva e manda il link"}</button>${on?`<button class="btn wide" id="sh-stop">Interrompi la condivisione</button>`:""}</div>`);
   $("sh-go").onclick=async()=>{
     if(!nav.share){const a=new Uint8Array(12);crypto.getRandomValues(a);
@@ -5183,7 +5245,7 @@ function paintSearch(){
 }
 async function geoSuggest(){
   const q=$("sq").value.trim(),my=++geoSeq;
-  if(q.length<2){geoPlaces=[];paintSearch();return}
+  if(q.length<3){geoPlaces=[];paintSearch();return} // ricerca luoghi Mapbox solo da 3 lettere (meno richieste a pagamento)
   loadNames().then(()=>{if(my===geoSeq)paintSearch()}).catch(()=>{});
   paintSearch();
   try{
