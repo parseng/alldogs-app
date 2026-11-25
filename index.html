@@ -1357,7 +1357,7 @@ const SB_LIB="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd
 const FN_URL=SB_URL+"/functions/v1/",AI_SRV="server"; // chat AI e calcolo dei giri passano dalle funzioni sul server: le chiavi non stanno più nell'app
 function fnHeaders(){let t="";try{const o=JSON.parse(localStorage.getItem("sb-xljgemccvkxlypxrtcbr-auth-token"));t=o&&o.access_token||""}catch(e){}return {"Content-Type":"application/json",apikey:SB_KEY,Authorization:"Bearer "+(t||SB_KEY)}}
 const SB_TOK="sb-xljgemccvkxlypxrtcbr-auth-token",SYK="alldogs-sync",SYD="alldogs-sync-dirty";
-const SYNC_RE=/^alldogs-(acts|dogs?|reviews|goal|train|salute)(-|$)/;
+const SYNC_RE=/^alldogs-(acts|dogs?|reviews|goal|train|salute|photo)(-|$)/;
 const SY={sb:null,p:null,user:null,busy:false,again:false,msg:"",err:"",mail:"",hash:null,rec:false};
 // il link dell'email (conferma o nuova password) arriva con #access_token=...: lo tolgo subito per non confondere le schermate
 if(/access_token=|error_description=/.test(location.hash)){SY.hash=location.hash.slice(1);history.replaceState(null,"",location.pathname+location.search+"#cane")}
@@ -1377,6 +1377,7 @@ function sbLoad(){if(SY.p)return SY.p;
     const {data}=await sb.auth.getSession();SY.user=data.session?data.session.user:null;
     sb.auth.onAuthStateChange((ev,ses)=>{const was=SY.user&&SY.user.id;SY.user=ses?ses.user:null;if(ev==="PASSWORD_RECOVERY")SY.rec=true;
       // uscita (anche se la sessione scade o viene chiusa altrove): i dati di quell'account lasciano lo schermo
+      if(SY.user&&SY.user.id!==was)SY.fotoOk=false;
       if(ev==="SIGNED_OUT"&&was&&!SY.elimina)setTimeout(()=>datiUscita(was),0);
       setTimeout(()=>{accPaint();if(SY.user&&SY.user.id!==was)syncNow()},0)});
     // nessuno collegato ma sul telefono ci sono ancora i dati di un account (versioni di prima): li metto nel suo cassetto
@@ -1392,7 +1393,7 @@ function sbLoad(){if(SY.p)return SY.p;
 const TENGO=/^alldogs-(ax|vx|wt|wx-v\d+|elev-v\d+|feat-v\d+|trails-v\d+|cellof|offline|scaricati-app|hill|map3d|mapstyle|surf|trailson|poi|poik|poik2|view|navset|headup|creamode|mankind|packkind|sensi|gps-background|avviso-meteo|meteo-domani|webcam|oggi-min|openacc|saluto|movimento|cassetto-.+)$/;
 const CASS="alldogs-cassetto-";
 function datiPersonali(){const out=[];try{for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k&&k.startsWith("alldogs-")&&!TENGO.test(k))out.push(k)}}catch(e){}return out}
-async function fotoCassetto(op,uid){} // nel sito le foto restano dove sono; l'app la sostituisce (cartella delle foto per account)
+async function fotoCassetto(op,uid,a){} // nel sito le foto restano dove sono; l'app la sostituisce (cartella delle foto per account)
 function dogsRileggi(){let o=null;try{o=JSON.parse(localStorage.getItem("alldogs-dogs"))}catch(e){}
   if(!o||!Array.isArray(o.list))o={list:[],cur:"d1",walk:[]};DOGS.list=o.list;DOGS.cur=o.cur||(o.list[0]&&o.list[0].id)||"d1";DOGS.walk=o.walk&&o.walk.length?o.walk:[DOGS.cur];dogsVer++}
 // toglie dal telefono i dati personali; con uid li mette nel cassetto di quell'account, senza (account eliminato) li butta
@@ -1408,6 +1409,23 @@ async function datiRiprendi(uid){let box=null;try{box=JSON.parse(localStorage.ge
   try{await fotoCassetto("riprendi",uid)}catch(e){}
   if(!box)return 0;let n=0;for(const k in box)if(box[k]!=null){try{localStorage.setItem(k,box[k]);n++}catch(e){}}
   try{localStorage.removeItem(CASS+uid)}catch(e){}dogsRileggi();return n}
+// Traslochi (25/11/2026): prima della separazione per account, sul telefono di Giuseppe i dati del suo account Apple
+// sono finiti nel cassetto di un account di prova creato quella mattina. Le foto (che per ora stanno solo sul telefono)
+// tornano al vero proprietario; l'account di prova non riprende la copia.
+const TRASLOCHI={"b02792bd-a947-4962-b2fd-d6ecc8728c72":"f59d745b-f7a6-48ef-93c6-52abf527a277"};
+async function trasloco(uid){let fatto=false;
+  for(const [da,a] of Object.entries(TRASLOCHI)){if(uid!==da&&uid!==a)continue;
+    let box=null;try{box=JSON.parse(localStorage.getItem(CASS+da))}catch(e){}
+    if(!box)continue;
+    const foto=Object.keys(box).filter(k=>/^alldogs-(photo|foto-web)/.test(k));
+    if(uid===a){for(const k of foto)try{if(localStorage.getItem(k)==null)localStorage.setItem(k,box[k])}catch(e){}
+      try{await fotoCassetto("riprendi",da)}catch(e){}}
+    else{let dst={};try{dst=JSON.parse(localStorage.getItem(CASS+a))||{}}catch(e){}
+      for(const k of foto)if(dst[k]==null)dst[k]=box[k];
+      try{localStorage.setItem(CASS+a,JSON.stringify(dst))}catch(e){}
+      try{await fotoCassetto("sposta",da,a)}catch(e){}}
+    try{localStorage.removeItem(CASS+da)}catch(e){}fatto=true}
+  return fatto}
 // dove porta il link dell'email (conferma, nuova password): nell'app è una pagina-ponte che riapre l'app
 let ACC_BACK="";
 let uscendo=false;
@@ -1422,6 +1440,7 @@ async function syncNow(){
   SY.busy=true;SY.err="";
   try{const sb=await sbLoad();if(!SY.user)return;
     const uid=SY.user.id;let st=store.get(SYK)||{};
+    if(await trasloco(uid)&&st.uid===uid){toast("Ho rimesso a posto le tue foto");setTimeout(()=>location.reload(),1200)}
     if(st.uid!==uid){
       // sul telefono ci sono i dati di un altro account: nel suo cassetto, non in questo account
       // (se invece sono dati fatti senza account, entrano in questo account; ma se l'account ha già un cassetto qui,
@@ -1435,6 +1454,7 @@ async function syncNow(){
     try{localStorage.removeItem(SYD)}catch(e){}accPaint();
     await syncPush(sb,uid,st);
     st.last=Date.now();store.set(SYK,st);
+    if(!SY.fotoOk){SY.fotoOk=true;fotoMancanti(sb,uid).catch(e=>{SY.fotoOk=false;console.warn("foto dall'account:",e&&e.message)})}
   }catch(e){SY.err=e&&e.message||"errore";try{localStorage.setItem(SYD,"1")}catch(x){}
     clearTimeout(syncDirty.t);syncDirty.t=setTimeout(()=>syncNow(),60000)}
   finally{SY.busy=false;accPaint();if(SY.again){SY.again=false;syncNow()}}
@@ -1492,7 +1512,54 @@ async function syncPush(sb,uid,st){
     rNow[id]=1;if(chg(rh,id,row))rRows.push(row)}
   await up("reviews",rRows,"user_id,trail_id");
   const goneR=Object.keys(rh).filter(k=>!rNow[k]);await del("reviews","trail_id",goneR);goneR.forEach(k=>delete rh[k]);st.rh=rh;
+  await fotoPush(sb,uid,st);
 }
+// ================= Foto nell'account (25/11/2026) =================
+// Foto del cane, delle uscite (diario e foto scattate in giro) e delle recensioni vanno nella cartella privata "foto"
+// di Supabase: <id utente>/<nome>.jpg, e ognuno vede solo la sua (regole in 20261125120000_foto_account.sql).
+// Si caricano solo quelle nuove o cambiate (firma in st.fh); senza rete ci riprova da solo come per il resto.
+// Su un telefono nuovo (o se una foto manca) si riscaricano.
+const FB="foto";
+const fileFoto=n=>String(n).replace(/[^a-zA-Z0-9_-]/g,"_")+".jpg";
+// tutte le foto che servono ai dati personali: nome del file online → dove sta sul telefono
+function fotoChiavi(){const out={};
+  for(const d of DOGS.list){const k=d.id==="d1"?"alldogs-photo":"alldogs-photo-"+d.id;if(localStorage.getItem(k))out["cane-"+d.id]={ls:k}}
+  for(const x of store.get("alldogs-acts")||[]){if(!x||!x.t)continue;if(x.ph)out[String(x.t)]={f:String(x.t)};for(const o of x.photos||[])if(o&&o.k)out[o.k]={f:o.k}}
+  for(const r of Object.values(store.get("alldogs-reviews")||{}))for(const k of (r&&r.ph)||[])if(k)out[k]={f:k};
+  return out}
+// nel sito le foto sono testi "data:"; l'app sostituisce queste tre funzioni (file sul telefono)
+async function fotoFirma(k){const v=await photoGet(k);return v?syH(v)+":"+v.length:null}
+async function fotoDati(k){return await photoGet(k)}
+async function fotoScarica(k,url){const r=await fetch(url);if(!r.ok)throw new Error("foto "+r.status);const b=await r.blob();
+  const d=await new Promise((ok,ko)=>{const f=new FileReader();f.onload=()=>ok(f.result);f.onerror=ko;f.readAsDataURL(b)});if(k)await photoPut(k,d);return d}
+function daDataUrl(d){const m=/^data:([^;,]+);base64,(.*)$/.exec(d||"");if(!m)return null;
+  const A="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/",s=m[2].replace(/[^A-Za-z0-9+/]/g,""),n=Math.floor(s.length*3/4),b=new Uint8Array(n);
+  let j=0;for(let i=0;i<s.length;i+=4){const a=A.indexOf(s[i]),c=A.indexOf(s[i+1]),e=s[i+2]!=null?A.indexOf(s[i+2]):-1,g=s[i+3]!=null?A.indexOf(s[i+3]):-1;
+    b[j++]=(a<<2)|(c>>4);if(e>=0&&j<n)b[j++]=((c&15)<<4)|(e>>2);if(g>=0&&j<n)b[j++]=((e&3)<<6)|g}
+  return {tipo:m[1],bytes:b.subarray(0,j)}}
+async function fotoPush(sb,uid,st){
+  const fh=st.fh||(st.fh={}),ora=fotoChiavi(),dir=uid+"/";
+  for(const [nome,o] of Object.entries(ora)){
+    const v=o.ls?store.get(o.ls):null,firma=o.ls?(v?syH(v)+":"+v.length:null):await fotoFirma(o.f);
+    if(!firma||fh[nome]===firma)continue;
+    const x=daDataUrl(o.ls?v:await fotoDati(o.f));if(!x||!/^image\//.test(x.tipo)||x.bytes.length>2e6)continue;
+    const {error}=await sb.storage.from(FB).upload(dir+fileFoto(nome),x.bytes.buffer.slice(x.bytes.byteOffset,x.bytes.byteOffset+x.bytes.length),{contentType:x.tipo,upsert:true});if(error)throw error;
+    fh[nome]=firma;store.set(SYK,st)} // salvo subito: se cade la rete a metà, le foto già caricate non si ricaricano
+  const via=Object.keys(fh).filter(k=>!ora[k]);
+  if(via.length){const {error}=await sb.storage.from(FB).remove(via.map(k=>dir+fileFoto(k)));if(!error)via.forEach(k=>delete fh[k])}}
+// foto che sono nell'account ma non su questo telefono (telefono nuovo, app reinstallata): le riscarico
+async function fotoMancanti(sb,uid){
+  const {data,error}=await sb.storage.from(FB).list(uid,{limit:1000});if(error)throw error;
+  const online=new Set((data||[]).map(f=>f.name));if(!online.size)return 0;
+  const st=store.get(SYK)||{},fh=st.fh||{};let n=0;
+  const prendi=async(nome,metti)=>{const r=await sb.storage.from(FB).createSignedUrl(uid+"/"+fileFoto(nome),600);if(r.error)throw r.error;await metti(r.data.signedUrl)};
+  for(const d of DOGS.list){const nome="cane-"+d.id,k=d.id==="d1"?"alldogs-photo":"alldogs-photo-"+d.id;
+    if(localStorage.getItem(k)||!online.has(fileFoto(nome)))continue;
+    await prendi(nome,async u=>{const dati=await fotoScarica(null,u);if(dati){try{localStorage.setItem(k,JSON.stringify(dati))}catch(e){}fh[nome]=syH(dati)+":"+dati.length;n++}})}
+  for(const [nome,o] of Object.entries(fotoChiavi()))if(o.f&&online.has(fileFoto(nome))&&!(await photoGet(o.f))){
+    await prendi(nome,async u=>{await fotoScarica(o.f,u);n++})}
+  if(n){const s2=store.get(SYK)||{};s2.fh=Object.assign(s2.fh||{},fh);store.set(SYK,s2);try{vMemo.m.clear()}catch(e){}if(typeof showAct==="function"&&location.hash==="#attivita")showAct()}
+  return n}
 // primo accesso su questo telefono: aggiunge i dati già nell'account che qui mancano (senza toccare quelli del telefono)
 // il server accetta percorsi fino a 150 KB: oltre 4000 punti si semplifica di più (le curve restano), così si salva sempre
 function tracciaLeggera(t){let r=t,tol=3;while(r.length>4000&&tol<120){r=simplify(t,tol);tol*=2}if(r.length>4000){const k=Math.ceil(r.length/4000);r=r.filter((p,i)=>i%k===0||i===r.length-1)}return r.map(p=>[Math.round(p[0]*1e5)/1e5,Math.round(p[1]*1e5)/1e5])}
@@ -1565,10 +1632,11 @@ function accPaint(){const box=$("acc-box"),sub=$("acc-sub"),u=SY.user;
       <p class="small muted" style="margin-top:8px">Se esci, i tuoi dati restano nell'account e spariscono da questo telefono finché non rientri.</p>
       <button class="btn sm" id="acc-del" type="button" style="margin-top:14px">Elimina l'account</button>
       <p class="small muted" style="margin-top:6px">Cancella per sempre l'account, i cani, le uscite, le recensioni e le segnalazioni, online e su questo telefono.</p>`;
-    $("acc-sync").onclick=()=>{SY.msg="";const st=store.get(SYK)||{};if(st.uid){st.wh={};st.dh={};st.rh={};store.set(SYK,st)}syncNow()};
+    $("acc-sync").onclick=()=>{SY.msg="";const st=store.get(SYK)||{};if(st.uid){st.wh={};st.dh={};st.rh={};st.fh={};store.set(SYK,st)}SY.fotoOk=false;syncNow()};
     $("acc-del").onclick=async e=>{if(!confirm("Eliminare per sempre l'account "+u.email+"? Cani, uscite, recensioni e segnalazioni verranno cancellati, online e su questo telefono, e non si potranno recuperare."))return;
       const btn=e.currentTarget;btn.disabled=true;
-      try{await getJSON(FN_URL+"elimina-account",{method:"POST",headers:fnHeaders(),body:"{}"});SY.elimina=true;try{await SY.sb.auth.signOut({scope:"local"})}catch(x){}
+      try{try{const sb=SY.sb,l=await sb.storage.from(FB).list(u.id,{limit:1000});if(l.data&&l.data.length)await sb.storage.from(FB).remove(l.data.map(f=>u.id+"/"+f.name))}catch(x){}
+        await getJSON(FN_URL+"elimina-account",{method:"POST",headers:fnHeaders(),body:"{}"});SY.elimina=true;try{await SY.sb.auth.signOut({scope:"local"})}catch(x){}
         SY.user=null;try{localStorage.removeItem(CASS+u.id)}catch(x){}await datiMettiVia(null);SY.elimina=false;SY.msg="Account eliminato.";toast("Account eliminato");setTimeout(()=>location.reload(),300)}
       catch(x){SY.elimina=false;SY.msg="Non sono riuscito a eliminare l'account ("+((x&&x.message)||"errore")+"). Riprova tra poco."}btn.disabled=false;accPaint()};
     $("acc-out").onclick=async e=>{const btn=e.currentTarget;btn.disabled=true;
