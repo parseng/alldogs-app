@@ -7,12 +7,12 @@
 <!-- protezioni di base (GitHub Pages non permette intestazioni HTTP proprie): niente plugin, niente <base> esterni, indirizzo completo mai inviato ad altri siti -->
 <meta http-equiv="Content-Security-Policy" content="object-src 'none'; base-uri 'self'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
-<title>AllDogs</title>
+<title>Wagabondo</title>
 <meta name="description" content="Sentieri e passeggiate adatti al tuo cane, in tutta Italia.">
 <meta name="theme-color" content="#eef0ec" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#111613" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="AllDogs">
+<meta name="apple-mobile-web-app-title" content="Wagabondo">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -24,7 +24,7 @@
 <style>
 /* Versione 3: una sola mappa Mapbox che si sposta tra le schermate; barra in basso; schede grandi. */
 :root{
-  /* AllDogs, libretto di stile (DESIGN.md): pietra, bosco, segnavia.
+  /* Wagabondo, libretto di stile (DESIGN.md): pietra, bosco, segnavia.
      --accent  = verde bosco: azioni principali e scheda attiva
      --dog     = arancio segnavia: SOLO le cose del cane (il suo nome, il suo percorso, i suoi tempi, Crea giro, Chiedi) */
   --bg:#eef0ec; --surface:#fbfcfa; --ink:#18201c; --muted:#5a6660; --line:#d8ddd6;
@@ -834,6 +834,8 @@ body{font-size:17px;line-height:1.5}
 #wiz .field{font-size:20px;margin-top:20px}
 #wiz .wz-opts{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
 #wiz .wz-opts .pill{font-size:16px;padding:10px 15px}
+#wiz .wz-q{font-weight:700;margin-top:18px}
+#wiz .wz-q+.wz-opts{margin-top:8px}
 #wiz .wz-card{display:block;width:100%;text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:16px;padding:14px 16px;margin-top:10px;font:inherit;color:var(--ink)}
 #wiz .wz-card b{font-size:18px;display:block}
 #wiz .wz-card small{color:var(--muted);font-size:15px;display:block;margin-top:3px}
@@ -1128,6 +1130,7 @@ body{font-size:17px;line-height:1.5}
     <label>Nome<input id="d-name" autocomplete="off"></label>
     <label class="full">Razza<input id="d-breed" autocomplete="off" placeholder="Es. Labrador, meticcio"></label>
     <label class="full">Se è un meticcio: che incrocio può essere?<input id="d-mix" autocomplete="off" placeholder="Facoltativo. Es. pastore tedesco e labrador"></label>
+    <label class="w full" id="d-tipo-l">Se è un meticcio: a che tipo somiglia di più?<select id="d-tipo"><option value="">Non so</option></select></label>
     <label>Età (anni)<input id="d-age" type="number" inputmode="decimal" min="0" max="25" step="0.5"></label>
     <label>Peso (kg)<input id="d-weight" type="number" inputmode="decimal" min="1" max="100"></label>
     <label class="w">Allenamento<select id="d-train"><option value="poco">Poco: passeggiate in città</option><option value="medio">Medio: qualche escursione</option><option value="molto">Molto: escursioni frequenti</option></select></label>
@@ -1138,7 +1141,22 @@ body{font-size:17px;line-height:1.5}
   <div class="block full" id="b-health"><h2>Salute</h2>
     <p class="muted small" style="margin-bottom:10px">Se segni un problema, l'app usa limiti più prudenti e ne tiene conto quando crea i giri. Non sostituisce il veterinario.</p>
     <div class="checks" id="pat"></div>
-    <div class="form" style="margin-top:10px"><label class="w" id="pat-other-l" hidden>Altro: scrivi quale<input id="pat-other" autocomplete="off"></label></div>
+    <div class="form" style="margin-top:10px"><label class="w" id="pat-other-l" hidden>Altro: scrivi quale<input id="pat-other" autocomplete="off"></label>
+      <label class="w full" id="c-stadio-l" hidden>Cuore: cosa ha detto il veterinario?<select id="c-stadio"></select></label>
+      <label class="w full" id="conv-tipo-l" hidden>Convalescenza: che intervento o problema?<select id="conv-tipo"></select></label>
+      <label class="w full" id="conv-sett-l" hidden>Convalescenza: da quanto è stato operato o si è fatto male?<select id="conv-sett"></select></label>
+      <label class="check" id="conv-ok-l" hidden><input id="conv-ok" type="checkbox">Il veterinario ha dato il via libera per camminare di più</label></div>
+  </div>
+  <div class="block full" id="b-att"><h2>Le ultime 4 settimane</h2>
+    <p class="muted small" style="margin-bottom:10px">Facoltativo. Se rispondi, nelle prime settimane l'app parte da quello che fa davvero (con un po' di prudenza), invece che da una stima. Poi contano le passeggiate registrate.</p>
+    <div class="form">
+      <label class="w full">Quanto cammina al giorno, in tutto?<select id="a-min"></select></label>
+      <label class="w full">L'uscita più lunga?<select id="a-lungo"></select></label>
+      <label class="w full">Quanta salita aveva?<select id="a-salita"></select></label>
+      <label class="w full">Come stava il giorno dopo?<select id="a-dopo"></select></label>
+      <label class="w full">Quante uscite di più di un'ora fa a settimana?<select id="a-uscite"></select></label>
+      <div class="w full" style="grid-column:1/-1"><span class="small muted" style="font-weight:500">Fa sport con te?</span><div class="checks" id="a-sport"></div></div>
+    </div>
   </div>
   <div class="block full" id="b-book"><h2>Libretto sanitario</h2>
     <p class="muted small" style="margin-bottom:10px">Resta su questo telefono e, se accedi, anche nel tuo account privato (lo vedi solo tu).</p>
@@ -1166,7 +1184,7 @@ body{font-size:17px;line-height:1.5}
     <div class="block small muted">
       <p>Il verdetto è un <b>consiglio prudente, non una garanzia</b>. Osserva sempre il tuo cane, fermati ai primi segni di stanchezza o affanno. L'app <b>non sostituisce il veterinario</b>: per qualsiasi dubbio sulla salute chiedi a lui.</p>
       <p style="margin-top:10px"><a href="privacy.html">Informativa sulla privacy</a> · <a href="termini.html">Condizioni d'uso</a></p>
-      <p style="margin-top:10px">Sentieri © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap contributors</a> (ODbL) · Mappe © <a href="https://www.mapbox.com/about/maps/" target="_blank" rel="noopener">Mapbox</a> · Meteo e quote <a href="https://open-meteo.com" target="_blank" rel="noopener">Open-Meteo</a> · Percorsi <a href="https://openrouteservice.org" target="_blank" rel="noopener">OpenRouteService</a> · Chat Gemini (Google) · Meteo di riserva <a href="https://www.met.no/en" target="_blank" rel="noopener">MET Norway</a> · Radar pioggia RainViewer · Mappa topografica OpenTopoMap · Sentinel-2 cloudless 2024 di <a href="https://s2maps.eu" target="_blank" rel="noopener">EOX</a> (dati Copernicus modificati) · Neve, nuvole e vegetazione NASA GIBS · Alberi e ombra ESA WorldCover 2021 (CC BY 4.0) · Regole per i cani: regolamenti dei parchi e OpenStreetMap</p>
+      <p style="margin-top:10px">Sentieri © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap contributors</a> (ODbL) · Mappe © <a href="https://www.mapbox.com/about/maps/" target="_blank" rel="noopener">Mapbox</a> · Meteo e quote <a href="https://open-meteo.com" target="_blank" rel="noopener">Open-Meteo</a> · Percorsi <a href="https://openrouteservice.org" target="_blank" rel="noopener">OpenRouteService</a> · Chat Gemini (Google) · Meteo di riserva <a href="https://www.met.no/en" target="_blank" rel="noopener">MET Norway</a> · Radar pioggia RainViewer · Mappa topografica OpenTopoMap · Neve, nuvole e vegetazione NASA GIBS · Alberi e ombra ESA WorldCover 2021 (CC BY 4.0) · Regole per i cani: regolamenti dei parchi e OpenStreetMap</p>
     </div>
   </div></details>
 </section>
@@ -1179,9 +1197,9 @@ body{font-size:17px;line-height:1.5}
 
 <!-- SEGUI: chi riceve il link vede la passeggiata in tempo reale -->
 <section class="screen" id="s-segui">
-  <div class="nav-top"><p class="small muted">Posizione condivisa con AllDogs</p><h3 id="fol-title">Passeggiata in corso</h3><p class="nav-msg" id="fol-msg">Cerco la posizione…</p></div>
+  <div class="nav-top"><p class="small muted">Posizione condivisa con Wagabondo</p><h3 id="fol-title">Passeggiata in corso</h3><p class="nav-msg" id="fol-msg">Cerco la posizione…</p></div>
   <div class="maphost" id="hostFollow"></div>
-  <div class="nav-bot"><p class="small muted" id="fol-info"></p><div class="row" style="margin-top:8px"><a class="btn" id="fol-go" target="_blank" rel="noopener" hidden>Portami da loro</a><a class="btn pri" href="#esplora">Apri AllDogs</a></div></div>
+  <div class="nav-bot"><p class="small muted" id="fol-info"></p><div class="row" style="margin-top:8px"><a class="btn" id="fol-go" target="_blank" rel="noopener" hidden>Portami da loro</a><a class="btn pri" href="#esplora">Apri Wagabondo</a></div></div>
 </section>
 
 <!-- PRIMO AVVIO: domande una per schermata -->
@@ -1214,7 +1232,7 @@ body{font-size:17px;line-height:1.5}
 <div class="msheet" id="layers" hidden><div class="msbox" role="dialog" aria-label="Mappe">
   <div class="mshd"><h2>Mappe</h2><button class="round" id="layers-x" aria-label="Chiudi"><svg><use href="#i-x"/></svg></button></div>
   <h3>Mappa di base</h3>
-  <div class="mgrid"><button class="mcard" data-st="map"><span class="mi"><img src="img/maps/map.jpg" alt="" loading="lazy"></span><span class="mt">Outdoor</span><small>Sentieri e curve</small></button><button class="mcard" data-st="sat"><span class="mi"><img src="img/maps/sat.jpg" alt="" loading="lazy"></span><span class="mt">Satellite</span><small>Foto aeree</small></button><button class="mcard" data-st="s2"><span class="mi"><img src="img/maps/s2.jpg" alt="" loading="lazy"><i class=tag>Nuovo</i></span><span class="mt">Sentinel-2</span><small>Satellite europeo</small></button><button class="mcard" data-st="topo"><span class="mi"><img src="img/maps/topo.jpg" alt="" loading="lazy"></span><span class="mt">Topografica</span><small>Carta classica</small></button><button class="mcard" data-st="str"><span class="mi"><img src="img/maps/str.jpg" alt="" loading="lazy"></span><span class="mt">Strade</span></button><button class="mcard" data-st="dark"><span class="mi"><img src="img/maps/dark.jpg" alt="" loading="lazy"></span><span class="mt">Notte</span></button></div>
+  <div class="mgrid"><button class="mcard" data-st="map"><span class="mi"><img src="img/maps/map.jpg" alt="" loading="lazy"></span><span class="mt">Outdoor</span><small>Sentieri e curve</small></button><button class="mcard" data-st="sat"><span class="mi"><img src="img/maps/sat.jpg" alt="" loading="lazy"></span><span class="mt">Satellite</span><small>Foto aeree</small></button><button class="mcard" data-st="topo"><span class="mi"><img src="img/maps/topo.jpg" alt="" loading="lazy"></span><span class="mt">Topografica</span><small>Carta classica</small></button><button class="mcard" data-st="str"><span class="mi"><img src="img/maps/str.jpg" alt="" loading="lazy"></span><span class="mt">Strade</span></button><button class="mcard" data-st="dark"><span class="mi"><img src="img/maps/dark.jpg" alt="" loading="lazy"></span><span class="mt">Notte</span></button></div>
   <h3>Meteo</h3>
   <div class="mgrid"><button class="mcard" data-st="rain"><span class="mi"><img src="img/maps/rain.jpg" alt="" loading="lazy"><i class=tag>Live</i></span><span class="mt">Pioggia adesso</span><small>Radar</small></button><button class="mcard" data-st="rainf"><span class="mi"><img src="img/maps/rainf.jpg" alt="" loading="lazy"><i class=tag>Nuovo</i></span><span class="mt">Pioggia prevista</span><small>Prossime 24 ore</small></button><button class="mcard" data-st="temp"><span class="mi"><img src="img/maps/temp.jpg" alt="" loading="lazy"><i class=tag>Nuovo</i></span><span class="mt">Temperatura</span><small>Aria, adesso</small></button><button class="mcard" data-st="wind"><span class="mi"><img src="img/maps/wind.jpg" alt="" loading="lazy"><i class=tag>Nuovo</i></span><span class="mt">Vento</span><small>Forza e direzione</small></button></div>
   <h3>Dal satellite</h3>
@@ -1225,7 +1243,7 @@ body{font-size:17px;line-height:1.5}
   <div class="mtog"><button data-st="trails"><i class="dot" style="background:var(--ok)"></i><span>Sentieri</span><i class="tg"></i></button><button data-st="poi-a"><i class="dot" style="background:#1f8a4c"></i><span>Aree cani</span><i class="tg"></i></button><button data-st="poi-v"><i class="dot" style="background:#d9483b"></i><span>Veterinari</span><i class="tg"></i></button><button data-st="poi-s"><i class="dot" style="background:#1e88e5"></i><span>Spiagge per cani</span><i class="tg"></i></button><button data-st="poi-g"><i class="dot" style="background:#6a9f2a"></i><span>Ville comunali e parchi</span><i class="tg"></i></button><button data-st="poi-w"><i class="dot" style="background:#1e88e5"></i><span>Fontanelle e punti acqua</span><i class="tg"></i></button></div>
   <button class="btn wide" data-st="legend" style="margin-top:14px">Legenda della mappa</button>
   <button class="btn wide" id="prop-map" type="button" style="margin-top:8px">Manca un posto? Proponilo</button>
-  <p class="small muted" style="margin-top:12px">Una mappa meteo o satellite alla volta. Fonti gratuite: Open-Meteo, RainViewer, NASA, Sentinel-2 di EOX.</p>
+  <p class="small muted" style="margin-top:12px">Una mappa meteo o satellite alla volta. Fonti gratuite: Open-Meteo, RainViewer, NASA.</p>
 </div></div>
 <div class="sheetbg" id="sheet" hidden><div class="box" id="sheet-box"></div></div>
 <div class="toast" id="toast" role="status"></div>
@@ -1243,8 +1261,6 @@ const MAPBOX_TOKEN="pk.eyJ1IjoicGFyc2VuZyIsImEiOiJjbXdqMTdhdDEwMHY0Mnhxd2V1N2x4a
 const STYLES={map:"mapbox://styles/mapbox/outdoors-v12",sat:"mapbox://styles/mapbox/satellite-streets-v12",str:"mapbox://styles/mapbox/streets-v12",dark:"mapbox://styles/mapbox/dark-v11",navn:"mapbox://styles/mapbox/navigation-night-v1",
   // carta topografica classica con curve di livello: OpenTopoMap (dati OpenStreetMap + SRTM)
   topo:{version:8,glyphs:"mapbox://fonts/mapbox/{fontstack}/{range}.pbf",sources:{topo:{type:"raster",tiles:["a","b","c"].map(x=>`https://${x}.tile.opentopomap.org/{z}/{x}/{y}.png`),tileSize:256,maxzoom:17,attribution:"Mappa © OpenTopoMap (CC-BY-SA) · dati © OpenStreetMap"}},layers:[{id:"topo",type:"raster",source:"topo"}]}};
-// Sentinel-2 senza nuvole (mosaico 2024 di EOX, dati Copernicus): foto dal satellite europeo, gratuita per uso non commerciale
-STYLES.s2={version:8,glyphs:"mapbox://fonts/mapbox/{fontstack}/{range}.pbf",sources:{s2:{type:"raster",tiles:["https://tiles.maps.eox.at/wmts/1.0.0/s2cloudless-2024_3857/default/g/{z}/{y}/{x}.jpg"],tileSize:256,maxzoom:14,attribution:"Sentinel-2 cloudless 2024 di EOX (contiene dati Copernicus Sentinel modificati 2024)"}},layers:[{id:"s2",type:"raster",source:"s2"}]};
 const DEM_TILES="https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png";
 // tipo di fondo: a = asfalto o pietra, n = terra o erba, g = gradini, u = non indicato nei dati
 const SFC={a:"#7b8494",n:"#2e9d5b",g:"#e0483a",u:"#ffffff"},SFL={a:"Asfalto o pietra",n:"Terra o erba",g:"Gradini",u:"Non indicato"},SFK=["n","a","g","u"];
@@ -1360,10 +1376,42 @@ function sbLoad(){if(SY.p)return SY.p;
       setTimeout(openAcc,300)}
     const {data}=await sb.auth.getSession();SY.user=data.session?data.session.user:null;
     sb.auth.onAuthStateChange((ev,ses)=>{const was=SY.user&&SY.user.id;SY.user=ses?ses.user:null;if(ev==="PASSWORD_RECOVERY")SY.rec=true;
+      // uscita (anche se la sessione scade o viene chiusa altrove): i dati di quell'account lasciano lo schermo
+      if(ev==="SIGNED_OUT"&&was&&!SY.elimina)setTimeout(()=>datiUscita(was),0);
       setTimeout(()=>{accPaint();if(SY.user&&SY.user.id!==was)syncNow()},0)});
+    // nessuno collegato ma sul telefono ci sono ancora i dati di un account (versioni di prima): li metto nel suo cassetto
+    if(!SY.user){const st=store.get(SYK);if(st&&st.uid)await datiUscita(st.uid)}
     accPaint();if(SY.user)syncNow();return sb})
   .catch(e=>{SY.p=null;throw e});
   return SY.p}
+// I dati sono dell'account (decisione di Giuseppe, 25/11/2026): chi non è collegato, o è collegato con un altro account,
+// non vede cani, uscite, recensioni, salvati e foto di un altro. Uscendo, i dati personali lasciano lo schermo e vanno
+// nel "cassetto" di quell'account sul telefono (così niente si perde, neanche le modifiche non ancora salvate online
+// o le foto, che per ora stanno solo sul telefono); rientrando con lo stesso account tornano, e si aggiungono quelli online.
+// Restano fuori dal cassetto solo le scelte del telefono (mappa, suoni, navigazione) e le copie dei dati pubblici.
+const TENGO=/^alldogs-(ax|vx|wt|wx-v\d+|elev-v\d+|feat-v\d+|trails-v\d+|cellof|offline|scaricati-app|hill|map3d|mapstyle|surf|trailson|poi|poik|poik2|view|navset|headup|creamode|mankind|packkind|sensi|gps-background|avviso-meteo|meteo-domani|webcam|oggi-min|openacc|saluto|movimento|cassetto-.+)$/;
+const CASS="alldogs-cassetto-";
+function datiPersonali(){const out=[];try{for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k&&k.startsWith("alldogs-")&&!TENGO.test(k))out.push(k)}}catch(e){}return out}
+async function fotoCassetto(op,uid){} // nel sito le foto restano dove sono; l'app la sostituisce (cartella delle foto per account)
+function dogsRileggi(){let o=null;try{o=JSON.parse(localStorage.getItem("alldogs-dogs"))}catch(e){}
+  if(!o||!Array.isArray(o.list))o={list:[],cur:"d1",walk:[]};DOGS.list=o.list;DOGS.cur=o.cur||(o.list[0]&&o.list[0].id)||"d1";DOGS.walk=o.walk&&o.walk.length?o.walk:[DOGS.cur];dogsVer++}
+// toglie dal telefono i dati personali; con uid li mette nel cassetto di quell'account, senza (account eliminato) li butta
+async function datiMettiVia(uid){const ks=datiPersonali();if(!ks.length&&!uid)return 0;
+  if(uid){let box={};try{box=JSON.parse(localStorage.getItem(CASS+uid))||{}}catch(e){}
+    for(const k of ks)box[k]=localStorage.getItem(k);
+    if(ks.length)localStorage.setItem(CASS+uid,JSON.stringify(box))} // se non c'è spazio si ferma qui e non toglie niente
+  for(const k of ks)try{localStorage.removeItem(k)}catch(e){}
+  try{await fotoCassetto(uid?"via":"butta",uid)}catch(e){}
+  dogsRileggi();return ks.length}
+// rimette sul telefono il cassetto di questo account (se c'è)
+async function datiRiprendi(uid){let box=null;try{box=JSON.parse(localStorage.getItem(CASS+uid))}catch(e){}
+  try{await fotoCassetto("riprendi",uid)}catch(e){}
+  if(!box)return 0;let n=0;for(const k in box)if(box[k]!=null){try{localStorage.setItem(k,box[k]);n++}catch(e){}}
+  try{localStorage.removeItem(CASS+uid)}catch(e){}dogsRileggi();return n}
+// dove porta il link dell'email (conferma, nuova password): nell'app è una pagina-ponte che riapre l'app
+let ACC_BACK="";
+let uscendo=false;
+async function datiUscita(uid){if(uscendo)return;uscendo=true;try{const n=await datiMettiVia(uid);if(n)setTimeout(()=>location.reload(),200)}finally{uscendo=false}}
 const syH=s=>{let h=5381;for(let i=0;i<s.length;i++)h=(h*33^s.charCodeAt(i))|0;return h.toString(36)};
 const syNum=v=>v===""||v==null||!isFinite(+v)?null:+v;
 const syK=(k,id)=>id==="d1"?k:k+"-"+id;
@@ -1374,8 +1422,16 @@ async function syncNow(){
   SY.busy=true;SY.err="";
   try{const sb=await sbLoad();if(!SY.user)return;
     const uid=SY.user.id;let st=store.get(SYK)||{};
-    if(st.uid!==uid){const n=await syncPull(sb,uid);st={uid};store.set(SYK,st);
-      if(n){try{localStorage.setItem(SYD,"1")}catch(e){}toast("Ho ripreso i dati dal tuo account");setTimeout(()=>location.reload(),1200);return}}
+    if(st.uid!==uid){
+      // sul telefono ci sono i dati di un altro account: nel suo cassetto, non in questo account
+      // (se invece sono dati fatti senza account, entrano in questo account; ma se l'account ha già un cassetto qui,
+      // sono quelli delle domande iniziali rifatte dopo l'uscita: tornano i suoi dati veri)
+      let cass=false;try{cass=!!localStorage.getItem(CASS+uid)}catch(e){}
+      const via=st.uid?await datiMettiVia(st.uid):cass?await datiMettiVia(null):0;
+      // poi tornano quelli lasciati qui l'ultima volta con questo account, e si aggiungono quelli online
+      const ripresi=await datiRiprendi(uid);
+      const n=await syncPull(sb,uid);st=store.get(SYK)||{};st.uid=uid;store.set(SYK,st);
+      if(n||via||ripresi){try{localStorage.setItem(SYD,"1")}catch(e){}if(n||ripresi)toast("Ho ripreso i dati dal tuo account");setTimeout(()=>location.reload(),n||ripresi?1200:200);return}}
     try{localStorage.removeItem(SYD)}catch(e){}accPaint();
     await syncPush(sb,uid,st);
     st.last=Date.now();store.set(SYK,st);
@@ -1438,29 +1494,41 @@ async function syncPush(sb,uid,st){
   const goneR=Object.keys(rh).filter(k=>!rNow[k]);await del("reviews","trail_id",goneR);goneR.forEach(k=>delete rh[k]);st.rh=rh;
 }
 // primo accesso su questo telefono: aggiunge i dati già nell'account che qui mancano (senza toccare quelli del telefono)
-// il server accetta percorsi fino a 300 KB: oltre ~9000 punti si semplifica di più (le curve restano), così si salva sempre
-function tracciaLeggera(t){let r=t,tol=3;while(r.length>9000&&tol<60){r=simplify(t,tol);tol*=2}return r.map(p=>[Math.round(p[0]*1e5)/1e5,Math.round(p[1]*1e5)/1e5])}
+// il server accetta percorsi fino a 150 KB: oltre 4000 punti si semplifica di più (le curve restano), così si salva sempre
+function tracciaLeggera(t){let r=t,tol=3;while(r.length>4000&&tol<120){r=simplify(t,tol);tol*=2}if(r.length>4000){const k=Math.ceil(r.length/4000);r=r.filter((p,i)=>i%k===0||i===r.length-1)}return r.map(p=>[Math.round(p[0]*1e5)/1e5,Math.round(p[1]*1e5)/1e5])}
 async function syncPull(sb,uid){
   // tutte le righe, a pagine da 500: il server ne restituisce al massimo 1000 per volta e le passeggiate non hanno limite
   const tutte=async(t,col)=>{let out=[];for(let i=0;;i+=500){const r=await sb.from(t).select("*").eq(col,uid).order("id").range(i,i+499);if(r.error)return r;out=out.concat(r.data||[]);if(!r.data||r.data.length<500)return {data:out}}};
   const [a,b,c]=await Promise.all([tutte("dogs","owner_id"),tutte("walks","user_id"),tutte("reviews","user_id")]);
   if(a.error||b.error||c.error)throw a.error||b.error||c.error;
-  let n=0;const ren={},had=DOGS.list.length>0,put=(k,v)=>{try{if(v!=null&&localStorage.getItem(k)==null)localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
+  let n=0;const ren={},had=DOGS.list.length>0;
+  // libretto, programma e lezioni dell'account vanno sul telefono se qui sono ancora vuoti (telefono nuovo):
+  // non basta "la chiave non c'è", perché le domande iniziali e le prime schermate creano già oggetti vuoti
+  const vuoto=v=>v==null||v===""||(Array.isArray(v)?v.every(vuoto):typeof v==="object"?Object.values(v).every(vuoto):false);
+  const put=(k,v,isEmpty)=>{try{if(vuoto(v))return false;const cur=localStorage.getItem(k);if(cur!=null&&!isEmpty(JSON.parse(cur)))return false;localStorage.setItem(k,JSON.stringify(v));return true}catch(e){return false}};
+  const riprendi=(id,D)=>{let w=0;
+    w+=put(syK("alldogs-goal",id),D.obiettivo,v=>vuoto(v)||!v.target);
+    w+=put(syK("alldogs-train",id),D.lezioni,v=>vuoto(v)||!Object.keys(v.st||{}).length);
+    w+=put(syK("alldogs-salute",id),D.salute,vuoto);return w};
+  const riempi=(dst,p)=>{let w=0;for(const k in p)if(dst[k]==null||dst[k]===""||(typeof dst[k]==="object"&&!Object.keys(dst[k]||{}).length)){if(!vuoto(p[k])){dst[k]=p[k];w++}}return w};
   for(const r of a.data){const D=r.dati||{},p=Object.assign({name:r.nome},D.profilo||{});let lid=r.local_id;
     const loc=lid&&DOGS.list.find(x=>x.id===lid);
-    if(loc&&(loc.name||"").trim().toLowerCase()===(p.name||"").trim().toLowerCase())continue; // stesso cane, già qui
+    // stesso cane, già qui (il caso più comune su un telefono nuovo: il primo cane è sempre "d1"): riprendo quello che manca
+    if(loc&&(loc.name||"").trim().toLowerCase()===(p.name||"").trim().toLowerCase()){
+      const w=riempi(loc,p)+riprendi(lid,D);
+      if(w){if(DOGS.cur===loc.id)try{localStorage.setItem("alldogs-dog",JSON.stringify(loc))}catch(e){}n++}
+      continue}
     // telefono nuovo: il cane appena creato con le domande iniziali ha lo stesso nome di quello nell'account.
     // Niente cane doppio: diventano lo stesso, e i dati dell'account riempiono quello che sul telefono manca (mai il contrario)
     const stesso=!loc&&DOGS.list.find(x=>(x.name||"").trim().toLowerCase()===(p.name||"").trim().toLowerCase());
     if(stesso){if(lid&&lid!==stesso.id)ren[lid]=stesso.id;
       const {error}=await sb.from("dogs").update({local_id:stesso.id}).eq("id",r.id);if(error)throw error;
-      for(const k in p)if(stesso[k]==null||stesso[k]===""||(typeof stesso[k]==="object"&&!Object.keys(stesso[k]||{}).length))stesso[k]=p[k];
-      put(syK("alldogs-goal",stesso.id),D.obiettivo);put(syK("alldogs-train",stesso.id),D.lezioni);put(syK("alldogs-salute",stesso.id),D.salute);
+      riempi(stesso,p);riprendi(stesso.id,D);
       if(DOGS.cur===stesso.id)try{localStorage.setItem("alldogs-dog",JSON.stringify(stesso))}catch(e){}
       n++;continue}
     if(!lid||loc){const nid="d"+Date.now().toString(36)+Math.random().toString(36).slice(2,5);const {error}=await sb.from("dogs").update({local_id:nid}).eq("id",r.id);if(error)throw error;if(lid)ren[lid]=nid;lid=nid}
     DOGS.list.push(Object.assign({},p,{id:lid}));
-    put(syK("alldogs-goal",lid),D.obiettivo);put(syK("alldogs-train",lid),D.lezioni);put(syK("alldogs-salute",lid),D.salute);n++}
+    riprendi(lid,D);n++}
   if(n&&!had){DOGS.cur=DOGS.list[0].id;DOGS.walk=[DOGS.cur];try{localStorage.setItem("alldogs-dog",JSON.stringify(DOGS.list[0]))}catch(e){}}
   if(n)try{localStorage.setItem("alldogs-dogs",JSON.stringify(DOGS))}catch(e){}
   const acts=store.get("alldogs-acts")||[],have=new Set(acts.map(x=>String(x.t)));let m=0;
@@ -1494,16 +1562,20 @@ function accPaint(){const box=$("acc-box"),sub=$("acc-sub"),u=SY.user;
     const stato=SY.busy?"Sto salvando…":SY.err?"Non sono riuscito a salvare ("+SY.err+"). Riprovo da solo.":dirty&&!navigator.onLine?"Sei senza internet: salvo appena torna la connessione.":dirty?"Ci sono modifiche da salvare.":st.last?"Tutto salvato nel tuo account · "+new Date(st.last).toLocaleString("it-IT",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"}):"Cani, uscite, recensioni e progressi di ogni giorno si salvano anche nel tuo account.";
     box.innerHTML=`<p>Sei collegato come <b>${esc(u.email)}</b>.</p><p class="small muted" style="margin-top:6px">${esc(stato)}</p>${msg}
       <div class="row" style="margin-top:10px;flex-wrap:wrap"><button class="btn sm" id="acc-sync" type="button">Salva ora</button><button class="btn sm" id="acc-out" type="button">Esci</button></div>
-      <p class="small muted" style="margin-top:8px">Se esci, i dati restano comunque su questo telefono.</p>
+      <p class="small muted" style="margin-top:8px">Se esci, i tuoi dati restano nell'account e spariscono da questo telefono finché non rientri.</p>
       <button class="btn sm" id="acc-del" type="button" style="margin-top:14px">Elimina l'account</button>
-      <p class="small muted" style="margin-top:6px">Cancella per sempre l'account e la copia online di cani, uscite, recensioni e segnalazioni. Sul telefono restano.</p>`;
+      <p class="small muted" style="margin-top:6px">Cancella per sempre l'account, i cani, le uscite, le recensioni e le segnalazioni, online e su questo telefono.</p>`;
     $("acc-sync").onclick=()=>{SY.msg="";const st=store.get(SYK)||{};if(st.uid){st.wh={};st.dh={};st.rh={};store.set(SYK,st)}syncNow()};
-    $("acc-del").onclick=async e=>{if(!confirm("Eliminare per sempre l'account "+u.email+"? Cani, uscite, recensioni e segnalazioni salvati online verranno cancellati e non si potranno recuperare. Sul telefono i dati restano."))return;
+    $("acc-del").onclick=async e=>{if(!confirm("Eliminare per sempre l'account "+u.email+"? Cani, uscite, recensioni e segnalazioni verranno cancellati, online e su questo telefono, e non si potranno recuperare."))return;
       const btn=e.currentTarget;btn.disabled=true;
-      try{await getJSON(FN_URL+"elimina-account",{method:"POST",headers:fnHeaders(),body:"{}"});try{await SY.sb.auth.signOut({scope:"local"})}catch(x){}
-        try{localStorage.removeItem(SYK);localStorage.removeItem(SYD)}catch(x){}SY.user=null;SY.msg="Account eliminato. I dati sul telefono sono rimasti.";toast("Account eliminato")}
-      catch(x){SY.msg="Non sono riuscito a eliminare l'account ("+((x&&x.message)||"errore")+"). Riprova tra poco."}btn.disabled=false;accPaint()};
-    $("acc-out").onclick=async()=>{try{await SY.sb.auth.signOut()}catch(e){}SY.user=null;SY.msg="";accPaint();toast("Sei uscito dall'account")};return}
+      try{await getJSON(FN_URL+"elimina-account",{method:"POST",headers:fnHeaders(),body:"{}"});SY.elimina=true;try{await SY.sb.auth.signOut({scope:"local"})}catch(x){}
+        SY.user=null;try{localStorage.removeItem(CASS+u.id)}catch(x){}await datiMettiVia(null);SY.elimina=false;SY.msg="Account eliminato.";toast("Account eliminato");setTimeout(()=>location.reload(),300)}
+      catch(x){SY.elimina=false;SY.msg="Non sono riuscito a eliminare l'account ("+((x&&x.message)||"errore")+"). Riprova tra poco."}btn.disabled=false;accPaint()};
+    $("acc-out").onclick=async e=>{const btn=e.currentTarget;btn.disabled=true;
+      // prima salvo nell'account le ultime modifiche (se non ci riesco, restano nel cassetto e partono al prossimo accesso)
+      try{if(localStorage.getItem(SYD)&&navigator.onLine){clearTimeout(syncDirty.t);await syncNow();for(let i=0;i<60&&SY.busy;i++)await new Promise(r=>setTimeout(r,250))}}catch(x){}
+      try{await SY.sb.auth.signOut({scope:"local"})}catch(x){} // l'uscita fa partire datiUscita (onAuthStateChange)
+      SY.user=null;SY.msg="";accPaint();toast("Sei uscito dall'account")};return}
   box.innerHTML=`<p class="small muted">Con l'account i dati tuoi e dei tuoi cani restano al sicuro anche se cambi telefono. Se è la prima volta, scrivi email e password e tocca Registrati.</p>
     <div class="form" style="margin-top:10px"><label class="w">Email<input id="acc-mail" type="email" autocomplete="email" inputmode="email" autocapitalize="off" spellcheck="false" value="${esc(SY.mail)}"></label>
     <label class="w">Password<input id="acc-pw" type="password" autocomplete="current-password" minlength="8"></label></div>${msg}
@@ -1511,7 +1583,7 @@ function accPaint(){const box=$("acc-box"),sub=$("acc-sub"),u=SY.user;
   const val=pw=>{const e=$("acc-mail").value.trim();SY.mail=e;if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e)){toast("Scrivi un'email valida");return null}
     const p=$("acc-pw").value;if(pw&&!p){toast("Scrivi la password");return null}return {e,p}};
   const run=async(f,btn)=>{btn.disabled=true;try{const sb=await sbLoad();await f(sb)}catch(e){SY.msg=ACC_ERR(e)}btn.disabled=false;accPaint()};
-  const back=location.origin+location.pathname;
+  const back=ACC_BACK||location.origin+location.pathname;
   $("acc-in").onclick=e=>{const v=val(true);if(v)run(async sb=>{const {error}=await sb.auth.signInWithPassword({email:v.e,password:v.p});if(error)throw error;SY.msg="";toast("Bentornato!")},e.currentTarget)};
   $("acc-up").onclick=e=>{const v=val(true);if(v&&(v.p.length<8||!/[a-z]/i.test(v.p)||!/[0-9]/.test(v.p))){toast("Per un account nuovo: almeno 8 caratteri, con lettere e numeri");return}if(v)run(async sb=>{const {data,error}=await sb.auth.signUp({email:v.e,password:v.p,options:{emailRedirectTo:back}});if(error)throw error;
     if(data.user&&data.user.identities&&!data.user.identities.length){SY.msg="Questa email è già registrata: tocca Accedi.";return}
@@ -1572,87 +1644,284 @@ const BREED_FIT=[
 const BASE_FIT={poco:[6,300],medio:[12,700],molto:[20,1200]}; // meticci e razze non riconosciute: si usa il peso
 const FIT_NOME={brachy:"muso schiacciato",schiena:"schiena lunga",mini:"piccola da compagnia",levriero:"levriero",molosso:"grande e pesante",resistente:"da lavoro",atletico:"sportiva"};
 const fitOf=id=>BREED_FIT.find(x=>x[0]===id);
-// Meticci (o razza non riconosciuta): limiti in base al peso, come le razze: sotto 10 kg come un cane piccolo, oltre 40 kg come un molosso.
-// Se l'utente scrive che incrocio può essere (es. "pastore tedesco e labrador"), si usa la razza PIÙ DELICATA dell'incrocio,
-// ma mai più dei limiti della sua taglia (un incrocio di 4 kg resta un cane piccolo).
-function breedFit(d){const b=String(d.breed||"").toLowerCase(),w=+d.weight;
-  if(b&&!/meticci/.test(b)){const g=BREED_FIT.find(x=>x[2].test(b));if(g)return {id:g[0],txt:g[1],t:g[3]}}
-  const mix=String(d.mix||"").toLowerCase().trim(),tr=d.train in BASE_FIT?d.train:"medio";
-  const wg=w>0&&w<10?fitOf("mini"):w>40?fitOf("molosso"):w>0?fitOf("atletico"):null;
-  const C=mix?mix.split(/\s+(?:e|ed|x|con|incrocio|incrociato|misto)\s+|[,;/+&×]|\s+-\s+/).map(x=>x.trim()).filter(Boolean).map(x=>BREED_FIT.find(g=>g[2].test(x))).filter(Boolean):[];
-  if(C.length){let g=C.reduce((a,x)=>x[3][tr][0]<a[3][tr][0]?x:a);
-    if(wg&&(wg[0]==="mini"||wg[0]==="molosso")&&wg[3][tr][0]<g[3][tr][0])g=wg;
-    return {id:g[0],txt:`un incrocio: conto i limiti della parte più delicata (razza ${FIT_NOME[g[0]]})`,t:g[3],mix:true,brachy:C.some(x=>x[0]==="brachy"),longback:C.some(x=>x[0]==="schiena")}}
-  if(!wg)return null;
-  return {id:wg[0],txt:wg[0]==="mini"?"un meticcio di taglia piccola":wg[0]==="molosso"?"un meticcio di taglia gigante":"un meticcio di taglia media",t:wg[3],mix:true}}
-// Cucciolo: le ossa crescono fino a 1 anno nelle taglie piccole e medie, fino a 18 mesi in quelle grandi (da 25 kg in su da adulto).
-// età da anziano per taglia (ricerca 23/11/2026, AAHA: ultimo quarto della vita attesa)
-function seniorAge(d){const w=+d.weight||15;return w>=45?6:w>=25?7:w>=10?8:10}
-// fine crescita: inizio dell'allenamento di resistenza (cartilagini chiuse ~7-9 mesi piccoli, 10-14 grandi, fino a 18 giganti)
-function puppyAge(d){const w=+d.weight||15;let r=null;try{r=breedRange(d)}catch(e){}const g=breedFit(d),m=r?(r.min+r.max)/2:w;
+// ---------------- Tutte le razze (FCI, solo ENCI, non FCI, incroci "di moda") ----------------
+// Dati da tools/razze.csv (pesi controllati sugli standard FCI/ENCI/AKC/UKC, vedi tools/razze-verifica.md), messi qui da
+// "python tools/razze.py". Ogni riga: [nome, alias separati da |, peso min kg, peso max kg, gruppo, segni]
+// segni (somma): 1 muso schiacciato, 2 schiena lunga/zampe corte, 4 mantello folto, 8 razza nordica, 16 molta energia.
+// RAZZE-INIZIO
+const RAZZE_DATI=[["Kelpie australiano","australian kelpie|kelpie|working kelpie",11,20,"resistente",16],["Pastore belga Groenendael","groenendael|belgian shepherd groenendael|belgian sheepdog|chien de berger belge",20,30,"resistente",16],["Pastore belga Tervueren","tervueren|tervuren|belgian tervuren|belgian shepherd tervueren",20,30,"resistente",16],["Pastore belga Malinois","malinois|belgian malinois|mechelaar|belgian shepherd malinois",20,30,"resistente",16],["Pastore belga Laekenois","laekenois|belgian laekenois|belgian shepherd laekenois",20,30,"resistente",16],["Schipperke","spitzke",3,9,"atletico",20],["Pastore croato","croatian shepherd dog|croatian sheepdog|hrvatski ovcar",13,20,"resistente",16],["Cane lupo cecoslovacco","czechoslovakian wolfdog|ceskoslovensky vlciak|cslv|csv|wolfdog",20,35,"resistente",28],["Pastore della Beauce","beauceron|berger de beauce|bas rouge|beauce sheepdog",32,50,"resistente",16],["Pastore della Brie","briard|berger de brie|brie sheepdog",25,45,"resistente",16],["Pastore dei Pirenei a pelo lungo","pyrenean shepherd|long-haired pyrenean sheepdog|berger des pyrenees|labrit",7,14,"resistente",16],["Pastore della Piccardia","berger picard|picardy sheepdog|berger de picardie|picard",23,32,"resistente",16],["Pastore dei Pirenei a faccia rasa","pyrenean sheepdog smooth faced|berger des pyrenees a face rase|face rase|smooth-faced pyrenean shepherd",7,15,"resistente",16],["Pastore tedesco","german shepherd|deutscher schaferhund|gsd|alsatian|pastore tedesco pelo lungo|pastore tedesco pelo corto",22,40,"atletico",20],["Bearded collie","beardie",20,25,"resistente",16],["Border collie","bc",14,25,"resistente",16],["Collie a pelo lungo","rough collie|collie rough|lassie|scotch collie",18,29.5,"atletico",4],["Collie a pelo corto","smooth collie|collie smooth",18,29.5,"atletico",0],["Bobtail","old english sheepdog|oes",27,45,"atletico",0],["Shetland sheepdog","sheltie|pastore delle shetland",7,11,"atletico",20],["Komondor","pastore ungherese",40,60,"molosso",0],["Kuvasz","",37,62,"molosso",12],["Mudi","",8,13,"resistente",16],["Puli","pulik",10,15,"resistente",16],["Pumi","",8,15,"resistente",16],["Pastore maremmano-abruzzese","maremmano|maremmano abruzzese|cane da pastore maremmano abruzzese|maremma sheepdog|abruzzese",30,45,"molosso",12],["Pastore bergamasco","bergamasco|bergamasco shepherd|cane da pastore bergamasco",26,38,"atletico",0],["Pastore polacco di pianura","polish lowland sheepdog|pon|polski owczarek nizinny|nizinny",14,23,"resistente",16],["Pastore polacco del Podhale","polish tatra shepherd|tatra|polski owczarek podhalanski|owczarek podhalanski|pastore dei tatra",36,59,"molosso",12],["Cane da pastore della Serra de Aires","portuguese sheepdog|cao da serra de aires|serra de aires|monkey dog",17,27,"resistente",16],["Pastore rumeno dei Carpazi","romanian carpathian shepherd dog|ciobanesc romanesc carpatin|carpatin",32,45,"molosso",12],["Pastore rumeno mioritico","romanian mioritic shepherd dog|ciobanesc romanesc mioritic|mioritic",45,59,"molosso",12],["Pastore della Russia meridionale","south russian shepherd dog|yuzhnorusskaya ovcharka|ovcharka russa meridionale",30,50,"molosso",8],["Ciuvach slovacco","slovakian chuvach|slovensky cuvac|cuvac|tatransky cuvac",31,44,"molosso",12],["Cane da pastore catalano","catalan sheepdog|gos d'atura catala|gos d'atura|perro de pastor catalan",16,20,"resistente",16],["Ca de bestiar","majorca shepherd dog|perro de pastor mallorquin|pastore di maiorca",25,50,"atletico",16],["Pastore svizzero bianco","white swiss shepherd dog|berger blanc suisse|pastore bianco svizzero|white shepherd",25,40,"atletico",4],["Schapendoes olandese","dutch schapendoes|nederlandse schapendoes|schapendoes",11.8,24.9,"resistente",16],["Pastore olandese","dutch shepherd|hollandse herdershond|herder|pastore olandese pelo corto|pastore olandese pelo lungo|pastore olandese pelo ruvido",19,34,"resistente",16],["Cane lupo di Saarloos","saarloos wolfhond|saarlooswolfhond|saarloos wolfdog|saarloos",30,45,"atletico",12],["Pastore australiano","australian shepherd|aussie",18,29,"resistente",20],["Bovaro australiano","australian cattle dog|acd|blue heeler|red heeler|queensland heeler",16,23,"resistente",16],["Bovaro delle Ardenne","bouvier des ardennes|ardennes cattle dog",22,35,"resistente",16],["Bovaro delle Fiandre","bouvier des flandres|vlaamse koehond|bouvier",27,40,"atletico",0],["Welsh corgi cardigan","cardigan welsh corgi|cardigan|corgi cardigan",11,17,"schiena",2],["Welsh corgi pembroke","pembroke welsh corgi|pembroke|corgi|corgi pembroke",9,12,"schiena",2],["Bovaro australiano a coda corta","australian stumpy tail cattle dog|stumpy tail|stumpy|stumpy tail cattle dog",14.5,20.4,"resistente",16],["Lancashire heeler","ormskirk heeler",4,8,"schiena",18],["Pastore boemo","chodsky pes|bohemian shepherd|chodenland dog|pastore di chodsko",17,27,"resistente",20],["Pastore americano miniatura","miniature american shepherd|mas|mini aussie|miniature australian shepherd|north american shepherd",9,18,"resistente",20],["Pastore della Sila","cane da pastore della sila|sila shepherd dog",35,50,"molosso",12],["Cane da pastore d'Oropa","pastore d'oropa|cane di oropa|oropa shepherd dog|pastore biellese",18,35,"resistente",16],["Spino degli Iblei","cane spino|spinu|pastore siciliano",32,50,"molosso",4],["Pastore della Lessinia e del Lagorai","pastore della lessinia|lagorai|pastore lessinia",20,30,"resistente",16],["Cane delle Alpi Apuane","pastore apuano|apuano",22,35,"resistente",20],["Pinscher austriaco","österreichischer pinscher|austrian pinscher",12,18,"atletico",16],["Cane da fattoria danese-svedese","dansk-svensk gårdshund|danish-swedish farmdog|danish swedish farmdog",6.8,9.1,"atletico",16],["Affenpinscher","monkey pinscher",3,4.5,"brachy",1],["Dobermann","doberman|dobermann pinscher|doberman pinscher",32,45,"atletico",16],["Pinscher medio","pinscher|pinscher tedesco|deutscher pinscher|german pinscher",14,20,"atletico",16],["Pinscher nano","zwergpinscher|miniature pinscher|min pin|zwergpinscher",4,6,"mini",16],["Schnauzer gigante","riesenschnauzer|giant schnauzer",35,47,"atletico",16],["Schnauzer nano","zwergschnauzer|miniature schnauzer|mini schnauzer",4,8,"mini",0],["Schnauzer medio","schnauzer|mittelschnauzer|standard schnauzer",14,20,"atletico",16],["Smoushond olandese","hollandse smoushond|dutch smoushond|smous",7,11,"atletico",0],["Terrier nero russo","russkiy tchiorny terrier|black russian terrier|brt|tchiorny terrier",45,60,"molosso",4],["Dogo argentino","argentine dogo|argentinian mastiff",40,45,"atletico",16],["Fila brasileiro","brazilian mastiff|fila",40,75,"molosso",0],["Shar pei","chinese shar-pei|sharpei",18,25,"atletico",0],["Broholmer","danish mastiff",40,70,"molosso",0],["Dogue de Bordeaux","french mastiff|bordeaux|dogo di bordeaux",45,65,"brachy",1],["Boxer","deutscher boxer|german boxer",25,32,"brachy",17],["Alano tedesco","deutsche dogge|great dane|alano|dogue allemand",50,80,"molosso",0],["Rottweiler","rottie",42,50,"molosso",0],["Bulldog inglese","bulldog|english bulldog|british bulldog",23,25,"brachy",1],["Bullmastiff","",41,59,"brachy",1],["Mastiff","english mastiff|old english mastiff",54,100,"brachy",1],["Cane corso","cane corso italiano|italian mastiff|corso",40,50,"molosso",1],["Mastino napoletano","neapolitan mastiff|mastino",50,70,"brachy",1],["Tosa","tosa inu|japanese mastiff|tosa ken",40,90,"molosso",0],["Fila di São Miguel","cão fila de são miguel|cao fila de sao miguel|saint miguel cattle dog|azores cattle dog",20,35,"atletico",16],["Dogo di Maiorca","perro dogo mallorquín|ca de bou|majorca mastiff|mallorca mastiff",30,38,"brachy",1],["Dogo canario","presa canario|perro de presa canario|canary mastiff",40,57,"molosso",0],["Cimarrón uruguayo","cimarron uruguayo|uruguayan cimarron",33,45,"atletico",16],["Bulldog continentale","continental bulldog|conti|kontinentaler bulldog",25,30,"brachy",1],["Bulldog campeiro","buldogue campeiro|brazilian bulldog",30,45,"brachy",1],["Tornjak","bosnian-herzegovinian croatian shepherd dog|bosnian and herzegovinian croatian shepherd",28.1,49.9,"molosso",12],["Terranova","newfoundland|newfie|terre-neuve",54,68,"molosso",12],["Cane da montagna dei Pirenei","chien de montagne des pyrénées|pyrenean mountain dog|great pyrenees|patou",40,60,"molosso",12],["Hovawart","",25,40,"atletico",16],["Leonberger","leo",45,77,"molosso",12],["Landseer","landseer european continental type|landseer ect",45,70,"molosso",8],["Aidi","aïdi|chien de montagne de l'atlas|atlas mountain dog|atlas shepherd",23,30,"atletico",16],["Sarplaninac","šarplaninac|yugoslavian shepherd dog|illyrian shepherd|pastore jugoslavo",30,45,"molosso",12],["Cane di Castro Laboreiro","cão de castro laboreiro|castro laboreiro dog|portuguese cattle dog",25,40,"atletico",16],["Cane della Serra da Estrela","cão da serra da estrela|estrela mountain dog",35,60,"molosso",12],["Rafeiro do Alentejo","rafeiro of alentejo|alentejo mastiff",35,60,"molosso",0],["Pastore romeno di Bucovina","ciobănesc românesc de bucovina|bucovina shepherd|romanian bucovina shepherd",50,90,"molosso",12],["Pastore del Caucaso","kavkazskaïa ovtcharka|caucasian shepherd dog|caucasian ovcharka|ovcharka",45,90,"molosso",12],["Pastore dell'Asia centrale","sredneasiatskaya ovtcharka|central asian shepherd dog|cao|alabai",40,80,"molosso",0],["Pastore del Carso","kraški ovčar|kraski ovcar|karst shepherd dog|istrian sheepdog",25,42,"atletico",4],["Mastino dei Pirenei","mastín del pirineo|pyrenean mastiff|mastin del pirineo",54.4,86.2,"molosso",8],["Mastino spagnolo","mastín español|spanish mastiff|mastin espanol",50,100,"molosso",0],["San Bernardo","st. bernhardshund|bernhardiner|saint bernard|st bernard",55,90,"molosso",12],["Mastino tibetano","do-khyi|tibetan mastiff|dokhyi",34,73,"molosso",12],["Pastore dell'Anatolia Kangal","kangal çoban köpegi|kangal shepherd dog|kangal|anatolian shepherd",40,60,"molosso",0],["Mastino transmontano","cão de gado transmontano|transmontano mastiff|matin transmontano",50,75,"molosso",0],["Pastore romeno corb","ciobănesc românesc corb|romanian raven shepherd dog|corb",40,60,"molosso",0],["Pastore macedone Karaman","macedonian shepherd dog karaman|karaman|ovčarsko kuče karaman",37,45,"molosso",12],["Bovaro dell'Appenzell","appenzeller sennenhund|appenzell cattle dog|appenzeller",22,32,"resistente",16],["Bovaro del Bernese","berner sennenhund|bernese mountain dog|bernese|bovaro bernese",31.8,52.2,"molosso",8],["Bovaro dell'Entlebuch","entlebucher sennenhund|entlebucher|entlebuch cattle dog|entlebucher mountain dog",20,30,"resistente",16],["Grande bovaro svizzero","grosser schweizer sennenhund|greater swiss mountain dog|great swiss mountain dog|swissy",38.6,63.5,"molosso",0],["Terrier brasiliano","brazilian terrier|terrier brasileiro|fox paulistinha",9,11,"atletico",16],["Terrier da caccia tedesco","german hunting terrier|jagdterrier|deutscher jagdterrier",7.5,10,"resistente",16],["Airedale terrier","airedale|re dei terrier|king of terriers",20,30,"atletico",16],["Bedlington terrier","bedlington",8,10,"atletico",16],["Border terrier","border",5.1,7.1,"resistente",16],["Fox terrier a pelo liscio","smooth fox terrier|fox terrier smooth|fox liscio",7,8,"resistente",16],["Fox terrier a pelo duro","wire fox terrier|fox terrier wire|fox a pelo ruvido",7,8.5,"resistente",16],["Lakeland terrier","lakeland",6.8,7.7,"resistente",16],["Manchester terrier","manchester",5.5,10,"atletico",16],["Parson Russell terrier","parson russell|parson jack russell",6,8,"resistente",16],["Welsh terrier","welsh",9,9.5,"atletico",16],["Irish Glen of Imaal terrier","glen of imaal terrier|glen|glen of imaal",14,16,"schiena",2],["Irish soft coated wheaten terrier","wheaten terrier|soft coated wheaten|wheaten",16,20.5,"atletico",16],["Irish terrier","irish",11,12.5,"atletico",16],["Kerry blue terrier","kerry blue|kerry",15,18,"atletico",16],["Australian terrier","aussie terrier|australian",5.5,6.5,"atletico",16],["Terrier ceco","cesky terrier|czech terrier|cesky teriér|bohemian terrier",6,10,"schiena",2],["Cairn terrier","cairn",6,7.5,"atletico",16],["Dandie Dinmont terrier","dandie dinmont|dandie",8,11,"schiena",2],["Jack Russell terrier","jack russell|jrt|jack",5,6,"resistente",16],["Norfolk terrier","norfolk",5,5.5,"atletico",16],["Norwich terrier","norwich",5,5.5,"atletico",16],["Scottish terrier","scottie|aberdeen terrier|scottish",8.6,10.4,"atletico",0],["Sealyham terrier","sealyham",8,9,"schiena",2],["Skye terrier","skye",11,20.4,"schiena",2],["West highland white terrier","westie|west highland|westy",6.5,9,"atletico",16],["Terrier giapponese","japanese terrier|nihon teria|nippon terrier",2.5,5.4,"mini",0],["Bull terrier","english bull terrier|bully",20,32,"atletico",16],["Bull terrier miniatura","miniature bull terrier|mini bull terrier|mini bull",8.2,12.7,"atletico",16],["Staffordshire bull terrier","staffy|staffie|sbt|stafford",11,17,"atletico",16],["American Staffordshire terrier","amstaff|american staffordshire|amstaff terrier",20,30,"atletico",16],["Silky terrier australiano","australian silky terrier|silky terrier|silky",3.5,4.5,"mini",0],["Toy terrier inglese nero focato","english toy terrier black and tan|english toy terrier|toy manchester terrier|ett",2.7,3.6,"mini",0],["Yorkshire terrier","yorkie|yorkshire|york",1.5,3.2,"mini",0],["Ratonero bodeguero andaluz","andalusian terrier|sherry terrier|bodeguero|ratonero andaluz|terrier andalou",8,12,"atletico",16],["Gos rater valencià","valencian terrier|ratonero valenciano|gos rater|ratier valencien",4,8,"atletico",16],["Bassotto tedesco standard a pelo corto","dachshund|dackel|teckel|bassotto|smooth dachshund|kurzhaar dackel|wiener dog",7,12,"schiena",18],["Bassotto tedesco standard a pelo duro","wirehaired dachshund|rauhaar dackel|teckel a poil dur|bassotto pelo duro",7,12,"schiena",18],["Bassotto tedesco standard a pelo lungo","longhaired dachshund|langhaar dackel|teckel a poil long|bassotto pelo lungo",7,12,"schiena",2],["Bassotto tedesco nano a pelo corto","miniature dachshund|zwergdackel|teckel nain|bassotto nano",4,5.5,"schiena",18],["Bassotto tedesco nano a pelo duro","wirehaired miniature dachshund|rauhaar zwergdackel|bassotto nano pelo duro",4,5.5,"schiena",18],["Bassotto tedesco nano a pelo lungo","longhaired miniature dachshund|langhaar zwergdackel|bassotto nano pelo lungo",4,5.5,"schiena",2],["Bassotto kaninchen a pelo corto","rabbit dachshund|kaninchendackel|teckel de chasse au lapin|bassotto kaninchen",2.5,4,"schiena",18],["Bassotto kaninchen a pelo duro","wirehaired rabbit dachshund|rauhaar kaninchendackel|bassotto kaninchen pelo duro",2.5,4,"schiena",18],["Bassotto kaninchen a pelo lungo","longhaired rabbit dachshund|langhaar kaninchendackel|bassotto kaninchen pelo lungo",2.5,4,"schiena",2],["Siberian Husky","husky|husky siberiano",15.5,28,"resistente",28],["Alaskan Malamute","malamute|mal",34,43,"resistente",28],["Samoiedo","samoyed|samojedskaja|sammy",16,30,"resistente",28],["Cane eschimese canadese","canadian eskimo dog|canadian inuit dog|qimmiq",18,40,"resistente",28],["Cane della Groenlandia","greenland dog|groenlandshund|kalaallit qimmiat|greenlandic sled dog",27,47,"resistente",28],["Spitz finlandese","finnish spitz|suomenpystykorva|finsk spets",7,14,"resistente",28],["Cane da orso della Carelia","karelian bear dog|karjalankarhukoira|kbd",17,28,"resistente",28],["Elkhound norvegese nero","norwegian elkhound black|norsk elghund sort|cane norvegese da alci nero",16,22,"resistente",28],["Elkhound norvegese grigio","norwegian elkhound grey|norsk elghund grå|elkhound|cane norvegese da alci grigio",20,27,"resistente",28],["Lundehund norvegese","norwegian lundehund|lundehund|puffin dog",5.4,8.2,"atletico",24],["Laika della Siberia orientale","east siberian laika|vostochno-sibirskaïa laïka|vsl",18,25,"resistente",28],["Laika russo-europeo","russian-european laika|russko-evropeïskaïa laïka|rel",18,23,"resistente",28],["Laika della Siberia occidentale","west siberian laika|zapadno-sibirskaïa laïka|wsl",18,25,"resistente",28],["Jämthund","jamthund|swedish elkhound|elkhound svedese|cane svedese da alci",25,35,"resistente",28],["Norrbottenspets","norrbottenspitz|nordic spitz|pohjanpystykorva",8,15,"resistente",24],["Lapphund finlandese","finnish lapponian dog|suomenlapinkoira|finnish lapphund|lapinkoira",15,24,"resistente",28],["Pastore lappone delle renne","lapponian herder|lapinporokoira|finnish reindeer herder",18,30,"resistente",28],["Cane da pastore islandese","icelandic sheepdog|islenskur fjárhundur|íslenskur fjárhundur",9,14,"resistente",28],["Buhund norvegese","norwegian buhund|norsk buhund",12,18,"resistente",28],["Lapphund svedese","swedish lapphund|svensk lapphund",15,21,"resistente",28],["Vallhund svedese","swedish vallhund|västgötaspets|vastgotaspets|swedish cattle dog",9,16,"schiena",26],["Spitz lupo (Keeshond)","keeshond|wolfspitz|spitz tedesco lupo|wolf spitz",15,20.4,"atletico",4],["Spitz grande","giant spitz|grossspitz|großspitz|spitz tedesco grande",15,22,"atletico",4],["Spitz medio","medium spitz|mittelspitz|spitz tedesco medio",7,11,"atletico",4],["Spitz piccolo","miniature spitz|kleinspitz|spitz tedesco piccolo|spitz nano",4,6,"mini",4],["Pomerania","pomeranian|zwergspitz|spitz tedesco nano|spitz di pomerania|volpino di pomerania|pom",1.5,3.5,"mini",4],["Volpino italiano","italian volpino|volpino|cane del quirinale|volpino fiorentino",3.6,7.3,"mini",20],["Chow Chow","chow|songshi quan",20,32,"molosso",12],["Eurasier","eurasian|eurasiatico",18,30,"atletico",12],["Akita","akita inu|akita japanese|japanese akita|akita giapponese",30,50,"molosso",12],["Akita americano","american akita|great japanese dog|akita (akc)",32,65,"molosso",12],["Hokkaido","hokkaido inu|ainu ken|ainu dog",18,30,"resistente",28],["Spitz giapponese","japanese spitz|nihon supittsu",5,10,"mini",4],["Kai","kai ken|kai inu|tora inu|tiger dog",11.3,18.1,"resistente",24],["Kishu","kishu ken|kishu inu",13,27,"resistente",24],["Shiba","shiba inu|shiba ken",7,11,"atletico",28],["Shikoku","shikoku ken|kochi ken|shikoku inu",15,25,"resistente",24],["Jindo coreano","korea jindo dog|jindo|jindo dog|jindo-gae",15,23,"resistente",24],["Thai Bangkaew","thai bangkaew dog|bangkaew|bang kaew",15.9,19.5,"atletico",20],["Basenji","congo dog|cane del congo",9.5,11,"atletico",16],["Cane di Canaan","canaan dog|kelev k'naani|kelev kanaani",18,25,"resistente",16],["Cane del faraone","pharaoh hound|kelb tal-fenek",18,27,"atletico",16],["Xoloitzcuintle standard","xoloitzcuintle|xolo|mexican hairless dog|cane nudo messicano",11,25,"atletico",0],["Xoloitzcuintle intermedio","xolo intermediate|xolo miniature (akc)",7,14,"atletico",0],["Xoloitzcuintle miniatura","xolo mini|xolo toy (akc)",3,7,"mini",0],["Cane nudo peruviano grande","peruvian hairless dog|perro sin pelo del perú|peruvian inca orchid|viringo",12,25,"atletico",0],["Cane nudo peruviano medio","peruvian hairless dog medium|perro sin pelo del perú medio",8,12,"atletico",0],["Cane nudo peruviano piccolo","peruvian hairless dog small|perro sin pelo del perú pequeño",4,8,"mini",0],["Cirneco dell'Etna","cirneco|sicilian greyhound",8,13,"resistente",16],["Podengo portoghese grande","portuguese podengo large|podengo português grande|portuguese warren hound",20,30,"atletico",16],["Podengo portoghese medio","portuguese podengo medium|podengo português médio",16,20,"resistente",16],["Podengo portoghese piccolo","portuguese podengo small|podengo português pequeno|podengo pequeno",4,6,"atletico",16],["Podenco canario","canarian warren hound|canary islands hound",16,25,"resistente",16],["Podenco d'Ibiza","ibizan podenco|ibizan hound|podenco ibicenco|ca eivissenc|cirneco delle baleari",19,25,"resistente",16],["Cane di Taiwan","taiwan dog|formosan mountain dog|taiwanese canis",12,18,"resistente",16],["Thai Ridgeback","thai ridgeback dog|mah thai lang ahn",16,34,"atletico",16],["Laika della Jacuzia","yakutian laika|yakutskaya laika|laika de iakoutie",18,24.9,"resistente",28],["Kintamani di Bali","anjing kintamani-bali|kintamani|bali mountain dog|chien de bali kintamani",12,20,"atletico",0],["Alaskan Husky","husky da corsa|sled dog",18,27,"resistente",24],["American Eskimo Dog","eskie|eskimo americano",3,16,"atletico",20],["Alaskan Klee Kai","klee kai|mini husky",4,10,"mini",28],["Chien de Saint-Hubert","bloodhound|segugio di sant'uberto|st. hubert hound",40,54,"molosso",0],["Segugio brasiliano","rastreador brasileiro|brazilian tracker",21,33,"resistente",16],["Billy","",25,32,"resistente",16],["Segugio francese tricolore","français tricolore|french tricolour hound|chien français tricolore",27,35,"resistente",16],["Segugio francese bianco e nero","français blanc et noir|french white and black hound",28,36,"resistente",16],["Segugio francese bianco e arancio","français blanc et orange|french white and orange hound",27,34,"resistente",16],["Gascon saintongeois (grande)","grand gascon saintongeois|gascon saintongeois",28,35,"resistente",16],["Gascon saintongeois (piccolo)","petit gascon saintongeois|small gascon saintongeois",22,28,"resistente",16],["Grand griffon vendéen","grand griffon vendeen|great vendeen griffon",30,35,"resistente",16],["Grand anglo-français tricolore","great anglo-french tricolour hound|anglo-francese tricolore",30,35,"resistente",16],["Grand anglo-français bianco e nero","grand anglo-français blanc et noir|great anglo-french white and black hound",32,36,"resistente",16],["Grand anglo-français bianco e arancio","grand anglo-français blanc et orange|great anglo-french white and orange hound",30,35,"resistente",16],["Grande blu di Guascogna","grand bleu de gascogne|great gascony blue",30,40,"resistente",16],["Poitevin","chien du haut-poitou",27,33,"resistente",16],["Foxhound inglese","english foxhound|foxhound",27,34,"resistente",16],["Otterhound","segugio da lontra",36,52,"atletico",4],["Segugio polacco","ogar polski|polish hound",20,32,"resistente",16],["Foxhound americano","american foxhound",27,34,"resistente",16],["Coonhound nero focato","black and tan coonhound|coonhound",29,50,"resistente",16],["Bracco austriaco nero focato","brandlbracke|vieräugl|austrian black and tan hound",15,22,"resistente",16],["Segugio stiriano a pelo duro","steirische rauhhaarbracke|coarse-haired styrian hound|peintinger",15,18,"resistente",16],["Segugio tirolese","tiroler bracke|tyrolean hound",15,22,"resistente",16],["Segugio bosniaco a pelo ruvido","bosanski ostrodlaki gonic|barak|bosnian broken-haired hound",16,24,"resistente",16],["Segugio istriano a pelo corto","istarski kratkodlaki gonic|istrian short-haired hound",16,21,"resistente",16],["Segugio istriano a pelo duro","istarski ostrodlaki gonic|istrian wire-haired hound|istrian coarse-haired hound",16,24,"resistente",16],["Segugio della Sava","posavski gonic|posavatz hound|posavac",16,24,"resistente",16],["Segugio finlandese","suomenajokoira|finnish hound|finsk stövare",20,27,"resistente",16],["Ariégeois","ariegeois",22,28,"resistente",16],["Segugio d'Artois","chien d'artois|artois hound|briquet d'artois",28,30,"resistente",16],["Beagle-harrier","beagle harrier",18,22,"resistente",16],["Griffon blu di Guascogna","griffon bleu de gascogne|blue gascony griffon",18,27,"resistente",16],["Briquet griffon vendéen","briquet griffon vendeen",20,24,"resistente",16],["Griffon fulvo di Bretagna","griffon fauve de bretagne|fawn brittany griffon",20,25,"resistente",16],["Griffon nivernais","chien de pays",22,28,"resistente",16],["Anglo-français de petite vénerie","anglo-français de petite venerie|medium-sized anglo-french hound|petit anglo-français",16,22,"resistente",16],["Porcelaine","chien de franche-comté",25,28,"resistente",16],["Piccolo blu di Guascogna","petit bleu de gascogne|small blue gascony",18,25,"resistente",16],["Harrier","",20,27,"resistente",16],["Segugio ellenico","hellinikos ichnilatis|hellenic hound|greek harehound",17,20,"resistente",16],["Segugio transilvano","erdélyi kopó|transylvanian hound|hungarian hound",25,35,"resistente",16],["Segugio italiano a pelo forte","italian rough-haired segugio|segugio",18,28,"resistente",16],["Segugio italiano a pelo raso","italian short-haired segugio",18,28,"resistente",16],["Segugio montenegrino","crnogorski planinski gonic|montenegrin mountain hound|yugoslavian mountain hound",20,25,"resistente",16],["Segugio di Halden","haldenstøver|halden hound",23,29,"resistente",16],["Segugio di Hygen","hygenhund|hygen hound",20,25,"resistente",16],["Segugio norvegese","dunker|norwegian hound|dunkerstøver",16,22,"resistente",16],["Cane da caccia polacco","gonczy polski|polish hunting dog",20,26,"resistente",16],["Segugio serbo","srpski gonic|serbian hound|balkan hound",18,25,"resistente",16],["Segugio serbo tricolore","srpski trobojni gonic|serbian tricolour hound",20,25,"resistente",16],["Segugio slovacco","slovenský kopov|slovakian hound|black forest hound",15,20,"resistente",16],["Segugio spagnolo","sabueso español|spanish hound",20,25,"resistente",16],["Hamiltonstövare","hamilton hound|segugio di hamilton",22,30,"resistente",16],["Schillerstövare","schiller hound",18,26,"resistente",16],["Smålandsstövare","smaland hound",15,20,"resistente",16],["Segugio svizzero","schweizer laufhund|chien courant suisse|swiss hound|segugio bernese|segugio del giura|segugio lucernese|segugio di svitto|berner laufhund|jura laufhund|luzerner laufhund|schwyzer laufhund|bruno du jura",15,20,"resistente",16],["Basset fulvo di Bretagna","basset fauve de bretagne|bfb",10.4,17.7,"schiena",18],["Basset blu di Guascogna","basset bleu de gascogne|blue gascony basset",16,20,"schiena",2],["Grand basset griffon vendéen","grand basset griffon vendeen|gbgv",18,20,"schiena",18],["Basset artesiano normanno","basset artésien normand|norman artesian basset",15,20,"schiena",2],["Petit basset griffon vendéen","petit basset griffon vendeen|pbgv",11,19,"schiena",18],["Segugio tedesco","deutsche bracke|german hound|olper bracke",16,20,"resistente",16],["Bassotto segugio della Westfalia","westfälische dachsbracke|westphalian dachsbracke|basset de westphalie",15,18,"schiena",2],["Basset hound","basset",18,29,"schiena",2],["Beagle","",9,14,"resistente",16],["Drever","swedish dachsbracke",14,16,"schiena",2],["Segugio svizzero piccolo","schweizer niederlaufhund|petit chien courant suisse|small swiss hound|niederlaufhund",12,18,"schiena",2],["Bassotto segugio alpino","alpenländische dachsbracke|alpine dachsbracke",15,18,"schiena",2],["Segugio bavarese da traccia","bayerischer gebirgsschweisshund|bavarian mountain scent hound|bavarian mountain hound",17,30,"resistente",16],["Segugio di Hannover","hannoverscher schweisshund|hanoverian scent hound|hanoverian hound",25,40,"atletico",0],["Dalmata","dalmatinski pas|dalmatian|dalmatiner",20.4,31.8,"resistente",16],["Rhodesian ridgeback","ridgeback",32,37,"atletico",16],["Segugio maremmano","maremma hound",13,23,"resistente",16],["Segugio estone","eesti hagijas|estonian hound",15,25,"resistente",16],["Segugio dell'Appennino","appennine hound|italian hare-hunting dog",10,18,"resistente",16],["Segugio fino colombiano","sabueso fino colombiano|colombian fino hound|perro fino colombiano",15,25,"resistente",16],["Segugio dei Tatra","tatranský duríč|tatra hound|tatransky duric",15,25,"resistente",16],["Gammel dansk hønsehund","old danish pointing dog|old danish pointer|cane da ferma danese antico|gammel dansk",26,35,"atletico",0],["Braque de l'Ariège","bracco dell'ariège|ariege pointer|ariège pointing dog|braco del ariege",25,30,"resistente",16],["Braque d'Auvergne","bracco d'alvernia|auvergne pointer|bleu d'auvergne",22,28,"resistente",16],["Braque du Bourbonnais","bracco del borbonese|bourbonnais pointing dog|braque bourbonnais",16,25,"resistente",16],["Braque français tipo Gascogne","bracco francese tipo guascogna|french pointing dog gascogne type|braque francais grande taille",20,32,"resistente",16],["Braque français tipo Pirenei","bracco francese tipo pirenei|french pointing dog pyrenean type|braque francais petite taille",15,25,"resistente",16],["Braque Saint-Germain","bracco saint-germain|saint germain pointer",18,26,"resistente",16],["Deutsch Stichelhaar","bracco tedesco a pelo spinoso|german rough-haired pointer|stichelhaar",25,32,"resistente",16],["Bracco tedesco a pelo corto (Kurzhaar)","kurzhaar|deutsch kurzhaar|german shorthaired pointer|gsp|drahthaar corto",20,32,"resistente",16],["Bracco tedesco a pelo duro (Drahthaar)","drahthaar|deutsch drahthaar|german wirehaired pointer|gwp",21,32,"resistente",16],["Pudelpointer","pudel pointer",20,30,"resistente",16],["Weimaraner a pelo corto","weimaraner|bracco di weimar|weim|grey ghost",25,40,"resistente",16],["Weimaraner a pelo lungo","weimaraner langhaar|longhaired weimaraner|bracco di weimar pelo lungo",25,40,"resistente",16],["Bracco ungherese a pelo corto (Vizsla)","vizsla|magyar vizsla|rövidszőrű magyar vizsla|hungarian vizsla|hungarian short-haired pointer",18,27,"resistente",16],["Bracco ungherese a pelo duro (Vizsla drótszőrű)","wirehaired vizsla|drótszőrű magyar vizsla|hungarian wire-haired pointer",20,30,"resistente",16],["Bracco italiano","italian pointing dog|italian pointer|bracco",25,40,"resistente",16],["Perdigueiro portoghese","perdigueiro português|portuguese pointer|portuguese pointing dog|bracco portoghese",16,27,"resistente",16],["Bracco slovacco a pelo duro","slovenský hrubosrstý stavač|ohar|wirehaired slovakian pointer|slovakian rough-haired pointer",25,35,"resistente",16],["Perdiguero de Burgos","bracco di burgos|burgos pointing dog|spanish pointer|perdiguero burgalés",20,30,"resistente",16],["Épagneul bleu de Picardie","spaniel blu di piccardia|blue picardy spaniel|epagneul bleu",19,22,"resistente",16],["Épagneul breton","breton|brittany|brittany spaniel|spaniel bretone|epagneul breton",13,18,"resistente",16],["Épagneul français","spaniel francese|french spaniel|epagneul francais",20,27,"resistente",16],["Épagneul picard","spaniel della piccardia|picardy spaniel",20,25,"resistente",16],["Épagneul de Pont-Audemer","spaniel di pont-audemer|pont-audemer spaniel",15,21.8,"resistente",16],["Bracco tedesco a pelo lungo (Deutsch Langhaar)","deutsch langhaar|german longhaired pointer|langhaar",27,33,"resistente",16],["Piccolo Münsterländer","kleiner münsterländer|small munsterlander|kleiner munsterlander|heidewachtel",17,26,"resistente",16],["Grande Münsterländer","grosser münsterländer|large munsterlander|grosser munsterlander vorstehhund",25,32,"resistente",16],["Drentsche patrijshond","cane da pernici della drenthe|drentse patrijshond|drent|drentsche partridge dog|dutch partridge dog",25,35,"resistente",16],["Stabijhoun","stabyhoun|stabij|frisian pointer",18,27,"atletico",0],["Český fousek","cesky fousek|bohemian wire-haired pointing griffon|grifone boemo",22,34,"resistente",16],["Griffone Korthals","korthals|griffon korthals|wirehaired pointing griffon|griffon à poil dur korthals|grifone a pelo duro",15.9,31.8,"resistente",16],["Spinone italiano","spinone|italian spinone|italian wire-haired pointing dog",29,39,"atletico",0],["Pointer inglese","english pointer|pointer",20,34,"resistente",16],["Setter inglese","english setter|setter|llewellin setter|setter inglese da lavoro",20,36,"resistente",16],["Setter Gordon","gordon setter|setter scozzese",20.4,36.3,"resistente",16],["Setter irlandese rosso e bianco","irish red and white setter|irwss|red and white setter",15.9,27.2,"resistente",16],["Setter irlandese","irish red setter|irish setter|red setter|setter irlandese rosso",25,32,"resistente",16],["Nova Scotia duck tolling retriever","toller|nova scotia|ndtr|retriever della nuova scozia",17,23,"atletico",16],["Curly coated retriever","curly|curly-coated retriever|retriever a pelo riccio",27,41,"atletico",16],["Flat coated retriever","flat-coated retriever|flat|flattie|retriever a pelo piatto",25,36,"atletico",16],["Golden retriever","golden",25,34,"atletico",20],["Labrador retriever","labrador|lab",25,36,"atletico",16],["Chesapeake Bay retriever","chesapeake|chessie",25,36.5,"atletico",16],["Cane da quaglie tedesco (Deutscher Wachtelhund)","deutscher wachtelhund|wachtelhund|german spaniel|spaniel tedesco",18,25,"resistente",16],["Clumber spaniel","clumber",25,34,"atletico",2],["Cocker spaniel inglese","english cocker spaniel|cocker inglese|cocker|working cocker",12,15.5,"atletico",16],["Springer spaniel inglese","english springer spaniel|springer|ess",18,25,"resistente",16],["Field spaniel","field",18,25,"atletico",0],["Sussex spaniel","sussex",15.9,20.4,"schiena",2],["Springer spaniel gallese","welsh springer spaniel|welsh springer|welshie",16,25,"resistente",16],["Kooikerhondje","nederlandse kooikerhondje|kooiker|kooikerhond|dutch decoy spaniel",9,14,"atletico",16],["Cocker spaniel americano","american cocker spaniel|cocker americano|american cocker",9,14,"atletico",0],["Barbet","cane da acqua francese|french water dog",17,28,"atletico",20],["Irish water spaniel","spaniel d'acqua irlandese|iws",20,31,"atletico",16],["Lagotto romagnolo","lagotto|romagna water dog|cane da acqua romagnolo|cane da tartufi",11,16,"atletico",16],["Cane da acqua portoghese","cão de água português|portuguese water dog|pwd|porty",16,25,"atletico",16],["Cane da acqua spagnolo","perro de agua español|spanish water dog|swd|turco andaluz",14,22,"atletico",16],["Wetterhoun","frisian water dog|cane da acqua frisone|otterhoun",28,34,"atletico",0],["American water spaniel","spaniel d'acqua americano|aws",11,20,"atletico",16],["Boykin spaniel","boykin",11,18,"atletico",16],["Spaniel russo da caccia","russian hunting spaniel|russkiy okhotnichiy spaniel|russian spaniel",12,17,"atletico",16],["Goldador","golden labrador|golden x labrador",25,36,"atletico",16],["Springador","labrador x springer|springer x labrador",18,30,"atletico",16],["Sprocker spaniel","sprocker|springer x cocker",12,20,"resistente",16],["Labradoodle standard/medio","labradoodle|australian labradoodle|doodle",13,30,"atletico",16],["Labradoodle mini","miniature labradoodle|mini labradoodle",7,13,"mini",0],["Goldendoodle standard","goldendoodle|groodle|golden doodle",20,40,"atletico",16],["Goldendoodle mini","mini goldendoodle|mini groodle",7,16,"mini",0],["Cockapoo","cockerpoo|cocker x barboncino",5,11,"mini",16],["Bichon à poil frisé","bichon frise|bichon frisé|bichon a poil frise|frisé",4,6,"mini",0],["Maltese","maltese dog|bichon maltais|cane maltese",3,4,"mini",0],["Bichon avanese","havanese|bichon havanais|havanais|avanese",3,6,"mini",0],["Bolognese","bichon bolognese",2.5,4,"mini",0],["Coton de Tuléar","coton de tulear|coton",3.5,6,"mini",0],["Piccolo cane leone","little lion dog|petit chien lion|löwchen|lowchen",5,7,"mini",0],["Barboncino toy","poodle toy|toy poodle|caniche toy|barboncino",1.8,2.7,"mini",0],["Barboncino nano","poodle miniature|miniature poodle|caniche nain",4,7,"mini",16],["Barboncino medio","poodle medium|medium poodle|caniche moyen",7,12,"atletico",16],["Barboncino grande","poodle standard|standard poodle|caniche grand|barbone",18,32,"atletico",16],["Griffon belga","griffon belge|belgian griffon",3.5,6,"brachy",1],["Griffon di Bruxelles","griffon bruxellois|brussels griffon|griffon",3.5,6,"brachy",1],["Piccolo brabantino","petit brabançon|petit brabancon|brabançon|smooth griffon",3.5,6,"brachy",1],["Cane nudo cinese","chinese crested dog|chinese crested|crestato cinese|hairless|powder puff",2.5,5.5,"mini",0],["Lhasa Apso","lhasa",5.5,8,"mini",0],["Shih Tzu","shih-tzu|cane crisantemo",4.5,8,"brachy",1],["Spaniel tibetano","tibetan spaniel|tibbie",4.1,6.8,"mini",0],["Terrier tibetano","tibetan terrier|tibetan",8,14,"atletico",8],["Chihuahua","chihuahueño|chihuahueno|chi",1.5,3,"mini",0],["Cavalier King Charles Spaniel","cavalier|ckcs",5.4,8,"brachy",1],["King Charles Spaniel","english toy spaniel|king charles",3.6,6.3,"brachy",1],["Pechinese","pekingese|pekinese|peke",3,5.4,"brachy",1],["Chin giapponese","japanese chin|chin|japanese spaniel",2,5,"brachy",1],["Spaniel nano continentale (Papillon / Phalène)","continental toy spaniel|epagneul nain continental|papillon|phalène|phalene",1.5,5,"mini",16],["Russkiy Toy","russian toy|russkij toy|toy russo|russian toy terrier",1.5,3,"mini",16],["Prazsky Krysarik","prague ratter|pražský krysařík|ratter di praga",2,3.5,"mini",16],["Kromfohrländer","kromfohrlander|kromi",9,16,"atletico",16],["Carlino","pug|mops|carlin",6.3,8.1,"brachy",1],["Bulldog francese","french bulldog|bouledogue français|bouledogue francais|frenchie",8,14,"brachy",1],["Boston Terrier","boston",4.5,11.4,"brachy",1],["Levriero afgano","afghan hound|afghan|tazi|levriero afghano",23,30,"levriero",16],["Saluki","levriero persiano|persian greyhound|gazelle hound",16,29,"levriero",16],["Borzoi","russkaya psovaya borzaya|levriero russo|russian wolfhound",25,48,"levriero",0],["Deerhound","scottish deerhound|levriero scozzese",36.5,45.5,"levriero",0],["Levriero irlandese","irish wolfhound|wolfhound|irish wolf hound",40.5,70,"levriero",0],["Greyhound","levriero inglese|english greyhound",27,32,"levriero",0],["Whippet","",11,18,"levriero",16],["Levriero ungherese","magyar agár|magyar agar|hungarian greyhound|agar",22,31,"levriero",16],["Piccolo levriero italiano","italian greyhound|italian sighthound|pli|levrierino",3,5,"levriero",0],["Azawakh","tuareg sloughi|levriero tuareg",15,25,"levriero",16],["Sloughi","levriero arabo|arabian greyhound",18,28,"levriero",0],["Levriero polacco","chart polski|polish greyhound",25,40,"levriero",16],["Levriero spagnolo","galgo español|galgo espanol|galgo|spanish greyhound",20,30,"levriero",0],["Tazy kazako","kazakh tazy|tazy|kazakh greyhound|kazakskaya tazy",18,30,"levriero",16],["American Pit Bull Terrier","pitbull|pit bull|pit-bull|apbt|american pitbull terrier",14,27,"atletico",16],["American Bully (Pocket/Standard/Classic)","american bully|bully pocket|pocket bully|standard bully|classic bully",15,35,"molosso",0],["American Bully XL","xl bully|bully xl",35,60,"molosso",0],["Exotic Bully","micro bully",10,25,"brachy",1],["Olde English Bulldogge","old english bulldog|olde english bulldog|oeb|leavitt bulldog",23,36,"molosso",0],["American Bulldog","bulldog americano|ambull",27,54,"molosso",16],["Boerboel","mastiff sudafricano|south african mastiff",55,90,"molosso",0],["Alano spagnolo","alano espanol|spanish alano",30,40,"molosso",0],["Toy Fox Terrier","american toy terrier|amertoy",1.6,3.2,"mini",16],["Rat Terrier","ratterrier",4.5,11,"atletico",16],["Teddy Roosevelt Terrier","trt",4,11,"atletico",16],["American Hairless Terrier","aht",5,12.7,"atletico",16],["Biewer Terrier","biewer|biewer yorkshire|biewer yorkie",1.8,3.6,"mini",0],["Plott","plott hound",18,27,"resistente",16],["Treeing Walker Coonhound","treeing walker|walker coonhound|twc",23,32,"resistente",16],["American English Coonhound","english coonhound|redtick coonhound",20,30,"resistente",16],["Bluetick Coonhound","bluetick",20,36,"resistente",16],["Redbone Coonhound","redbone",20,32,"resistente",16],["American Leopard Hound","leopard cur",16,34,"resistente",16],["Mountain Cur","",14,27,"resistente",16],["Black Mouth Cur","southern black mouth cur",18,43,"resistente",16],["Treeing Tennessee Brindle","ttb",14,23,"resistente",16],["Catahoula Leopard Dog","catahoula|louisiana catahoula",18,43.1,"resistente",16],["English Shepherd","farm collie",18,29,"resistente",16],["McNab","mcnab shepherd|mcnab collie",11,29,"resistente",16],["Koolie","german koolie",13,23,"resistente",16],["Patterdale Terrier","patterdale|black fell terrier",5,8,"resistente",16],["Carolina Dog","american dingo|dixie dingo",13.6,24.9,"atletico",16],["Chinook","",25,41,"resistente",28],["Silken Windhound","silken",10,20.4,"levriero",0],["Shiloh Shepherd","shiloh",45,70,"molosso",4],["King Shepherd","",34,68,"molosso",4],["Bolonka colorata russa","bolonka|bolonka zwetna|bolonka tsvetnaya|russian tsvetnaya bolonka",2,4,"mini",0],["Elo (piccolo)","elo klein|kleinelo|elo piccolo",8,15,"mini",0],["Elo (grande)","elo gross|elo|grosselo",20,35,"atletico",4],["Cane Fonnese","fonnese|cane di fonni|pastore fonnese|mastino fonnese|dogo sardo di fonni",25,35,"atletico",20],["Cane di Mannara","mannara|mastino siciliano|mannarino",40,55,"molosso",4],["Mastino abruzzese","pastore abruzzese da lavoro",40,60,"molosso",4],["Dogo sardo","dogo sardesco|cane pertiatzu",30,45,"molosso",0],["Lupo italiano","cane lupo italiano",25,40,"atletico",20],["Cane Lupino del Gigante","lupino del gigante|luvin|cane lupino",18,30,"resistente",20],["Cane Paratore","paratore",18,30,"resistente",16],["Levriero sardo","charnigue sardo",18,25,"levriero",0],["Labradoodle (medio)","labradoodle medio|medium labradoodle|australian labradoodle medium",14,20,"atletico",16],["Cockapoo (standard/maxi)","cockapoo standard|maxi cockapoo",9,16,"atletico",16],["Maltipoo","maltipu|maltese barboncino|moodle",2,9,"mini",0],["Cavapoo","cavoodle|cavadoodle",4,11,"mini",1],["Cavachon","cavalier bichon",5,9,"mini",1],["Shih-poo","shihpoo|shoodle|shih poo",3,9,"brachy",1],["Puggle","pug beagle",7,14,"brachy",17],["Frenchton","frenchbo|faux frenchbo bulldog",7,13,"brachy",1],["Chiweenie","chihuahua bassotto|choxie",2.5,5.5,"schiena",2],["Jackapoo","jack-a-poo|jackadoodle|poojack",5,11,"atletico",16],["Pomsky","pomerania husky",7,14,"atletico",28],["Bernedoodle (mini)","bernedoodle mini|mini bernedoodle|tiny bernedoodle",7,23,"atletico",0],["Bernedoodle (standard)","bernedoodle|berne doodle",32,45,"molosso",0],["Sheepadoodle","sheepdoodle|bobtail barboncino",11,36,"atletico",16],["Aussiedoodle","aussiepoo|aussie doodle",7,32,"atletico",16],["Lurcher","levriero incrocio|longdog",15,35,"levriero",0],["Eurohound","euro hound|eurodog",18,27,"resistente",16],["Yorkipoo","yorkiepoo|yoodle",1.5,6.5,"mini",0]];
+// RAZZE-FINE
+const nrmB=t=>String(t||"").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^a-z0-9]+/g," ").trim();
+const MIX_RE=/\b(meticci[oa]?|incrocio|incrociat[oa]|bastardin[oa]|mix|mixed|razza mista|crossbreed|non so)\b/;
+let RZC=null;
+function rz(){if(RZC)return RZC;const byKey=new Map(),list=[];
+  for(const r of RAZZE_DATI){const e={n:r[0],al:r[1]?r[1].split("|"):[],min:r[2],max:r[3],g:r[4],f:r[5]||0};list.push(e);const nk=nrmB(e.n);if(nk&&!byKey.has(nk))byKey.set(nk,e)}
+  for(const e of list)for(const k of e.al){const nk=nrmB(k);if(nk&&!byKey.has(nk))byKey.set(nk,e)}
+  // per i nomi scritti a mano ("il mio è un pastore tedesco a pelo lungo"): si cerca il nome più lungo contenuto nel testo
+  const keys=[...byKey.keys()].filter(k=>k.length>=4).sort((a,b)=>b.length-a.length);
+  return RZC={byKey,list,keys}}
+// la riga della razza (null se non si riconosce o se è un meticcio)
+const BEC=new Map();
+function breedEntry(b){const q=nrmB(b);if(!q)return null;if(BEC.has(q))return BEC.get(q);const R=rz();let e=R.byKey.get(q)||null;
+  if(!e&&!MIX_RE.test(q)){const s=" "+q+" ";for(const k of R.keys)if(s.includes(" "+k+" ")){e=R.byKey.get(k);break}}
+  if(BEC.size>500)BEC.clear();BEC.set(q,e);return e}
+// ricerca nell'elenco delle razze (nome e alias): prima quelle che iniziano con il testo, poi le altre
+function razzeCerca(q,max){const n=nrmB(q),R=rz();if(!n)return RAZZE.slice(0,max||9);const a=[],b=[],seen=new Set();
+  const add=(nm,first)=>{if(seen.has(nm))return;seen.add(nm);(first?a:b).push(nm)};
+  for(const r of RAZZE){const k=nrmB(r);if(k.startsWith(n))add(r,1);else if(k.includes(n))add(r,0)}
+  for(const e of R.list){const ks=[e.n,...e.al].map(nrmB);if(ks.some(k=>k.startsWith(n)))add(e.n,1);else if(ks.some(k=>k.includes(n)))add(e.n,0)}
+  return a.concat(b).slice(0,max||12)}
+// Meticci (regola in reports/razze/meticci.md): prima la forma (muso corto, zampe corte, levriero), poi il peso DA ADULTO,
+// con il "tipo" facoltativo. Un meticcio non parte mai come "resistente": ci arriva solo con uscite vere fatte senza problemi.
+const MIX_TIPI=[["pastore","Pastore, da gregge"],["caccia","Da caccia (segugio, da ferma, retriever)"],["terrier","Terrier"],["molosso","Molossoide o bull (testa larga, massiccio)"],["levriero","Levriero (torace profondo, vita sottile)"],["nordico","Nordico o spitz (pelo folto, coda arrotolata)"],["bassotto","Zampe corte e schiena lunga"],["compagnia","Da compagnia"]];
+// peso da adulto: per un cucciolo si stima (stessa regola della tabella dei cuccioli)
+function adultKg(d){const w=+d.weight||0;if(!(w>0))return 0;const a=d.age===""||d.age==null?4:+d.age;return a<1?w*(a<.5?3:a<.8?1.6:1.2):w}
+const TIPO_RE=[["bassotto",/bassott|corgi|basset/],["levriero",/levrier|greyhound|whippet|galgo|lurcher/],["nordico",/husky|malamute|nordic|spitz|volpino|samoied|akita|shiba/],["molosso",/bull|molos|mastin|corso|rottweiler|dogo|boxer/],["pastore",/pastore|collie|shepherd|aussie|malinois|kelpie|border/],["caccia",/ferma|setter|pointer|bracco|segugio|labrador|golden|retriever|spaniel|cocker|caccia|podenco|cirneco|beagle|kurzhaar|epagneul|breton/],["terrier",/terrier|jack|russell/]];
+function mixTipo(d){if(d.tipo)return d.tipo;const s=nrmB((d.breed||"")+" "+(d.mix||""));for(const [k,re] of TIPO_RE)if(re.test(s))return k;return ""}
+function mixFit(d){
+  const w=adultKg(d),t=mixTipo(d),mix=nrmB(d.mix);
+  // incrocio scritto a mano (es. "pastore tedesco e labrador"): dai genitori prendo i segni più fragili
+  const P=mix?String(d.mix).toLowerCase().split(/\s+(?:e|ed|x|con|incrocio|incrociato|misto)\s+|[,;/+&×]|\s+-\s+/).map(x=>x.trim()).filter(Boolean).map(x=>breedEntry(x)||(BREED_FIT.find(g=>g[2].test(x))?{g:BREED_FIT.find(g=>g[2].test(x))[0],f:0}:null)).filter(Boolean):[];
+  const brachy=P.some(e=>e.f&1||e.g==="brachy"),longback=t==="bassotto"||P.some(e=>e.f&2||e.g==="schiena"),nordico=t==="nordico"||P.some(e=>e.f&8),folto=nordico||P.some(e=>e.f&4);
+  let id=null,why="";
+  if(d.brachy){id="brachy";why="un meticcio con il muso schiacciato"}
+  else if(longback){id="schiena";why="un meticcio con le zampe corte e la schiena lunga"}
+  else if(t==="levriero"&&(!w||w>=8)){id="levriero";why="un meticcio di tipo levriero"}
+  else if(w>0){
+    if(w<5)id="mini";else if(w<10)id=["terrier","pastore","caccia"].includes(t)?"atletico":"mini";
+    else if(w<=25)id="atletico";else if(w<=40)id=t==="molosso"||P.some(e=>e.g==="molosso")?"molosso":"atletico";else id="molosso";
+    why=w<10?"un meticcio di taglia piccola":w<=25?"un meticcio di taglia media":w<=40?"un meticcio di taglia grande":"un meticcio di taglia gigante";
+    // promozione a "resistente" solo con le prove: 3 o più uscite lunghe (in media 5 km o più) senza stancarsi
+    if(id==="atletico"&&["pastore","caccia","nordico"].includes(t)&&w>=10){const tr=trained(d);if(tr.n>=3&&tr.km>=5&&!tr.tired){id="resistente";why+=" che regge bene le uscite lunghe"}}
+  }else if(P.length){const tr=d.train in BASE_FIT?d.train:"medio";const g=P.map(e=>fitOf(e.g)).filter(Boolean).reduce((a,x)=>!a||x[3][tr][0]<a[3][tr][0]?x:a,null);if(g){id=g[0];why=`un incrocio: conto i limiti della parte più delicata (razza ${FIT_NOME[g[0]]})`}}
+  if(!id)return null;const g=fitOf(id);
+  return {id,txt:why,t:g[3],mix:true,brachy:brachy||!!d.brachy,longback,folto,nordico,energy:["pastore","caccia","terrier"].includes(t),w}}
+// Gruppo di resistenza del cane: razza riconosciuta → i suoi dati; nome non in elenco → le vecchie regole per parole; meticcio → mixFit
+function breedFit(d){const b=String(d.breed||""),e=breedEntry(b);
+  if(e){const g=fitOf(e.g)||fitOf("atletico");return {id:g[0],txt:g[1],t:g[3],e,brachy:!!(e.f&1),longback:!!(e.f&2),folto:!!(e.f&4),nordico:!!(e.f&8),energy:!!(e.f&16)}}
+  const q=nrmB(b);if(q&&!MIX_RE.test(q)){const g=BREED_FIT.find(x=>x[2].test(b.toLowerCase()));if(g)return {id:g[0],txt:g[1],t:g[3],brachy:g[0]==="brachy",longback:g[0]==="schiena"}}
+  return mixFit(d)}
+// età da anziano per taglia (AAHA: ultimo quarto della vita attesa; durate di vita McMillan 2024): 10 / 9 / 8 / 6 anni
+// per meno di 10 kg / 10-25 / 25-45 / oltre 45 kg (rapporto "Soglie di sforzo", 24/11/2026)
+function seniorAge(d){const w=adultKg(d)||15;return w<10?10:w<=25?9:w<=45?8:6}
+// fine crescita: inizio dell'allenamento di resistenza (cartilagini chiuse ~7-9 mesi piccoli, 10-14 grandi, fino a 18 giganti).
+// La sterilizzazione prima della pubertà allunga la crescita di 3-6 mesi, ma il profilo non ha ancora il campo "sterilizzato".
+function puppyAge(d){const w=adultKg(d)||15;let r=null;try{r=breedRange(d)}catch(e){}const g=breedFit(d),m=r?r.max:w; // peso massimo della razza: prudente per i maschi grandi
   if(m>=45||(g&&g.id==="molosso"))return 1.5;if(m>=25)return 1.25;if(m>=10)return 1;return .84}
 // Allenamento VERO: le passeggiate registrate nelle ultime 6 settimane. Con almeno 3 uscite in cui il cane non è tornato stanco,
-// i limiti salgono fino a 1,2 volte la media delle sue 3 uscite più lunghe, ma mai oltre +50% rispetto al punto di partenza.
+// i limiti salgono fino a 1,2 volte la media delle sue 3 uscite più lunghe, ma mai oltre +30% rispetto al tetto della razza
+// (prima +50%: il dato misurato più alto su cani da lavoro simili è circa 30 km in una giornata).
 // Se nelle ultime uscite è tornato spesso stanco o ha avuto problemi, i limiti scendono del 15%.
 const trC={k:"",v:null};
-function trained(d){const A=S&&S.acts||[],id=d.id||null,k=(id||"")+"|"+A.length+"|"+A.slice(0,30).map(x=>x.t+":"+x.dist+":"+(x.up||0)+":"+(x.mood||"")+":"+(x.dogs||"")).join(",");if(trC.k===k)return trC.v;
-  const from=Date.now()-42*864e5,L=A.filter(x=>x.t>=from&&x.dist>=1000&&(!x.dogs||!id||x.dogs.includes(id)));
+function trained(d){const A=S&&S.acts||[],id=d.id||null,k=(id||"")+"|"+A.length+"|"+A.slice(0,30).map(x=>x.t+":"+x.dist+":"+(x.up||0)+":"+(x.mood||"")+":"+(x.dogs||"")+":"+(x.kind||"")).join(",");if(trC.k===k)return trC.v;
+  // per salire di gradino servono uscite registrate col GPS: quelle scritte a mano contano per il limite (con il tetto, vedi capacity)
+  // ma non fanno cambiare gradino da sole (24/11/2026, Giuseppe: tre uscite a mano da 12 km portavano Gohan al gradino 4)
+  const from=Date.now()-42*864e5,L=A.filter(x=>x.t>=from&&x.dist>=1000&&x.kind!=="manual"&&(!x.dogs||!id||x.dogs.includes(id)));
   const good=L.filter(x=>x.mood!=="tired"&&x.mood!=="bad"),top=(a)=>{a=a.sort((x,y)=>y-x).slice(0,3);return a.length>=3?a.reduce((s,x)=>s+x,0)/3:0};
   const moods=A.filter(x=>x.mood&&(!x.dogs||!id||x.dogs.includes(id))).slice(0,5),tired=moods.filter(x=>x.mood==="tired").length>=2||moods.some(x=>x.mood==="bad");
   trC.k=k;return trC.v={km:top(good.map(x=>x.dist/1000)),up:top(good.map(x=>x.up||0)),n:good.length,tired}}
+// Domande facoltative sulle ultime 4 settimane (iscrizione o dati del cane). Si usano solo per le prime 6 settimane,
+// mentre arrivano le uscite vere. Valore dichiarato = centro della fascia × 0,7 (chi dichiara tende a sopravvalutare)
+// × 1,3 (margine come per le uscite registrate) = × 0,91; mai oltre il tetto della razza.
+const ATT_MIN=[["<30","Meno di 30 minuti","poco"],["30-60","30-60 minuti","poco"],["60-90","60-90 minuti","medio"],["90-120","90-120 minuti","medio"],[">120","Più di 2 ore","molto"]];
+const ATT_LUNGO=[["<3","Meno di 3 km (o 45 minuti)",2],["3-6","3-6 km",4.5],["6-10","6-10 km",8],["10-15","10-15 km",12.5],[">15","Più di 15 km",17.5]];
+const ATT_SALITA=[["piana","Quasi in piano",0],["<300","Un po' (fino a 300 m)",150],["300-800","Collina o montagna (300-800 m)",550],[">800","Tanta (oltre 800 m)",1000]];
+const ATT_DOPO=[["ok","Come sempre"],["stanco","Un po' stanco"],["rigido","Rigido o zoppicava"]];
+// testi corti: nell'app sono pastiglie da toccare e non vanno tagliati
+const ATT_USCITE=[["0","Nessuna"],["1","Una"],["2-3","2-3"],["4+","4 o più"]];
+const ATT_SPORT=[["no","No"],["corsa","Corsa"],["canicross","Canicross"],["bici","Bici"],["agility","Agility o altro"]];
+// gradino di partenza dalle risposte (24/11/2026): minuti al giorno + uscite di più di un'ora a settimana; lo sport di resistenza
+// (corsa, canicross, bici) vale +1 solo con almeno 2 uscite lunghe a settimana, mai oltre il 5. Il 6 ("atleta") solo con le uscite vere.
+// "Rigido o zoppicava il giorno dopo": niente bonus.
+function attStep(a){if(!a||!a.min)return null;const lunghe=a.uscite==="2-3"||a.uscite==="4+";
+  let s={"<30":1,"30-60":2,"60-90":3,"90-120":lunghe?4:3,">120":lunghe?5:4}[a.min];if(!s)return null;
+  const sp=Array.isArray(a.sport)?a.sport:[];if(lunghe&&a.dopo!=="rigido"&&sp.some(x=>x==="corsa"||x==="canicross"||x==="bici"))s=Math.min(5,s+1);return s}
+// mette il gradino delle risposte nel profilo (solo quando le risposte sono nuove o cambiate)
+function fragile(d){const g=breedFit(d)||{};return pats(d).length>0||!!d.brachy||+d.age>=seniorAge(d)||+d.age<puppyAge(d)||!!g.brachy||!!g.longback||g.id==="schiena"||g.id==="molosso"||g.id==="brachy"}
+function attApply(d){let s=attStep(d.att);if(!s)return;if(fragile(d))s=Math.min(s,3); /* cani fragili: le risposte non li mettono oltre "allenato" */d.trainStep=s;d.train=stepTrain(s);d.trainStepOf=d.train}
+const CUORE_ST=[["soffio","Soffio senza sintomi, il veterinario dice ok"],["sintomi","Ha sintomi o prende farmaci per il cuore"],["nonso","Non so"],["respiro","È solo il respiro, non il cuore"]];
+const CONV_TIPO=[["ossa","Ossa o articolazioni"],["altro","Altro (es. sterilizzazione)"]];
+const CONV_SETT=[["<4","Meno di 4 settimane",0],["4-8","4-8 settimane",4],["8-12","8-12 settimane",8],[">12","Più di 12 settimane",12]];
+const SETT=7*864e5;
+const attVal=(L,v)=>{const x=L.find(r=>r[0]===v);return x?x[2]:null};
+function declared(d){const a=d.att;return a&&a.t&&Date.now()-a.t<=42*864e5?a:null}
+// punto di partenza P: senza dati il 40% del tetto (rapporto "Soglie di sforzo" con la correzione del revisore: 40%, non 50%);
+// con le risposte il valore dichiarato. "Quasi in piano" non abbassa la salita (non dice niente sul saper salire).
+function startPoint(d,kmT,upT){const a=declared(d);let km=kmT*.4,up=upT*.4,src="stima";
+  if(a&&a.dopo!=="rigido"){const L=attVal(ATT_LUNGO,a.lungo),U=attVal(ATT_SALITA,a.salita);
+    if(L!=null){km=Math.min(kmT,L*.91);src="risposte"}
+    if(U>0){up=Math.min(upT,U*.91);src="risposte"}
+    if(a.dopo==="stanco"){km*=.85;up*=.85}
+    if(fragile(d)){km=Math.min(km,kmT*.6);up=Math.min(up,upT*.6)}} // revisione 24/11/2026: per i cani fragili le risposte valgono al massimo il 60% del tetto
+  return {km:Math.max(.5,km),up:Math.max(30,up),src,rigido:!!(a&&a.dopo==="rigido")}}
+// cuore: lo stadio cambia tutto. Soffio senza sintomi con il via del veterinario: limiti ridotti; sintomi, farmaci o "non so": niente sentieri
+function heartState(d){const p=d.pat||{};if(!p.cuore)return {on:false};return {on:true,ok:d.cuoreStadio==="soffio",stadio:d.cuoreStadio||"nonso"}}
+// convalescenza: prime 8 settimane (di solito 8-12) o senza il via del veterinario = niente sentieri, solo 5-10 minuti al guinzaglio
+// Le 8 settimane valgono per ossa e articolazioni (o se il tipo non è detto); per gli altri interventi (es. sterilizzazione)
+// basta il via del veterinario: la convalescenza finisce e si riparte dalla partenza P (seconda revisione 24/11/2026).
+function convState(d){const p=d.pat||{};if(!p.conv)return {on:false,attiva:false};
+  if(d.convTipo==="altro"){const ok=!!d.convOk;return ok?{on:false,attiva:false,ok,from:d.convOkT||0}:{on:true,attiva:true,sett:null,ok}}
+  const sett=d.convDa?Math.floor((Date.now()-d.convDa)/SETT):null,ok=!!d.convOk,attiva=!ok||sett==null||sett<8;
+  return {on:true,attiva,sett,ok,from:attiva?null:Math.max(d.convDa+8*SETT,d.convOkT||0)}}
+// primo giorno dei dati del cane (risposte, iscrizione o prima uscita): serve per le "prime 6 settimane"
+function dogStart(d){const id=d.id||null,A=(S&&S.acts)||[];let t=(d.att&&d.att.t)||d.onb||0;
+  if(!t)for(const x of A)if((!x.dogs||!id||x.dogs.includes(id))&&(!t||x.t<t))t=x.t;return t||0}
+// "ha continuato a camminare senza l'app?": la risposta vale fino alla prossima uscita registrata
+function senzaApp(d,ult){const s=d.senzaApp;return !!(s&&s.si&&s.t>(ult||0))}
+function pauseAsk(d){if(!d)return false;const R=recentForm(d),ult=R.ult||R.prevT||0;if(!ult)return false;
+  const giorni=(Date.now()-ult)/864e5,s=d.senzaApp;return giorni>=14&&!(s&&s.t>ult)}
+// il giorno dopo un'uscita lunga: "è rigido o zoppica?" (sì = 48 ore di riposo o solo giri brevi)
+function stiffAsk(){const A=(S&&S.acts)||[],now=Date.now();return A.find(x=>x.t<now-12*36e5&&x.t>now-40*36e5&&(x.dist||0)>=3000&&!x.dopo)||null}
+function stiffNow(d){const A=(S&&S.acts)||[],id=d.id||null,now=Date.now();return A.find(x=>(!x.dogs||!id||x.dogs.includes(id))&&x.dopo==="rigido"&&x.t>now-60*36e5&&(x.dopoT||x.t)>now-48*36e5)||null}
+// risposte alle due domande (salvate nel profilo del cane e nell'uscita: vanno anche nell'account)
+function answerSenzaApp(si){const d=S.dog;if(!d)return;d.senzaApp={si:!!si,t:Date.now()};store.set("alldogs-dog",d);try{vMemo.m.clear()}catch(e){}}
+function answerDopo(t,v){const x=(S.acts||[]).find(a=>a.t===t);if(!x)return;x.dopo=v==="rigido"?"rigido":"ok";x.dopoT=Date.now();store.set("alldogs-acts",S.acts);try{vMemo.m.clear()}catch(e){}}
+// le due domande sulla pagina del cane (nell'app nativa arrivano come finestra)
+function dogQuestions(d){let h="";const lv=levelNote(d);if(lv)h+=`<span class="box" style="display:block;margin-top:10px"><b>${esc(lv)}</b></span>`;const nm=esc(d.name||"il tuo cane"),x=stiffAsk();
+  if(x)h+=`<span class="box" style="display:block;margin-top:10px"><b>${nm} è rigido o zoppica, dopo l'uscita di ieri?</b><br><span class="small muted">Se sì, per 48 ore solo riposo o giri brevi.</span><br><button class="btn sm" type="button" style="margin-top:8px" onclick="answerDopo(${x.t},'rigido');showDog()">Sì</button> <button class="btn sm" type="button" style="margin-top:8px" onclick="answerDopo(${x.t},'ok');showDog()">No, sta bene</button></span>`;
+  if(pauseAsk(d))h+=`<span class="box" style="display:block;margin-top:10px"><b>Da 2 settimane non registri uscite: ${nm} ha continuato a camminare senza l'app?</b><br><span class="small muted">Se sì, i suoi limiti scendono al massimo del 5%.</span><br><button class="btn sm" type="button" style="margin-top:8px" onclick="answerSenzaApp(1);showDog()">Sì</button> <button class="btn sm" type="button" style="margin-top:8px" onclick="answerSenzaApp(0);showDog()">No, era fermo</button></span>`;
+  return h}
+// LIVELLO DI ALLENAMENTO CHE SI ADATTA DA SOLO (24/11/2026, richiesta di Giuseppe): poco → medio → molto con le uscite vere.
+// Su: almeno 3 uscite nelle ultime 6 settimane senza "stanco"/"male" e la media delle 3 più lunghe arriva all'80% del tetto del
+// livello attuale (km o salita). Giù: oltre 8 settimane senza uscite, oppure stanco in 2 delle ultime 5 uscite (o 1 "male") in due
+// controlli di giorni diversi. Al massimo un gradino ogni 4 settimane. Sopra "molto" resta la regola del +30%. A mano si può sempre cambiare.
+const LIV=["poco","medio","molto"];
+// 6 GRADINI per ogni razza e meticcio (24/11/2026, Giuseppe: "il salto deve essere graduale"). L'iscrizione offre solo poco/medio/molto
+// (gradini 1/3/5); poi si sale o si scende un gradino alla volta con le uscite registrate.
+// 1 poco · 2 a metà fra poco e medio · 3 medio · 4 a metà fra medio e molto · 5 molto · 6 atleta = molto × 1,3 (sostituisce il vecchio +30%)
+const GRADINI=["poco allenato","un po' allenato","allenato","ben allenato","molto allenato","atleta"];
+const STEP_DI={poco:1,medio:3,molto:5};
+function stepTier(tab,s){const P=tab.poco,M=tab.medio,X=tab.molto,mid=(a,b)=>[(a[0]+b[0])/2,(a[1]+b[1])/2];
+  return [P,mid(P,M),M,mid(M,X),X,[X[0]*1.3,X[1]*1.3]][Math.max(1,Math.min(6,s))-1]}
+// gradino attuale: quello salvato dalle uscite, se il livello scritto a mano non è cambiato da allora; altrimenti 1/3/5
+function trainStep(d){const tr=d.train in BASE_FIT?d.train:"medio";return d.trainStep>=1&&d.trainStep<=6&&d.trainStepOf===tr?Math.round(d.trainStep):STEP_DI[tr]}
+const stepTrain=s=>s<=2?"poco":s<=4?"medio":"molto";
+// revisione 24/11/2026: muso schiacciato e schiena lunga (bassotti, bulldog...) non arrivano al gradino 6 "atleta"
+const stepMax=g=>g&&(g.id==="brachy"||g.id==="schiena"||g.id==="molosso"||g.brachy||g.longback)?5:6; // anche i molossi (seconda revisione)
+// Su di un gradino: nelle ultime 6 settimane almeno 3 uscite senza "stanco"/"male" e la media delle 3 più lunghe all'80% del gradino
+// attuale (km o salita). Giù di un gradino: oltre 8 settimane senza uscite, oppure stanco in 2 delle ultime 5 uscite (o 1 "male") in due
+// controlli di giorni diversi. Al massimo un gradino ogni 2 settimane (da medio ad atleta servono almeno 6 settimane). I cuccioli no.
+function levelNext(d){if(!d)return null;const now=Date.now(),s=trainStep(d),a=d.trainAuto||{};
+  if(+d.age<puppyAge(d))return null;
+  if(convState(d).on)return null; // convalescenza: il gradino resta fermo finché non è finita (revisione 24/11/2026)
+  if(a.t&&now-a.t<14*864e5)return null;
+  const g=breedFit(d),tab=g?g.t:BASE_FIT,T=stepTier(tab,s),tr=trained(d),id=d.id||null;
+  if(s<stepMax(g)&&tr.n>=3&&!tr.tired&&(tr.km>=T[0]*.8||tr.up>=T[1]*.8))
+    return {to:s+1,dir:1,why:`nelle ultime settimane ha fatto uscite di circa ${kmN(Math.round(tr.km*10)/10)} km in media senza stancarsi`};
+  if(s>1){const A=(S&&S.acts||[]).filter(x=>(!x.dogs||!id||x.dogs.includes(id))&&(x.dist||0)>=300),last=A.reduce((m,x)=>Math.max(m,x.t),0);
+    if(last&&now-last>56*864e5)return {to:s-1,dir:-1,why:"non esce con l'app da più di 8 settimane"};
+    if(tr.tired){const prima=d.trainTired;if(prima&&dKey(prima)!==dKey(now))return {to:s-1,dir:-1,why:"nelle ultime uscite è tornato spesso stanco"};return {mark:true}}}
+  return null}
+// applica il controllo al cane scelto e lo salva nel profilo (va anche nell'account). Ritorna il cambio fatto, o null.
+function levelCheck(){const d=S.dog;if(!d)return null;let n=null;try{n=levelNext(d)}catch(e){return null}
+  if(!n){if(d.trainTired&&!(trained(d).tired)){delete d.trainTired;store.set("alldogs-dog",d)}return null}
+  if(n.mark){if(!d.trainTired){d.trainTired=Date.now();store.set("alldogs-dog",d)}return null}
+  const g=breedFit(d),tab=g?g.t:BASE_FIT,from=trainStep(d),km=s=>Math.round(stepTier(tab,s)[0]*10)/10;
+  d.trainStep=n.to;d.train=stepTrain(n.to);d.trainStepOf=d.train;
+  d.trainAuto={t:Date.now(),from,to:n.to,fromKm:km(from),toKm:km(n.to),dir:n.dir,why:n.why,seen:false};delete d.trainTired;
+  store.set("alldogs-dog",d);try{vMemo.m.clear()}catch(e){}return d.trainAuto}
+function levelNote(d){const a=d&&d.trainAuto;if(!a||Date.now()-a.t>14*864e5)return "";const nm=d.name||"Il tuo cane";
+  return a.dir>0?`${nm} si è allenato: ora è «${GRADINI[a.to-1]}» (gradino ${a.to} di 6) e il suo tetto sale da ${kmN(a.fromKm)} a ${kmN(a.toKm)} km (${a.why}).`
+    :`${nm} torna a «${GRADINI[a.to-1]}» (gradino ${a.to} di 6): ${a.why}. Il tetto scende da ${kmN(a.fromKm)} a ${kmN(a.toKm)} km; con le prossime uscite può risalire.`}
+// i primi caldi dell'anno: il cane non è abituato per circa 2 settimane (-2 °C). Il giorno si segna quando il meteo supera 25° percepiti.
+function acclimSeen(maxF){if(!(maxF>=25))return;const y=new Date().getFullYear(),c=store.get("alldogs-caldo1");if(c&&c.y===y)return;store.set("alldogs-caldo1",{y,t:Date.now()})}
+function notAcclim(){const c=store.get("alldogs-caldo1");return !!(c&&c.y===new Date().getFullYear()&&Date.now()-c.t<14*864e5)}
 function capacity(d){
-  const g=breedFit(d),T=(g?g.t:BASE_FIT)[d.train]||(g?g.t:BASE_FIT).medio;
-  let k=T[0],up=T[1],f=1,fu=1,heat=0;const notes=[],plus=[],senior=seniorAge(d),p=d.pat||{};
-  // allenamento registrato nell'app
+  // tetto = gradino di allenamento (1-6) della sua razza o tipo; il gradino sale e scende con le uscite registrate (levelCheck)
+  // revisione 24/11/2026: niente gradino 6 per muso schiacciato e schiena lunga; dopo la convalescenza al massimo il gradino 3 finché non è finita
+  const g=breedFit(d),C=convState(d),step=Math.min(trainStep(d),stepMax(g),C.on?3:6),T=stepTier(g?g.t:BASE_FIT,step);
+  let k=T[0],up=T[1],f=1,fu=1,heat=0;const notes=[],plus=[],senior=seniorAge(d),p=d.pat||{},age=+d.age||0,H=heartState(d);
   const tr=trained(d);
-  if(tr.km>=k*.8){const nk=Math.min(k*1.5,Math.max(k,tr.km*1.2));if(nk>k+.05){plus.push(`nelle ultime settimane ha fatto uscite fino a circa ${kmN(Math.round(tr.km*10)/10)} km senza stancarsi troppo`);k=nk}}
-  if(tr.up>=up*.8){const nu=Math.min(up*1.5,Math.max(up,tr.up*1.2));if(nu>up+5){if(!plus.length)plus.push(`nelle ultime settimane ha fatto salite fino a circa ${Math.round(tr.up)} m`);up=nu}}
+  if(d.trainAuto&&d.trainAuto.dir>0&&d.trainStep===step&&Date.now()-d.trainAuto.t<14*864e5)plus.push(d.trainAuto.why);
   if(tr.tired){f*=.85;notes.push("nelle ultime uscite è tornato stanco")}
-  const puppy=d.age<puppyAge(d);
-  if(puppy){const P=puppyLimit(d);k=Math.min(k,P.km);up=Math.min(up,P.up);notes.push(P.mesi<4?"ha meno di 4 mesi: prima dei sentieri servono i vaccini completi (chiedi al veterinario)":`è un cucciolo di ${Math.round(P.mesi)} mesi: le articolazioni crescono fino a circa ${Math.round(puppyAge(d)*12)} mesi`);}
-  else if(d.age>=senior){f*=.6;notes.push("è anziano per la sua taglia")}
+  const puppy=d.age<puppyAge(d);let P0=null;
+  if(puppy){P0=puppyLimit(d);
+    // revisione 24/11/2026: un cucciolo di razza piccola non può avere più km di un adulto (Chihuahua 9 mesi: 3,8 km contro 2,8)
+    const ak=Math.round(T[0]*.4*10)/10,au=Math.round(T[1]*.4/10)*10;if(P0.km>ak)P0=Object.assign({},P0,{km:ak,min:Math.max(10,Math.round(ak*20/5)*5)});if(P0.up>au)P0=Object.assign({},P0,{up:au});
+    k=Math.min(k,P0.km);up=Math.min(up,P0.up);notes.push(P0.sett<18?"è un cucciolo: fino a 1-2 settimane dopo l'ultimo vaccino (fatto a 16 settimane o più) evita i posti molto frequentati da altri cani":`è un cucciolo di ${Math.round(P0.mesi)} mesi: le articolazioni crescono fino a circa ${Math.round(puppyAge(d)*12)} mesi`);}
+  else if(age>=senior){const vecchio=age>=senior+3||pats(d).length>0;f*=vecchio?.6:.8;notes.push(vecchio?"è anziano per la sua taglia":`dai ${senior} anni, per la sua taglia, è anziano`)}
   if(!g&&d.weight<8){f*=.7;notes.push("è di taglia piccola")}
   if(!g&&d.weight>40){f*=.8;notes.push("è di taglia gigante")}
-  if(g&&(g.id!=="atletico"&&g.id!=="resistente"||g.txt.startsWith("un incrocio")))notes.push("è "+g.txt);
+  if(g&&(g.id!=="atletico"&&g.id!=="resistente"||g.mix))notes.push("è "+g.txt);
   if(d.brachy&&!(g&&(g.id==="brachy"||g.brachy))){f*=.6;notes.push("ha il muso schiacciato e respira con più fatica")}
-  if(p.art){f*=.7;fu*=.6;notes.push("ha problemi alle articolazioni")}
-  if(p.cuore){f*=.6;fu*=.5;heat-=3;notes.push("ha problemi di cuore")}
+  if(p.art){f*=.7;fu*=.6;notes.push("ha problemi alle articolazioni (meglio poco ogni giorno che tanto nel fine settimana)")}
+  if(H.on){heat-=3;if(H.ok){f*=.8;fu*=.75;notes.push("ha un soffio al cuore senza sintomi")}else{f*=.6;fu*=.5;notes.push("ha problemi di cuore")}}
   if(p.resp){f*=.7;heat-=3;notes.push("ha problemi respiratori")}
   if(p.peso){f*=.8;heat-=2;notes.push("è in sovrappeso")}
   if(p.epi){f*=.85;notes.push("soffre di epilessia (meglio giri non isolati)")}
   if(p.diab){f*=.85;notes.push("ha il diabete")}
   if(p.altro){f*=.85;notes.push("ha un problema di salute"+(d.patOther?" ("+d.patOther+")":""))}
-  if(p.conv){k=Math.min(k,3);up=Math.min(up,100);notes.push("è in convalescenza")}
+  if(C.on)notes.push(C.attiva?"è in convalescenza":"sta riprendendo dopo la convalescenza");
   const brachy=!!d.brachy||!!(g&&(g.id==="brachy"||g.brachy));
-  const sensitive=brachy||d.caldo||d.coat==="lungo"||puppy||d.age>=senior||d.weight>35||p.cuore||p.resp||p.peso;
+  // pelo folto (doppio mantello o razza nordica, oppure "lungo o folto" nel profilo): -2 °C, ma da solo non rende "sensibile"
+  const folto=d.coat==="lungo"||!!(g&&(g.folto||g.nordico));
+  const caldoRazza=!!g&&(g.id==="levriero"||/chow/.test(nrmB(g.e?g.e.n:d.breed))); // Chow Chow e levrieri: rischio colpo di calore molto alto (Hall 2020)
+  const sensitive=brachy||caldoRazza||!!d.caldo||puppy||age>=senior||adultKg(d)>35||H.on||!!p.resp||!!p.peso;
   const agil=p.art||p.conv?"bassa":d.agil;
   // limite teorico (razza, età, allenamento dichiarato, salute) = solo un tetto; forma attuale = il valore usato dai verdetti.
-  // Revisione del 23/11/2026: il profilo diceva "regge 15 km" a un cane che camminava 8 minuti al giorno.
-  // - con 3 o più uscite nelle ultime 4 settimane: fino a 1,5 volte la più lunga (mai sotto il 35% del teorico)
-  // - con meno dati: stima iniziale prudente, 35% del teorico (o 1,5 volte l'uscita più lunga, se è di più)
-  // - se l'ultima uscita è di più di 2 settimane fa: -15%; se non esce da 4 settimane ma aveva camminato: 70%
-  const kmT=Math.max(1,Math.round(k*f*10)/10),upT=Math.max(50,Math.round(up*f*fu/10)*10),R=recentForm(d);
-  let kmV,upV,fonte;
-  // con uscite vere il limite non supera mai il doppio dell'uscita più lunga (revisione 23/11/2026, punto 6)
-  const conUscite=(x,top,T)=>Math.min(T,Math.max(top*1.5,Math.min(T*.35,top*2)),Math.max(top*2,1));
+  // Regole del 24/11/2026 (rapporto "Soglie di sforzo per cani", approvato da Giuseppe):
+  // - P (partenza) = 40% del tetto, oppure le risposte sulle ultime 4 settimane (prime 6 settimane)
+  // - con uscite nelle ultime 4 settimane: 1,5 volte la più lunga (mai oltre 2 volte); nelle prime 6 settimane mai sotto P;
+  //   la salita mai sotto P, e le uscite quasi in piano (meno di 100 m) non la abbassano
+  // - pausa: 8-14 giorni -5%, 15-28 giorni -10%, 29-56 giorni 80% della forma di prima (mai sotto P), oltre 8 settimane si riparte da P;
+  //   se ha continuato a camminare senza l'app, al massimo -5%
+  const kmT=Math.max(1,Math.round(k*f*10)/10),upT=Math.max(50,Math.round(up*f*fu/10)*10),P=startPoint(d,kmT,upT);
+  // uscite scritte a mano (24/11/2026, Giuseppe): contano come le altre, ma da sole non portano il limite oltre la partenza del
+  // gradino successivo (40% del suo tetto). Prima tre uscite scritte da 10 km portavano Gohan da 6 a 15 km il primo giorno.
+  const Tn=stepTier(g?g.t:BASE_FIT,Math.min(step+1,stepMax(g))),manKm=Math.max(P.km,Math.min(kmT,Tn[0]*f*.4)),manUp=Math.max(P.up,Math.min(upT,Tn[1]*f*fu*.4));
+  const R=recentForm(d,C.from,{km:manKm/1.5,up:manUp/1.5});
+  const t0=dogStart(d),prime6=!t0||Date.now()-t0<42*864e5,sa=senzaApp(d,R.ult||R.prevT);
+  let kmV,upV,fonte,no="";
   if(puppy){fonte="cucciolo";kmV=kmT;upV=upT} // i limiti dei cuccioli sono già prudenti (tabella per età e taglia)
-  else if(R.n>=3){fonte="dati";kmV=conUscite(0,R.km,kmT);upV=Math.max(50,Math.min(upT,Math.max(R.up*1.5,Math.min(upT*.35,R.up*2)),Math.max(R.up*2,50)))}
-  else if(!R.n&&R.old){fonte="pausa";
-    // dopo una pausa: il 70% dell'ultima forma misurata, mai sopra la stima iniziale (35% del teorico)
-    kmV=Math.min(kmT*.35,Math.max(1,R.oldKm*1.5*.7));upV=Math.min(upT*.35,Math.max(50,R.oldUp*1.5*.7));notes.push("non esce con l'app da più di 4 settimane: si riparte piano")}
-  else if(R.n){fonte="stima";kmV=conUscite(0,R.km,kmT);upV=Math.max(50,Math.min(upT,Math.max(upT*.35,R.up*1.5),Math.max(R.up*2,50)))}
-  else{fonte="stima";kmV=kmT*.35;upV=upT*.35}
-  if(!puppy&&R.n&&R.giorni>14){kmV*=.85;upV*=.85;if(fonte==="dati")fonte="calo";notes.push("poche uscite nelle ultime 2 settimane")}
+  else if(C.attiva){fonte="convalescenza";kmV=.8;upV=30;
+    no=`In convalescenza: niente sentieri. Solo passeggiate al guinzaglio di 5-10 minuti, 3-4 volte al giorno, finché il veterinario non dà il via libera (di solito dopo 8-12 settimane).`}
+  else if(H.on&&!H.ok){fonte="cuore";kmV=P.km;upV=P.up;
+    no=H.stadio==="sintomi"?`Con sintomi o farmaci per il cuore l'app non consiglia sentieri da sola: le uscite le decidi con il veterinario.`:`Problemi di cuore: l'app non consiglia sentieri finché non sai cosa ha detto il veterinario. Se è un soffio senza sintomi e lui dice che può camminare, scrivilo nei dati del cane.`}
+  else if(R.n&&R.n<3&&R.km<kmT*.25){fonte=P.src;kmV=P.km;upV=P.up} // revisione 24/11/2026: 1-2 uscite brevi non dicono quanto regge: resta la partenza
+  else if(R.n){
+    // partenza P: con le risposte vale per le prime 6 settimane; con la stima del 40% vale finché ci sono meno di 3 uscite,
+    // poi al massimo 2 volte l'uscita più lunga (seconda revisione 24/11/2026: 10 uscite da 0,5 km = circa 1 km, non 6)
+    kmV=Math.min(kmT,Math.max(R.km*1.5,P.src==="risposte"||R.n<3?P.km:Math.min(P.km,R.km*2)));
+    upV=Math.min(upT,Math.max(P.up,R.up100*1.5));
+    fonte=R.n>=3?"dati":"stima";
+    if(R.giorni>=8){const c=sa?.05:R.giorni>14?.10:.05;kmV*=1-c;upV=Math.max(P.up,upV*(1-c));fonte="calo";notes.push(R.giorni>14?"poche uscite nelle ultime 2 settimane":"non esce da più di una settimana")}}
+  else if(R.old||sa&&R.prevKm){fonte="pausa";
+    // 29-56 giorni senza uscite: 80% della forma di prima, mai sotto P; se ha camminato senza l'app: 95%
+    const q=sa?.95:.8,ok=R.old?R.oldKm:R.prevKm,ou=R.old?R.oldUp100:R.prevUp100;
+    kmV=Math.max(P.km,Math.min(kmT,ok*1.5)*q);upV=Math.max(P.up,Math.min(upT,ou*1.5)*q);
+    notes.push(sa?"ha continuato a camminare anche senza l'app":"non esce con l'app da più di 4 settimane: si riparte un po' più piano")}
+  else{fonte=P.src;kmV=P.km;upV=P.up;if(R.prevKm)notes.push("non esce con l'app da più di 8 settimane: si riparte da capo")}
+  // MINIMO (24/11/2026, Giuseppe: l'app non deve punire chi registra solo giri brevi): il limite di oggi non scende mai sotto la
+  // partenza del gradino 1 della sua razza (40% del tetto "poco"), con le riduzioni per età e salute. Non vale per cuccioli,
+  // convalescenza e cuore con sintomi, che hanno le loro regole.
+  const T1=stepTier(g?g.t:BASE_FIT,1),minKm=Math.round(T1[0]*f*.4*10)/10,minUp=Math.round(T1[1]*f*fu*.4/10)*10;
+  if(!puppy&&!no){if(kmV<minKm)kmV=minKm;if(upV<minUp)upV=minUp}
+  if(C.on&&!C.attiva&&fonte!=="dati")notes.push("dopo la convalescenza si riparte piano, con aumenti piccoli");
+  if(P.rigido&&!puppy)notes.push("hai detto che dopo le uscite lunghe era rigido o zoppicava: parto prudente, e se succede ancora senti il veterinario");
+  // il giorno dopo era rigido o zoppicava: 48 ore di riposo o solo giri brevi
+  const st=!puppy&&!no&&stiffNow(d);if(st){kmV=Math.min(kmV,2);upV=Math.min(upV,50);fonte="riposo";notes.push("dopo l'ultima uscita era rigido o zoppicava: 48 ore di riposo o solo giri brevi")}
   if(fonte==="dati"&&kmV<kmT-.05)notes.push(`nelle ultime 4 settimane l'uscita più lunga è stata di ${kmN(Math.round(R.km*10)/10)} km`);
-  return {km:Math.max(1,Math.round(kmV*10)/10),up:Math.max(50,Math.round(upV/10)*10),kmT,upT,fonte,forma:{n:R.n,tot:Math.round(R.tot*10)/10,max:Math.round(R.km*10)/10,giorni:R.giorni},notes,plus,heat:(sensitive?19:22)+heat,sensitive,agil,health:pats(d).length>0,
-    breed:g?g.id:null,brachy,puppy,longback:!!(g&&(g.id==="schiena"||g.longback)),heart:!!p.cuore,strict:puppy||!!p.conv,breath:brachy||!!p.resp};
+  // caldo: 22° percepiti per le escursioni lunghe o in salita, 24° per le passeggiate brevi in piano; 19° per i cani sensibili.
+  // Pelo folto -2, 12 anni o più -2, cuore e respiro -3, sovrappeso -2, primi caldi dell'anno -2 (il sole è già nella temperatura percepita).
+  const hx=heat-(folto?2:0)-(age>=12?2:0)-(notAcclim()?2:0);
+  // revisione 24/11/2026: soglia mai sotto 16° (prima un carlino anziano e malato arrivava a 7°); per i cani molto delicati lo dice il testo
+  const hH=Math.max(16,(sensitive?19:22)+hx),hW=Math.max(16,(sensitive?19:24)+hx);
+  if((sensitive?19:22)+hx<16)notes.push("è molto delicato col caldo: anche sotto i 16° percepiti solo uscite brevi, all'ombra e con tanta acqua");
+  return {km:Math.max(no?.5:1,Math.round(kmV*10)/10),up:Math.max(no?0:50,Math.round(upV/10)*10),kmT,upT,min:{km:Math.max(1,minKm),up:Math.max(50,minUp)},P:{km:Math.round(P.km*10)/10,up:Math.round(P.up/10)*10,src:P.src},fonte,
+    forma:{n:R.n,tot:Math.round(R.tot*10)/10,max:Math.round(R.km*10)/10,giorni:R.giorni},notes,plus,heat:hH,heatWalk:hW,sensitive,folto,agil,health:pats(d).length>0,
+    breed:g?g.id:null,step,stepName:GRADINI[step-1],brachy,puppy,pup:P0,longback:!!(g&&(g.id==="schiena"||g.longback)),heart:H.on,heartOk:!!H.ok,conv:C,no,strict:puppy||C.on||!!st,breath:brachy||!!p.resp,rest:!!st};
 }
-// uscite vere del cane nelle ultime 4 settimane (tutte, anche quelle in cui è tornato stanco): la sua forma attuale
-function recentForm(d){const A=(S&&S.acts)||[],id=d.id||null,mio=x=>!x.dogs||!id||x.dogs.includes(id),from=Date.now()-28*864e5;
-  const L=A.filter(x=>mio(x)&&x.t>=from&&(x.dist||0)>=300),ult=L.reduce((m,x)=>Math.max(m,x.t),0);
-  return {n:L.length,km:L.reduce((m,x)=>Math.max(m,(x.dist||0)/1000),0),up:L.reduce((m,x)=>Math.max(m,x.up||0),0),tot:L.reduce((s,x)=>s+(x.dist||0)/1000,0),
-    giorni:ult?Math.floor((Date.now()-ult)/864e5):null,old:!L.length&&A.some(x=>mio(x)&&x.t<from&&(x.dist||0)>=300),
-    oldKm:A.filter(x=>mio(x)&&x.t<from).slice(0,10).reduce((m,x)=>Math.max(m,(x.dist||0)/1000),0),oldUp:A.filter(x=>mio(x)&&x.t<from).slice(0,10).reduce((m,x)=>Math.max(m,x.up||0),0)}}
+// uscite vere del cane nelle ultime 4 settimane (tutte, anche quelle in cui è tornato stanco): la sua forma attuale.
+// "from": dopo la convalescenza contano solo le uscite fatte dopo il via libera.
+// up100: la salita più alta fra le uscite con almeno 100 m (le uscite quasi in piano non dicono niente sul saper salire).
+// man (facoltativo) = {km,up}: le uscite scritte a mano contano, ma al massimo fino a questi valori (vedi capacity)
+function recentForm(d,from0,man){let A=(S&&S.acts)||[];const id=d.id||null,f0=from0||0,mio=x=>(!x.dogs||!id||x.dogs.includes(id))&&x.t>=f0&&(x.dist||0)>=300,now=Date.now(),from=now-28*864e5,from2=now-56*864e5;
+  if(man)A=A.map(x=>x&&x.kind==="manual"?Object.assign({},x,{dist:Math.min(x.dist||0,man.km*1000),up:Math.min(x.up||0,man.up)}):x);
+  const L=A.filter(x=>mio(x)&&x.t>=from),ult=L.reduce((m,x)=>Math.max(m,x.t),0),O=A.filter(x=>mio(x)&&x.t<from&&x.t>=from2),Pv=A.filter(x=>mio(x)&&x.t<from).slice(0,10);
+  const mk=a=>a.reduce((m,x)=>Math.max(m,(x.dist||0)/1000),0),mu=a=>a.reduce((m,x)=>Math.max(m,(x.up||0)>=100?x.up:0),0);
+  return {n:L.length,km:mk(L),up:L.reduce((m,x)=>Math.max(m,x.up||0),0),up100:mu(L),tot:L.reduce((s,x)=>s+(x.dist||0)/1000,0),
+    giorni:ult?Math.floor((now-ult)/864e5):null,ult,old:!L.length&&O.length>0,oldKm:mk(O),oldUp100:mu(O),
+    prevKm:L.length?0:mk(Pv),prevUp100:L.length?0:mu(Pv),prevT:Pv.reduce((m,x)=>Math.max(m,x.t),0)}}
 const dogStep=w=>w<10?.3:w<25?.45:w<40?.6:.7;
 // lunghezza del TUO passo: media delle passeggiate in cui hai scritto i passi veri dell'app Salute (altrimenti 75 cm)
 function myStride(){let m=0,n=0;for(const x of S.acts||[]){if(!(x.steps>0)||!(x.dist>=300))continue;const st=x.dist/x.steps;if(st<.4||st>1.1)continue;m+=x.dist;n+=x.steps;if(n>200000)break}return n?m/n:.75}
@@ -1679,10 +1948,12 @@ const pace=()=>{const p=paceInfo();return p?p.pace:DEF_PACE};
 function verdict(it,d,day){
   const cap=capacity(d),why=[],add=(lvl,txt)=>why.push({lvl,txt}),k=it.len/1000,nm=esc(d.name||"il tuo cane");
   const ar=it.shape==="lolli"?" in tutto":it.loop===false?" andata e ritorno":"";
-  const tol=cap.strict?1:1.3; // cuccioli e convalescenza: oltre il limite è subito sconsigliato
+  const tol=cap.strict?1:1.3; // cuccioli, convalescenza e riposo dopo una zoppia: oltre il limite è subito sconsigliato
   if(k<=cap.km)add(0,`${km(it.len)} km${ar}: dentro le possibilità di ${nm} (fino a circa ${kmN(cap.km)} km).`);
   else if(k<=cap.km*tol)add(1,`${km(it.len)} km${ar}: un po' oltre il limite consigliato di circa ${kmN(cap.km)} km. Prevedi pause lunghe.`);
   else add(2,`${km(it.len)} km${ar}: troppo lungo, il limite consigliato per ${nm} è circa ${kmN(cap.km)} km.`);
+  if(cap.puppy&&cap.pup)why[why.length-1].txt+=` Per un cucciolo vuol dire circa ${cap.pup.min} minuti di cammino a uscita (il gioco libero non conta).`;
+  if(cap.no)add(2,cap.no); // convalescenza o cuore con sintomi: niente sentieri
   if(it.loop===false)why[why.length-1].txt+=it.shape==="lolli"?` Comprende il tratto da rifare per tornare alla partenza (${km(it.ret)} km).`:` Andata e ritorno sulla stessa strada (${km(it.one||it.len/2)} km all'andata).`;
   const up=it.up;
   if(up!=null){
@@ -1708,11 +1979,12 @@ function verdict(it,d,day){
   const pi=paceInfo(),hours=k*pace()/60+Math.max(0,(up||0)-(pi?pi.upk*k:0))/400;
   const w=dayWx(it.start,day);let best=null;
   if(w){
-    const need=Math.max(1,Math.ceil(hours)),lim=cap.heat;
+    // passeggiate brevi e in piano: soglia più alta (24° invece di 22°) per i cani non sensibili al caldo
+    const corto=k<=5&&(up||0)<=100,need=Math.max(1,Math.ceil(hours)),lim=corto?cap.heatWalk:cap.heat;
     // oggi si cerca solo da adesso in avanti (revisione 23/11/2026: alle 15 di un giorno caldo diceva "parti alle 7")
     const h0=day===0?Math.max(5,w.sr,new Date().getHours()+(new Date().getMinutes()>20?1:0)):Math.max(5,w.sr);
     const win=t=>{for(let h=h0;h+need<=Math.min(22,w.ss+1);h++){let g=true;for(let i=0;i<need;i++)if(!(w.H[h+i]&&w.H[h+i].f<=t))g=false;if(g)return h}return null};
-    const maxF=Math.max(...w.H.slice(w.sr,w.ss+1).map(x=>x.f));
+    const maxF=Math.max(...w.H.slice(w.sr,w.ss+1).map(x=>x.f));if(day===0)acclimSeen(maxF);
     const sens=cap.sensitive?` (${nm} soffre il caldo più di altri cani)`:"";
     let h=win(lim);
     if(h!=null){best=h;add(0,maxF>lim?`Caldo: nelle ore centrali si arriva a ${Math.round(maxF)}° percepiti. Parti verso le ${h}:00, quando sono ${Math.round(w.H[h].f)}°.`:`Temperatura buona tutto il giorno (massimo ${Math.round(maxF)}° percepiti).`)}
@@ -1727,13 +1999,14 @@ function verdict(it,d,day){
     if(rain>=60)add(1,`Pioggia probabile (${rain}%): il fondo può diventare scivoloso.`);
     const minT=Math.min(...w.H.slice(w.sr,w.ss+1).map(x=>x.t));
     if(minT<3&&(d.weight<10||d.coat==="corto"))add(1,`Freddo: si scende a ${Math.round(minT)}°. Un cappottino può servire.`);
-  } else if(S.wxFail||Date.now()-(wxBad[wxKey(it.start)]||0)<5*60e3)add(1,"Meteo non disponibile: controlla la temperatura prima di partire, il caldo è il rischio più grande per il cane.");
+  } else if(S.wxFail||it.start&&Date.now()-(wxBad[wxKey(it.start)]||0)<5*60e3)add(1,"Meteo non disponibile: controlla la temperatura prima di partire, il caldo è il rischio più grande per il cane.");
   else add(-1,"Meteo in arrivo…");
   if(it.dg&&it.dg[0]==="no")add(2,"Cani non ammessi. "+esc(it.dg[1]));
   else if(it.dg&&it.dg[0]==="lim")add(1,"Cani ammessi solo in parte. "+esc(it.dg[1]));
   else if(it.dogs==="no")add(2,"Secondo i dati di OpenStreetMap i cani non sono ammessi su questo sentiero.");
   if(cap.health)add(0,`Limiti ridotti per la salute di ${nm}: in caso di dubbio chiedi al veterinario.`);
-  if(cap.puppy&&(+d.age||0)*12<4)add(1,`${nm} ha meno di 4 mesi: sui sentieri solo 1-2 settimane dopo l'ultimo vaccino, con il via libera del veterinario.`);
+  if(cap.puppy&&cap.pup&&cap.pup.sett<18)add(1,`${nm} è un cucciolo piccolo: fino a 1-2 settimane dopo l'ultimo vaccino (che si fa a 16 settimane o più) evita i posti molto frequentati da altri cani. Chiedi al veterinario.`);
+  if(cap.rest)add(1,`Dopo l'ultima uscita ${nm} era rigido o zoppicava: per 48 ore riposo o solo giri brevi. Se non passa, senti il veterinario.`);
   const known=why.filter(x=>x.lvl>=0);
   const v=why.some(x=>x.lvl<0)&&!known.some(x=>x.lvl===2)?-1:Math.max(...known.map(x=>x.lvl));
   // impegno PER IL CANE: rispetto ai suoi limiti, non a quelli di una persona
@@ -1750,7 +2023,7 @@ function bringList(it,d,res,ft){
   const b=res.best??10,hot=res.w?Math.max(...res.w.H.slice(b,b+Math.max(1,Math.ceil(res.hours))).map(x=>x.f))>20:true;
   let L=Math.max(.5,d.weight*.025*res.hours*(hot?1.5:1));L=Math.ceil(L*4)/4;
   const nw=ft&&ft.w?ft.w.length:0;
-  const out=[`Acqua per ${esc(d.name||"il cane")}: almeno ${String(L).replace(".",",")} litri, più la tua.`+(nw?` Lungo il percorso ci sono ${nw===1?"una fontanella segnata":nw+" fontanelle segnate"} su OpenStreetMap: non contarci troppo, possono essere chiuse.`:""),"Ciotola pieghevole e sacchetti.","Pettorina e guinzaglio."];
+  const out=[`Acqua per ${esc(d.name||"il cane")}: almeno ${L===1?"1 litro":String(L).replace(".",",")+" litri"}, più la tua.`+(nw?` Lungo il percorso ci sono ${nw===1?"una fontanella segnata":nw+" fontanelle segnate"} su OpenStreetMap: non contarci troppo, possono essere chiuse.`:""),"Ciotola pieghevole e sacchetti.","Pettorina e guinzaglio."];
   if(res.hours>=2)out.push("Uno snack o un pasto leggero per lui.");
   if(it.scale==="E"||it.scale==="EE")out.push("Scarpette protettive se ha le zampe delicate: il fondo può essere roccioso.");
   if(hot)out.push("Un asciugamano da bagnare per rinfrescarlo nelle pause.");
@@ -1802,7 +2075,7 @@ const retLen=(r,len)=>r.ret<300&&r.f<.75?0:r.f>=.75?len:r.f*len;
 const SHAPE={loop:"Ad anello",lolli:"Anello con tratto di andata e ritorno",line:"Andata e ritorno"};
 function dnOf(tr,frac){const e=elev[tr.id];if(!e)return null;if(!e.p||e.p.length<3)return Math.round(e.up*(frac??1));const n=Math.max(1,Math.round((e.p.length-1)*(frac??1)));let upA=0,up=0,dw=0;for(let i=1;i<e.p.length;i++){const x=e.p[i]-e.p[i-1];if(x>0)upA+=x;if(i<=n){if(x<0)dw-=x}}return Math.round(dw*(upA?e.up/upA:1))}
 const totLen=tr=>tr.loop===false?tr.len+(tr.ret??tr.len):tr.len;
-function totUp(tr){const e=elev[tr.id];if(!e)return null;if(tr.loop!==false)return e.up;const dn=dnOf(tr,Math.min(1,(tr.ret??tr.len)/Math.max(1,tr.len)));return e.up+(dn??e.up)}
+function totUp(tr){const e=elev[tr.id];if(!e)return null;if(tr.loop!==false)return e.up;const dn=e.dn!=null?e.dn:dnOf(tr,Math.min(1,(tr.ret??tr.len)/Math.max(1,tr.len))); /* dn: già calcolata da build_lite.py col profilo completo */return e.up+(dn??e.up)}
 // Cani ammessi (campo "dg" dei sentieri, da tools/build_dogs.py): [stato, testo, area]
 // stato dei cani su un sentiero, a tre valori (revisione 23/11/2026): "si" ammessi con una regola vera (anche al guinzaglio
 // o solo in parte), "no" vietati, "nv" non verificato (nessun dato, o solo "nessun divieto conosciuto": assenza di divieto non è un permesso)
@@ -1846,10 +2119,36 @@ function loadCell(k){
   if(cellState[k])return cellState[k];
   if(!IDX||!IDX.cells[k])return cellState[k]=Promise.resolve(0);
   return cellState[k]=getJSON(`data/c/${k}.json?v=${IDX.t}`).then(d=>{
-    for(const t of d.trails){if(TR.has(t.id))continue;elev[t.id]=t.e;FT[t.id]=t.f||{f:[],w:[],wood:0};delete t.e;delete t.f;t.cell=k;hydrate(t);TR.set(t.id,t);trailClean(t)}
-    S.trails=visTrails();loadPhotos(k).then(n=>{if(n&&S.ready&&curScr==="esplora")renderList()});return d.trails.length;
+    for(const t of d.trails){const o=TR.get(t.id);if(o&&!o.lite)continue;elev[t.id]=t.e;FT[t.id]=t.f||{f:[],w:[],wood:0};delete t.e;delete t.f;t.cell=k;hydrate(t);
+      if(o){Object.assign(o,t);delete o.lite}else{TR.set(t.id,t);trailClean(t)}}
+    S.geoV=(S.geoV||0)+1;S.trails=visTrails();loadPhotos(k).then(n=>{if(n&&S.ready&&curScr==="esplora")renderList()});return d.trails.length;
   }).catch(e=>{delete cellState[k];throw e});
 }
+// Versione leggera dei riquadri (data/l/<riquadro>.json, da tools/build_lite.py, circa 8 volte più piccola): nome, difficoltà, cani,
+// km, salita, un profilo di 16 quote, particolarità e la linea semplificata a 20 m. Basta per l'elenco, i filtri, i verdetti e la mappa
+// fino a zoom 13. La versione completa (data/c) arriva da vicino o quando si apre un sentiero (fullOf), e prende il posto di quella leggera.
+const LITE_MAX=30,FULL_Z=13,liteState={};
+function unpoly(s,prec){const out=[];let i=0,la=0,lo=0;while(i<s.length){for(let k=0;k<2;k++){let b,sh=0,r=0;do{b=s.charCodeAt(i++)-63;r|=(b&31)<<sh;sh+=5}while(b>=32&&i<s.length);const d=r&1?~(r>>1):r>>1;if(k)lo+=d;else la+=d}out.push([la/prec,lo/prec])}return out}
+function loadLite(k){
+  if(cellState[k])return cellState[k];
+  if(liteState[k])return liteState[k];
+  if(!IDX||!IDX.cells[k])return liteState[k]=Promise.resolve(0);
+  return liteState[k]=getJSON(`data/l/${k}.json?v=${IDX.t}`).then(d=>{
+    for(const x of d.trails){if(TR.has(x.id))continue;
+      const {e,f,w,g,...t}=x;
+      if(e)elev[t.id]={up:e[0],max:e[1],min:e[2],p:e[3]&&e[3].length>2?e[3]:undefined,dn:e[4]};
+      FT[t.id]={f:(f&&f[0])||[],wood:(f&&f[1])||0,w:[],wn:(f&&f[2])||0,n:(f&&f[3])||undefined,lite:1};
+      t.dg=d.dg[g]||undefined;t.ways=w.map(s=>unpoly(s,1e4));t.cell=k;t.lite=1;
+      for(const q of ["ref","from","to","zone","scale","dogs","sf"])if(t[q]==null)t[q]="";
+      hydrate(t);TR.set(t.id,t);trailClean(t)}
+    S.trails=visTrails();loadPhotos(k).then(n=>{if(n&&S.ready&&curScr==="esplora")renderList()});return d.trails.length;
+  }).catch(e=>{delete liteState[k];return loadCell(k)}); // file leggero mancante: uso quello completo
+}
+// partenze di tutti i sentieri d'Italia per la mappa da lontano (data/s.json, ~140 KB): si scaricano una volta sola
+let STARTS=null,startsP=null;
+function loadStarts(){if(STARTS||startsP||!IDX)return;startsP=getJSON(`data/s.json?v=${IDX.t}`).then(d=>{STARTS={t:d.t,f:unpoly(d.p,1e3).map(p=>({type:"Feature",properties:{},geometry:{type:"Point",coordinates:[p[1],p[0]]}}))};if(S.far&&typeof applyScene==="function")applyScene()}).catch(()=>{startsP=null})}
+// il sentiero con tutti i dati (quote, fontanelle, descrizione, tracciato preciso): da chiamare prima di aprirlo o partire
+async function fullOf(tr){if(tr&&tr.lite&&tr.cell){try{await loadCell(tr.cell)}catch(e){}}return tr}
 // Luoghi utili per il cane (aree cani, veterinari, spiagge per cani) e parchi: data/p/<riquadro>.json, creati da tools/build_city.py
 const PL={},plState={},POI_T={a:["Area cani","#1f8a4c"],v:["Veterinario","#d9483b"],s:["Spiaggia per cani","#1e88e5"],g:["Villa comunale o parco","#6a9f2a"]};
 const poiOld=store.get("alldogs-poi")!==false;
@@ -1911,7 +2210,7 @@ function poiSheet(pr,c){
 }
 function viewCells(b){const out=[];for(let la=Math.floor(b[0][0]/CELL)*CELL;la<b[1][0];la+=CELL)for(let lo=Math.floor(b[0][1]/CELL)*CELL;lo<b[1][1];lo+=CELL)out.push(cellKey(la+.01,lo+.01));return out}
 async function findTrail(id){ // per aprire un sentiero salvato o un indirizzo diretto
-  if(TR.has(id))return TR.get(id);
+  if(TR.has(id))return fullOf(TR.get(id));
   await loadIndex();
   const ks=cellOf[id]?[cellOf[id]]:viewCells([[40.5,13.5],[41.5,15.0]]); // i salvati più vecchi erano tutti in Campania
   await Promise.all(ks.map(k=>loadCell(k).catch(()=>0)));
@@ -1933,20 +2232,27 @@ function acts(tr,res){
 // ================= Dati: meteo =================
 const WX_KEY="alldogs-wx-v2";
 const wx=(()=>{const c=store.get(WX_KEY);return c&&Date.now()-c.t<3600e3&&c.d===new Date().toDateString()?c.wx:{}})();
+const wxT0=(c=>Object.keys(wx).length&&c?{t:c.t,d:c.d}:null)(store.get(WX_KEY)); // quando era stato scaricato il meteo ripreso dalla memoria
 let wxVer=0; // cambia ogni volta che arriva meteo nuovo: serve a sapere quando rifare i verdetti
 const wxKey=p=>(Math.round(p[0]*4)/4).toFixed(2)+","+(Math.round(p[1]*4)/4).toFixed(2); // un punto meteo ogni quarto di grado (circa 25 km)
 // Meteo: prima fonte Open-Meteo (una sola richiesta per tanti punti). Se è bloccata o non risponde, seconda fonte gratuita: MET Norway.
 // punti per cui il meteo non è arrivato: per 5 minuti il verdetto dice "meteo non disponibile" invece di "Sto valutando"
 const wxBad={};
 const wxT={}; // quando è stato scaricato il meteo di ogni punto
+if(wxT0)for(const k in wx)wxT[k]=wxT0;
 async function loadWeather(points){
   // previsioni vecchie di più di 3 ore, o di un altro giorno, si riscaricano (revisione 23/11/2026)
   const fresco=k=>wx[k]&&wxT[k]&&Date.now()-wxT[k].t<3*36e5&&wxT[k].d===new Date().toDateString();
   const keys=[...new Set(points.map(wxKey))].filter(k=>!fresco(k));
   if(!keys.length)return;
+  // senza rete (o con le due fonti giù) il meteo vecchio NON si usa per il verdetto se è di un altro giorno o di più di 6 ore fa:
+  // prima restava quello del giorno prima, letto come se fosse di oggi (revisione 24/11/2026)
+  const scaduto=()=>{const now=Date.now(),oggi=new Date().toDateString();let tolti=0;
+    keys.forEach(k=>{const t=wxT[k];if(wx[k]&&(!t||t.d!==oggi||now-t.t>6*36e5)){delete wx[k];delete wxT[k];tolti++}if(!wx[k])wxBad[k]=now});
+    if(tolti)wxVer++};
   try{await omLoad(keys)}
   catch(e){console.warn("Open-Meteo non disponibile, uso MET Norway",e.status||e);
-    try{await metLoad(keys.filter(k=>!wx[k]))}catch(e2){keys.forEach(k=>{if(!wx[k])wxBad[k]=Date.now()});wxVer++;throw e2}}
+    try{await metLoad(keys.filter(k=>!fresco(k)))}catch(e2){scaduto();wxVer++;throw e2}}
   keys.forEach(k=>{if(wx[k]){delete wxBad[k];wxT[k]={t:Date.now(),d:new Date().toDateString()}}else wxBad[k]=Date.now()});
   {const ks=Object.keys(wx);if(ks.length>90)ks.slice(0,ks.length-90).forEach(k=>delete wx[k])} // non riempire la memoria del telefono (e non rallentare il salvataggio)
   wxVer++;store.set(WX_KEY,{t:Date.now(),d:new Date().toDateString(),wx});
@@ -2013,6 +2319,7 @@ function dayWx(p,day){
   return m[day]||(m[day]=dayWx0(w,day));
 }
 function dayWx0(w,day){
+  if(!w.daily||!w.daily.sunrise[day]||!w.daily.sunset[day])return null; // giorno non ancora nelle previsioni
   const o=day*24,H=[];for(let h=0;h<24;h++)H.push({h,t:w.hourly.temperature_2m[o+h],f:w.hourly.apparent_temperature[o+h],rain:w.hourly.precipitation_probability[o+h]??0,c:(w.hourly.weather_code||[])[o+h]??0});
   const sr=w.daily.sunrise[day],ss=w.daily.sunset[day];
   return {H,sr:parseInt(sr.slice(11,13))+(sr.slice(14,16)!=="00"?1:0),ss:parseInt(ss.slice(11,13)),srT:sr.slice(11,16),ssT:ss.slice(11,16),daily:w.daily};
@@ -2090,7 +2397,7 @@ function initMap(){
     if(scene.mode!=="nav"&&M.getLayer("ad-poi")){const pf=M.queryRenderedFeatures([[e.point.x-8,e.point.y-8],[e.point.x+8,e.point.y+8]],{layers:["ad-poi","ad-poi-g"].filter(l=>M.getLayer(l))});
       if(pf.length&&!(scene.mode==="crea"&&drawing())){poiSheet(pf[0].properties,pf[0].geometry.coordinates);return}}
     if(scene.mode==="explore"){
-      if(M.getLayer("ad-cells")){const cf=M.queryRenderedFeatures(e.point,{layers:["ad-cells"]});if(cf.length){M.flyTo({center:cf[0].geometry.coordinates,zoom:9.6});return}}const f=M.queryRenderedFeatures([[e.point.x-10,e.point.y-10],[e.point.x+10,e.point.y+10]],{layers:["ad-trails-hit","ad-trails-start"]});if(f.length){peek(f[0].properties.id);return}hidePeek()}
+      if(M.getLayer("ad-cells")){const cf=M.queryRenderedFeatures(e.point,{layers:["ad-cells"]});if(cf.length){const pc=cf[0].properties&&cf[0].properties.point_count;M.flyTo({center:cf[0].geometry.coordinates,zoom:pc?Math.min(11,M.getZoom()+2.5):11.5});return}}const f=M.queryRenderedFeatures([[e.point.x-10,e.point.y-10],[e.point.x+10,e.point.y+10]],{layers:["ad-trails-hit","ad-trails-start"]});if(f.length){peek(f[0].properties.id);return}hidePeek()}
     else if(scene.mode==="trail"&&!curHost.classList.contains("full"))setFull(true);
     else if(scene.mode==="crea"){
       const t=e.originalEvent&&e.originalEvent.target;if(t&&t.closest&&t.closest(".mapboxgl-marker"))return; // tocco su un segnaposto: non è un nuovo punto
@@ -2142,11 +2449,12 @@ function addLayers(){
   }catch(e){console.warn(e)}
   detailMap();
   const empty={type:"FeatureCollection",features:[]};
-  ["trails","sel","selpath","water","startpt","track","cells","poi"].forEach(s=>{if(!M.getSource(s))M.addSource(s,{type:"geojson",data:empty})});
+  ["trails","sel","selpath","water","startpt","track","poi"].forEach(s=>{if(!M.getSource(s))M.addSource(s,{type:"geojson",data:empty})});
+  if(!M.getSource("cells"))M.addSource("cells",{type:"geojson",data:empty,cluster:true,clusterRadius:44,clusterMaxZoom:9});
   if(!M.getSource("dem"))M.addSource("dem",{type:"raster-dem",tiles:[DEM_TILES],encoding:"terrarium",tileSize:256,maxzoom:14,attribution:"Rilievo: Terrain Tiles (Mapzen, AWS Open Data)"});
   M.addLayer({id:"ad-trails-line",type:"line",source:"trails",layout:{"line-cap":"round","line-join":"round"},paint:{"line-color":["get","col"],"line-width":["interpolate",["linear"],["zoom"],8,2,13,4],"line-opacity":.9}});
   M.addLayer({id:"ad-trails-hit",type:"line",source:"trails",paint:{"line-color":"#000","line-width":16,"line-opacity":0}});
-  M.addLayer({id:"ad-trails-start",type:"circle",source:"startpt",paint:{"circle-color":["get","col"],"circle-radius":["interpolate",["linear"],["zoom"],8,3.5,13,7],"circle-stroke-color":"#fff","circle-stroke-width":2}});
+  M.addLayer({id:"ad-trails-start",type:"circle",source:"startpt",paint:{"circle-color":["get","col"],"circle-radius":["interpolate",["linear"],["zoom"],7,1.8,10,3.5,13,7],"circle-stroke-color":"#fff","circle-stroke-width":["interpolate",["linear"],["zoom"],7,.6,10,1.5,13,2]}});
   M.addLayer({id:"ad-sel-casing",type:"line",source:"sel",layout:{"line-cap":"round","line-join":"round"},paint:{"line-color":"#ffffff","line-width":9,"line-opacity":.95}});
   M.addLayer({id:"ad-sel-line",type:"line",source:"sel",layout:{"line-cap":"round","line-join":"round"},paint:{"line-color":["match",["get","sf"],"a",SFC.a,"n",SFC.n,"g",SFC.g,"u",SFC.u,"#ff5d2a"],"line-width":5}});
   // luoghi utili per il cane: verde = area cani, rosso = veterinario, azzurro = spiaggia per cani
@@ -2164,8 +2472,8 @@ function addLayers(){
   addLayers.far=true;
   poiData();setTimeout(vxView,1200);
   // da lontano: un cerchio per ogni riquadro con il numero dei sentieri
-  M.addLayer({id:"ad-cells",type:"circle",source:"cells",paint:{"circle-color":"#1d4f3c","circle-opacity":.85,"circle-stroke-color":"#fff","circle-stroke-width":2,"circle-radius":["interpolate",["linear"],["get","n"],1,11,200,17,1500,26]}});
-  M.addLayer({id:"ad-cells-n",type:"symbol",source:"cells",layout:{"text-field":["get","t"],"text-size":11.5,"text-font":["DIN Pro Bold","Arial Unicode MS Bold"],"text-allow-overlap":true},paint:{"text-color":"#fff"}});
+  M.addLayer({id:"ad-cells",type:"circle",source:"cells",paint:{"circle-color":"#1d4f3c","circle-opacity":.88,"circle-stroke-color":"#fff","circle-stroke-width":["case",["has","point_count"],2,1.2],"circle-radius":["case",["has","point_count"],["interpolate",["linear"],["get","point_count"],2,10,50,14,500,19,3000,25],4]}});
+  M.addLayer({id:"ad-cells-n",type:"symbol",source:"cells",filter:["has","point_count"],layout:{"text-field":["get","point_count_abbreviated"],"text-size":11.5,"text-font":["DIN Pro Bold","Arial Unicode MS Bold"],"text-allow-overlap":true},paint:{"text-color":"#fff"}});
   // frecce che mostrano il verso del percorso scelto
   if(!M.hasImage("ad-arrow")){const c=document.createElement("canvas");c.width=c.height=40;const g=c.getContext("2d");
     g.fillStyle="#fff";g.strokeStyle="#131a2a";g.lineWidth=3;g.lineJoin="round";g.beginPath();g.moveTo(8,8);g.lineTo(34,20);g.lineTo(8,32);g.lineTo(14,20);g.closePath();g.stroke();g.fill();
@@ -2378,10 +2686,10 @@ function applyScene(){
   {const sp=sc.mode==="trail"&&cur&&cur.tr?cur.tr.path:sc.mode==="crea"&&S.gen?S.gen[S.genIdx].path:sc.mode==="nav"&&nav?nav.o.path:sc.mode==="follow"&&follow&&follow.path?follow.path:null;
     setData("selpath",fc(sp&&sp.length>1?[{type:"Feature",properties:{},geometry:{type:"LineString",coordinates:sp.map(ll)}}]:[]))}
   if(ex){
-    const rows=S.far?[]:(S.rows||[]).slice(0,500),VC=[-1,0,1,2].map(vColor),col=v=>VC[v+1]||VC[0];
+    const rows=S.far?[]:(S.rows||[]),VC=[-1,0,1,2].map(vColor),col=v=>VC[v+1]||VC[0];
     // i dati della mappa si rimandano solo se sono cambiati: ridisegnare 500 sentieri a ogni spostamento faceva scattare la mappa
-    if(setDataK("cells",S.far&&IDX?"far"+IDX.t:"-"))setData("cells",fc(S.far&&IDX?Object.entries(IDX.cells).map(([k,n])=>{const q=k.split("_").map(Number);return {type:"Feature",properties:{n,t:n>=1000?(n/1000).toFixed(1).replace(".",",")+"k":String(n)},geometry:{type:"Point",coordinates:[q[1]+CELL/2,q[0]+CELL/2]}}}):[]));
-    const rk=VC.join()+"|"+rows.map(r=>r.tr.id+":"+r.res.v).join(",");
+    if(setDataK("cells",S.far&&STARTS?"far"+STARTS.t:"-"))setData("cells",fc(S.far&&STARTS?STARTS.f:[]));
+    const rk=VC.join()+"|"+(S.geoV||0)+"|"+rows.map(r=>r.tr.id+":"+r.res.v).join(",");
     if(setDataK("trails",rk))setData("trails",fc(rows.map(r=>lineF(r.tr.ways,{id:r.tr.id,col:col(r.res.v)}))));
     if(setDataK("startpt",rk))setData("startpt",fc(rows.map(r=>({type:"Feature",properties:{id:r.tr.id,col:col(r.res.v)},geometry:{type:"Point",coordinates:ll(r.tr.start)}}))));
     const p=S.peek&&TR.get(S.peek);
@@ -2410,6 +2718,8 @@ function applyScene(){
         stopMarkers.push(m)});
       if(fitPending){fitPending=false;if(S.draw.pts.length>1)fitTo(boundsOf([S.draw.pts]));else M.jumpTo({center:ll(S.draw.pts[0]||S.start),zoom:14,pitch:map3d?55:0})}
     }
+    // con i segnaposti a mano la partenza la mette l'utente: niente segnaposto verde in mezzo alla mappa
+    else if(S.mode==="man"&&S.manKind==="draw"){if(pinM){pinM.remove();pinM=null}}
     else if(!pinM){const el=document.createElement("div");el.className="mk-pin";pinM=new mapboxgl.Marker({element:el,draggable:true,anchor:"bottom"}).setLngLat(ll(S.start)).addTo(M);
       pinM.on("dragend",()=>{const p=pinM.getLngLat();setStart([p.lat,p.lng],true)})}
     else pinM.setLngLat(ll(S.start));
@@ -2528,7 +2838,7 @@ function showLegend(){
   const dot=(c,t)=>`<svg viewBox="0 0 46 18"><circle cx="23" cy="9" r="6.5" fill="${c}" stroke="#fff" stroke-width="2"/>${t?`<text x="23" y="12.5" text-anchor="middle" font-size="9" font-weight="700" fill="#131a2a">${t}</text>`:""}</svg>`;
   const row=(sw,t,sub)=>`${sw}<div>${t}${sub?`<small>${sub}</small>`:""}</div>`;
   openSheet(`<h2>Legenda della mappa</h2><p class="small muted" style="margin-top:6px">I colori dello sfondo valgono per la mappa Outdoor; nelle altre mappe possono cambiare un po'.</p>
-  <h3>I segni di AllDogs</h3><div class="lg">
+  <h3>I segni di Wagabondo</h3><div class="lg">
     ${row(dot(css("--ok")),"Sentiero fattibile per "+dn(),"Il colore del sentiero è il verdetto per il tuo cane")}
     ${row(dot(css("--warn")),"Con prudenza")}${row(dot(css("--no")),"Sconsigliato")}${row(dot(css("--wait")),"Lo sto ancora valutando")}
     ${row(ln("#ff5d2a",null,4),"Percorso scelto")}${row(ln("#2f7bff",null,4),"Strada già fatta","Durante Avvia percorso")}
@@ -2675,15 +2985,17 @@ const vMemo={sig:"",m:new Map()};
 function verdictMemo(tr,d){const r=vMemo.m.get(tr.id);if(r)return r;const v=verdict(item(tr),d,S.day);vMemo.m.set(tr.id,v);return v}
 function vMemoSync(d){const a=S.acts,sig=JSON.stringify(d)+"|"+S.day+"|"+wxVer+"|"+Object.keys(wx).length+"|"+(S.wxFail?1:0)+"|"+a.length+"|"+(a[0]?a[0].t+":"+a[0].dist:"")+"|"+a.filter(x=>x.mood).map(x=>x.mood[0]).join("");
   if(sig!==vMemo.sig){vMemo.sig=sig;vMemo.m.clear()}}
+// difficoltà CAI ridotta alle tre del filtro: EEA (attrezzati), AT e "E;EE" contano come EE, "T/E" come E (si prende la più alta)
+function difLev(s){s=String(s||"").toUpperCase();if(!s||s==="CITY")return "";if(/EEA|AT|EE/.test(s))return "EE";if(/E/.test(s))return "E";if(/T/.test(s))return "T";return ""}
 function filtered(){
   const d=dog(),q=$("q").value.trim().toLowerCase(),fit=$("f-fit").value,len=$("f-len").value,upf=$("f-up").value,dif=$("f-dif").value,zone=$("f-zone").value,eff=$("f-eff").value;
   const rows=[];vMemoSync(d);
   for(const tr of S.trails){
     if(!S.near&&!q){if(S.wide){if(hav(tr.start,S.wide.c)>S.wide.r*1000)continue}else if(!inView(tr))continue} // la zona inquadrata, o il cerchio allargato quando con i filtri non c'era niente
     if(q&&!(tr.name+" "+tr.ref+" "+tr.zone+" "+tr.from+" "+tr.to+" "+(FT[tr.id]&&FT[tr.id].n?Object.values(FT[tr.id].n).flat().join(" "):"")).toLowerCase().includes(q))continue;
-    if(len!=="all"){const [a,b]=len.split("-").map(Number);const L=totLen(tr);if(L<a*1000||L>=b*1000)continue}
+    if(len!=="all"){const [a,b]=len.split("-").map(Number);const L=totLen(tr);if(L<a*1000||(b<99&&L>=b*1000))continue} // "più di 10 km" senza tetto: un andata e ritorno può superare i 99 km
     if(upf!=="all"){const u=totUp(tr);if(u==null)continue;const [a,b]=upf.split("-").map(Number);if(u<a||u>=b)continue} // salita di andata e ritorno, come nelle schede
-    if(dif!=="all"&&tr.scale!==dif)continue;
+    if(dif!=="all"&&difLev(tr.scale)!==dif)continue;
     {const ty=$("f-type").value;if(ty!=="all"&&!(ty==="walk"?tr.type==="walk":ty==="cai"?tr.ref&&tr.type!=="walk":ty==="flat"?elev[tr.id]&&elev[tr.id].up<100*Math.max(1,tr.len/5000):tr.type!=="walk"&&tr.shape===ty))continue}
     {const dg=tr.dg&&tr.dg[0],dv=$("f-dog").value;if(dg==="no"&&dv!=="show")continue;if(dv==="free"&&dg==="lim")continue;if(dv==="ver"&&dogState(tr)!=="si")continue} // di base i sentieri vietati ai cani non si mostrano
     if(zone!=="all"&&tr.zone!==zone)continue;
@@ -2882,7 +3194,7 @@ async function sosSheet(pos){
     </div>
     <p class="small muted" style="margin-top:12px">Nel frattempo: tienilo fermo e tranquillo, all'ombra, e non dargli farmaci di tua iniziativa.</p>`);
   const b=$("sos-pos");if(b)b.onclick=async()=>{const url=`https://www.google.com/maps?q=${g}`,text=`Sono qui con ${d.name||"il cane"} e ho bisogno di aiuto:`;
-    try{if(navigator.share){await navigator.share({title:"AllDogs",text,url});return}}catch(e){if(e&&e.name==="AbortError")return}
+    try{if(navigator.share){await navigator.share({title:"Wagabondo",text,url});return}}catch(e){if(e&&e.name==="AbortError")return}
     try{await navigator.clipboard.writeText(text+" "+url);toast("Posizione copiata: incollala in un messaggio")}catch(e){prompt("Copia e manda questo indirizzo:",url)}};
 }
 $("nav-sos").onclick=()=>sosSheet(nav&&nav.pos);
@@ -2971,7 +3283,7 @@ function trailHaz(tr){const f=FT[tr.id],e=elev[tr.id];return hazards({wood:f?(f.
 async function showTrail(id){
   mountMap($("hostTrail"),false);
   let tr=TR.get(id);S.sel=id;
-  if(!tr){$("det").innerHTML=`<p class="muted" style="padding:30px 0">Sto caricando il sentiero…</p>`;
+  if(!tr||tr.lite){$("det").innerHTML=`<p class="muted" style="padding:30px 0">Sto caricando il sentiero…</p>`;
     tr=await findTrail(id).catch(()=>null);if(S.sel!==id||location.hash!=="#s-"+id)return;
     if(!tr){$("det").innerHTML=`<p class="muted" style="padding:30px 0">Sentiero non trovato. Torna alla mappa e riprova.</p>`;return}}
   cur={type:"trail",tr};rememberCell(tr);
@@ -2988,7 +3300,7 @@ async function showTrail(id){
       sections:`${dogBlock(tr)}${tr.d?`<div class="block"><h2>Descrizione</h2><p>${esc(tr.d)}</p></div>`:""}${(hz=>hz.length?`<div class="block"><h2>Attenzione in questo periodo</h2><div class="tags">${hz.map(h=>`<span class="tag">${h.t}</span>`).join("")}</div><button class="btn sm" data-haz style="margin-top:10px">Leggi i consigli</button></div>`:"")(trailHaz(tr))}${sh?`<div class="block"><h2>Fondo del percorso</h2>${surfBlock(sh,dog())}</div>`:""}<div class="block"><h2>Particolarità</h2>${tags}<p class="small muted" style="margin-top:8px">Ricavate in automatico da OpenStreetMap: fiumi e torrenti che il sentiero costeggia, laghi e spiagge che raggiunge, cascate, cime, panorami e luoghi storici che si incontrano lungo il tracciato.</p></div>
       <div class="block"><h2>Scheda per il cane</h2><div class="tiles"><div class="tile"><span>Acqua lungo il percorso</span><b>${water}</b></div><div class="tile"><span>Ombra (stima)</span><b>${shade}</b></div><div class="tile"><span>Fondo prevalente</span><b>${sh?SFL[dom]:"Da verificare"}</b></div>${tr.type==="walk"?`<div class="tile"><span>Nel verde</span><b>${Math.round((tr.green||0)*100)}% del giro</b></div>`:`<div class="tile"><span>Punti critici</span><b>${(q=>q?esc(q):"Da verificare")(qSummary(((store.get("alldogs-reviews")||{})[tr.id]||{}).q))}</b></div>`}</div>
       ${f&&f.sh?shadeBar(f.sh,tr.len):""}<p class="small muted" style="margin-top:8px">${f&&f.w.length?"Le fontanelle sono i punti blu sulla mappa. ":""}${f&&f.sh?"L'ombra viene dalla mappa satellitare degli alberi (ESA WorldCover, 10 m): conta come ombra solo dove ci sono alberi sul sentiero o a pochi metri. L'acqua viene da OpenStreetMap. ":"Acqua e ombra sono stime dai dati di OpenStreetMap. "}Verificale sul posto: il sentiero non è ancora stato provato con un cane.</p></div>${trailRules(tr)}`})+
-      reviewHTML(tr.id)+(tr.type==="walk"?`<p class="small muted block">Giro in città calcolato da AllDogs sulle strade e i vialetti di OpenStreetMap, preferendo verde, zone pedonali e poco traffico. Controlla sempre attraversamenti, marciapiedi e orari di apertura dei parchi.</p>`:`<p class="small block"><a href="https://www.openstreetmap.org/relation/${tr.id}" target="_blank" rel="noopener">Vedi i dati del sentiero su OpenStreetMap</a></p>`);
+      reviewHTML(tr.id)+(tr.type==="walk"?`<p class="small muted block">Giro in città calcolato da Wagabondo sulle strade e i vialetti di OpenStreetMap, preferendo verde, zone pedonali e poco traffico. Controlla sempre attraversamenti, marciapiedi e orari di apertura dei parchi.</p>`:`<p class="small block"><a href="https://www.openstreetmap.org/relation/${tr.id}" target="_blank" rel="noopener">Vedi i dati del sentiero su OpenStreetMap</a></p>`);
     bindReview(tr.id);
     bindDays($("det"),paint);syncSave();bindTools($("det"));
     $("det").querySelectorAll("[data-haz]").forEach(b=>b.onclick=()=>hazSheet(trailHaz(tr)));
@@ -3037,6 +3349,10 @@ function showCrea(){
   ["auto","man"].forEach(m=>$("p-"+m).hidden=S.mode!==m);
   loadWeather([S.start]).then(()=>{rules();autoWhy()}).catch(()=>{});
   if(S.mode==="man")showMan();if(S.mode==="auto")autoWhy();
+  // la partenza è dove sei, a meno che tu non l'abbia scelta tu (parco, tocco sulla mappa) nelle ultime ore:
+  // prima restava l'ultima salvata, o Napoli al primo avvio
+  if(!chosenStart()&&!S.gen&&!S.draw.pts.length&&Date.now()-(showCrea.gps||0)>12e4){showCrea.gps=Date.now();
+    getPos().then(p=>{if(scene.mode==="crea"&&!chosenStart()&&!S.gen&&!S.draw.pts.length){showMe(p);setStart(p,false,"gps")}}).catch(()=>{showCrea.gps=0})}
 }
 document.querySelectorAll("#crea-mode button").forEach(b=>b.onclick=()=>{S.mode=b.dataset.mode;store.set("alldogs-creamode",S.mode);showCrea()});
 $("new-loc").onclick=async()=>{try{const p=await getPos();showMe(p);if(drawing()){M&&M.easeTo({center:ll(p),zoom:Math.max(M.getZoom(),15)});addPt(p)}else setStart(p,false,"gps")}catch(e){toast("Non riesco a leggere la posizione: tocca la mappa")}};
@@ -3400,7 +3716,7 @@ const GEM_SCHEMA={type:"OBJECT",properties:{
 function sysPrompt(){
   const d=dog(),cap=capacity(d),n=nowWx(),w=dayWx(S.start,0),hr=new Date().getHours();
   const next=w?w.H.slice(hr,Math.min(24,hr+6)).map(x=>`${x.h}:00 ${Math.round(x.f)}° percepiti, pioggia ${x.rain}%`).join("; "):"non disponibile";
-  return `Sei l'assistente di AllDogs, un'app per passeggiate ed escursioni col cane in Italia. Parli in italiano semplice, frasi brevi, tono gentile.
+  return `Sei l'assistente di Wagabondo, un'app per passeggiate ed escursioni col cane in Italia. Parli in italiano semplice, frasi brevi, tono gentile.
 Il tuo compito: capire che giro vuole fare l'utente col suo cane (ad anello, oppure verso una meta e ritorno), decidere la durata e le preferenze, e proporre tappe e comandi da dare al cane. Il percorso lo calcola l'app (OpenRouteService), tu non inventi strade né luoghi.
 Profilo del cane: nome ${d.name}; razza ${d.breed||"non indicata"}; età ${d.age} anni; peso ${d.weight} kg; allenamento ${d.train}; agilità ${cap.agil}; pelo ${d.coat}; muso schiacciato ${d.brachy?"sì":"no"}.
 Problemi di salute: ${pats(d).join(", ")||"nessuno indicato"}.
@@ -3465,7 +3781,7 @@ function showChat(){
 // Sentieri candidati per l'assistente: quelli entro 35 km dalla partenza, più quelli il cui nome compare nella richiesta. Già giudicati per il cane.
 async function chatCandidates(text){
   const p=S.start,d=dog();
-  try{await loadIndex();await Promise.all(viewCells([[p[0]-.4,p[1]-.5],[p[0]+.4,p[1]+.5]]).map(k=>loadCell(k).catch(()=>0)))}catch(e){}
+  try{await loadIndex();await Promise.all(viewCells([[p[0]-.4,p[1]-.5],[p[0]+.4,p[1]+.5]]).map(k=>loadLite(k).catch(()=>0)))}catch(e){}
   const words=text.toLowerCase().split(/[^a-zàèéìòù]+/).filter(w=>w.length>=5&&!/^(sentiero|sentieri|percorso|percorsi|consigli|consigliami|vorrei|voglio|escursione|passeggiata|andare|fare|posso|quale|dove)$/.test(w));
   const rows=[];
   for(const tr of S.trails){
@@ -3635,7 +3951,7 @@ function showAct(){
 // ================= Proposte degli utenti: luoghi e sentieri da far approvare allo sviluppatore =================
 // Per ora (alpha, senza account) la proposta parte come e-mail già scritta; resta anche nell'elenco «Le tue proposte».
 // Con gli account (Supabase) andrà in una tabella «proposte» da approvare.
-const PROP_TO="giuseppeparisi2805@gmail.com";
+const PROP_TO="ciao@wagabondo.app";
 const PROP_K={a:"Area cani",s:"Spiaggia per cani",g:"Parco o villa comunale",w:"Fontanella o punto acqua",v:"Veterinario",o:"Altro posto per cani",t:"Sentiero o giro"};
 const PROP_DG={ok:"Cani ammessi liberi",lea:"Cani ammessi al guinzaglio",no:"Cani vietati",nd:"Non so"};
 function propList(){const L=store.get("alldogs-props")||[],el=$("prop-list");if(!el)return;
@@ -3663,10 +3979,10 @@ function proposeSheet(kind){
     const k=$("pp-k").value,name=$("pp-n").value.trim(),pp=k==="t"?paths.find(p=>p.id===($("pp-p")||{}).value):null;
     if(!name){toast("Scrivi il nome");return}if(k==="t"&&!pp){toast("Scegli il percorso");return}
     let P=pp?pp.path:null;if(P){let m=10;P=thin(P,m);while(P.length>120){m*=1.5;P=thin(pp.path,m)}}
-    const at=P?P[0]:pos,body=[`Proposta per AllDogs`,``,`Tipo: ${PROP_K[k]}`,`Nome: ${name}`,`Cani: ${PROP_DG[$("pp-dg").value]}`,`Posizione: ${at[0].toFixed(5)}, ${at[1].toFixed(5)}`,`Mappa: https://www.openstreetmap.org/?mlat=${at[0].toFixed(5)}&mlon=${at[1].toFixed(5)}#map=17/${at[0].toFixed(5)}/${at[1].toFixed(5)}`,
+    const at=P?P[0]:pos,body=[`Proposta per Wagabondo`,``,`Tipo: ${PROP_K[k]}`,`Nome: ${name}`,`Cani: ${PROP_DG[$("pp-dg").value]}`,`Posizione: ${at[0].toFixed(5)}, ${at[1].toFixed(5)}`,`Mappa: https://www.openstreetmap.org/?mlat=${at[0].toFixed(5)}&mlon=${at[1].toFixed(5)}#map=17/${at[0].toFixed(5)}/${at[1].toFixed(5)}`,
       pp?`Lunghezza: ${km(pp.len||0)} km`:"",`Note: ${$("pp-d").value.trim()||"nessuna"}`,P?`\nPercorso (lat,lon):\n${P.map(q=>q[0].toFixed(5)+","+q[1].toFixed(5)).join(";")}`:""].filter(x=>x!=="").join("\n");
     const L=store.get("alldogs-props")||[];L.unshift({t:Date.now(),k,name,at,dg:$("pp-dg").value,d:$("pp-d").value.trim(),path:P});store.set("alldogs-props",L.slice(0,50));propList();
-    location.href=`mailto:${PROP_TO}?subject=${encodeURIComponent("AllDogs: proposta «"+name+"»")}&body=${encodeURIComponent(body)}`;
+    location.href=`mailto:${PROP_TO}?subject=${encodeURIComponent("Wagabondo: proposta «"+name+"»")}&body=${encodeURIComponent(body)}`;
     $("sheet").hidden=true;toast("Grazie! Premi Invia nella posta: la proposta resta in attesa di approvazione")};
 }
 $("prop-open").onclick=()=>proposeSheet("a");
@@ -3698,12 +4014,12 @@ const fmtDay=t=>new Date(t).toLocaleDateString("it-IT",{day:"numeric",month:"lon
 const r1=x=>Math.round(x*10)/10;
 // che tipo di cane è: serve per scegliere esercizi e ritmo di allenamento
 function dogKind(d){
-  const b=(d.breed||"").toLowerCase(),p=d.pat||{},senior=d.age>=seniorAge(d);
-  return {p,senior,young:d.age<1,puppy:d.age<puppyAge(d),small:d.weight<8,
-    giant:d.weight>40||/alano|san bernardo|terranova|mastino|leonberger|cane corso|bovaro|dogue|caucaso/.test(b),
-    longback:/bassott|corgi|basset/.test(b),sight:/levrier|greyhound|whippet|galgo|saluki|borzoi/.test(b),
-    energy:/border|pastore|malinois|husky|labrador|retriever|setter|pointer|bracco|jack russell|spinone|segugio|kurzhaar|weimaraner|vizsla|dalmata|australian|kelpie|malamute|epagneul|springer|cocker/.test(b),
-    brachy:!!d.brachy||/carlin|bulldog|boxer|shih|pechinese|boston|dogue|cavalier/.test(b),
+  const b=(d.breed||"").toLowerCase(),p=d.pat||{},senior=d.age>=seniorAge(d),g=breedFit(d)||{},w=adultKg(d);
+  return {p,senior,young:d.age<1,puppy:d.age<puppyAge(d),small:w>0&&w<8,
+    giant:w>40||g.id==="molosso"||/alano|san bernardo|terranova|mastino|leonberger|cane corso|bovaro|dogue|caucaso/.test(b),
+    longback:!!g.longback||g.id==="schiena"||/bassott|corgi|basset/.test(b),sight:g.id==="levriero"||/levrier|greyhound|whippet|galgo|saluki|borzoi/.test(b),
+    energy:g.e?!!g.energy:!!g.energy||/border|pastore|malinois|husky|labrador|retriever|setter|pointer|bracco|jack russell|spinone|segugio|kurzhaar|weimaraner|vizsla|dalmata|australian|kelpie|malamute|epagneul|springer|cocker/.test(b),
+    brachy:!!d.brachy||!!g.brachy||g.id==="brachy"||/carlin|bulldog|boxer|shih|pechinese|boston|dogue|cavalier/.test(b),
     joint:!!(p.art||p.conv),heart:!!(p.cuore||p.resp)};
 }
 
@@ -3846,10 +4162,10 @@ function showTrain(){
     toast(b.dataset.v==="1"?`Bravissimo ${dog().name||""}!`.trim():"Lo ritrovi tra quelle da ripassare");showTrain()});
   $("tr-main").querySelectorAll("[data-ask]").forEach(b=>b.onclick=()=>{const l=LESSONS.find(x=>x.id===b.dataset.ask);openAI();$("tr-in").value=`Come faccio a insegnare «${l.t}» a ${dog().name}? `;$("tr-in").focus()});
   miniChat("tr",{host:"tr-chat",ph:"Chiedi come insegnare qualcosa",
-    hello:()=>`Ciao! Sono l'educatore di AllDogs. Chiedimi come insegnare un comando a ${dog().name||"il tuo cane"}, o cosa fare se una lezione non funziona.`,
+    hello:()=>`Ciao! Sono l'educatore di Wagabondo. Chiedimi come insegnare un comando a ${dog().name||"il tuo cane"}, o cosa fare se una lezione non funziona.`,
     sugg:()=>[`Non riesce a imparare «${todayLesson().t}»`,"Tira molto al guinzaglio","Come insegno il richiamo?"],
     sys:()=>{const d=dog(),T=todayLesson(),L=trList();
-      return `Sei l'educatore cinofilo di AllDogs, un'app per chi vive e cammina con il proprio cane in Italia. Parli in italiano semplice, frasi brevi, tono gentile e incoraggiante.
+      return `Sei l'educatore cinofilo di Wagabondo, un'app per chi vive e cammina con il proprio cane in Italia. Parli in italiano semplice, frasi brevi, tono gentile e incoraggiante.
 Profilo del cane: ${dogLine(d)}.
 Lezione di oggi nell'app: ${T.t} (${T.obj}).
 Lezioni imparate: ${L.filter(l=>TRS.st[l.id]&&TRS.st[l.id].ok).map(l=>l.t).join(", ")||"nessuna ancora"}.
@@ -3878,8 +4194,10 @@ const bestIn=(a,b)=>actsIn(a,b).reduce((m,x)=>Math.max(m,x.dist/1000),0);
 const kmIn=(a,b)=>actsIn(a,b).reduce((m,x)=>m+x.dist/1000,0);
 // quanto può crescere la passeggiata lunga ogni settimana (prudente; 0 = niente programma)
 function goalRate(d,k){
-  if(k.p.conv||k.puppy)return 0;
-  if(k.heart||k.p.resp)return 0; // cuore: nessuna fonte per un ritmo sicuro, prima il veterinario (ricerca 23/11/2026)
+  if(k.puppy||convState(d).attiva)return 0;
+  if(k.p.resp)return 0; // respiro: prima il veterinario
+  if(k.p.cuore)return heartState(d).ok?.07:0; // cuore: solo soffio senza sintomi con il via del veterinario, piano (rapporto 24/11/2026)
+  if(k.p.conv)return .07; // dopo la convalescenza (8-12 settimane e via del veterinario): si riparte piano
   if(k.senior||k.brachy||k.giant||k.joint||k.p.peso||k.p.diab||k.p.epi||k.p.altro||weightState(d).s>=1)return .07;
   if(d.train==="molto"&&k.energy)return .15;
   return k.energy||d.train==="molto"?.12:.10;
@@ -3899,6 +4217,14 @@ function buildCal(g,r){
   const S0=stepsFor(K),uq=g.up1>0?Math.pow(Math.max(1,g.up1/Math.max(20,g.up0||20)),1/Math.max(1,S0)):1;
   for(let j=0;j<K;j++){const cons=grow&&consAt(j,K);if(!cons)st++;longs.push({t:addDays(f0,j*7),L:j===K-1?g.target:r1(g.from*Math.pow(q,st)*(cons?.8:1)),cons,
     up:g.up1>0?(j===K-1?g.up1:Math.round(Math.min(g.up1,Math.max(20,g.up0||20)*Math.pow(uq,st))/10)*10):undefined})}
+  // aumento minimo 0,5 km o 50 m di salita a settimana (altrimenti i cani piccoli non avanzano mai): stesso ritmo, ma mai passi più
+  // piccoli; così si arriva all'obiettivo un po' prima e lo si mantiene (rapporto "Soglie di sforzo", 24/11/2026)
+  if(grow||g.up1>0){let lk=g.from,lu=Math.max(20,g.up0||20);
+    for(let j=0;j<longs.length-1;j++){const x=longs[j];
+      if(x.cons){x.L=r1(Math.min(x.L,lk*.8));if(x.up!=null)x.up=Math.round(Math.min(x.up,lu*.8)/10)*10;continue}
+      // la prima settimana resta il passo normale (come prima); poi mai meno di 0,5 km o 50 m
+      if(grow){lk=Math.min(g.target,j?lk+Math.max(.5,lk*(q-1)):lk*q);x.L=r1(lk)}
+      if(x.up!=null){lu=Math.min(g.up1,j?lu+Math.max(50,lu*(uq-1)):lu*uq);x.up=Math.round(lu/10)*10}}}
   const days=[];let li=0;
   for(let t=day0(g.start);t<=end;t=addDays(t,1)){
     while(li<longs.length-1&&longs[li].t<t)li++;
@@ -3912,10 +4238,15 @@ function buildCal(g,r){
 function goalNow(g,d,k){
   const r=Math.min(g.r||.1,goalRate(d,k)||.05),C=buildCal(g,r),now=Date.now(),t0=day0(now);
   const past=C.longs.filter(x=>x.t<t0),lastL=past.length?past[past.length-1]:null,recent=bestIn(addDays(now,-14),now+DAY);
-  return Object.assign(C,{today:C.days.find(x=>x.t===t0)||null,recent,behind:!!(lastL&&lastL.t>=day0(g.start)&&recent<lastL.L*.8)});
+  let today=C.days.find(x=>x.t===t0)||null,hold=false;
+  // nuovo aumento della lunga solo dopo almeno 3 uscite ben tollerate (AKC CHF: 4-6; qui 3) dall'ultima lunga
+  if(today&&today.kd==="lunga"&&lastL&&today.km>lastL.L){const good=actsIn(lastL.t,t0).filter(x=>(x.dist||0)>=300&&x.mood!=="tired"&&x.mood!=="bad").length;
+    if(good<3){today=Object.assign({},today,{km:lastL.L,up:lastL.up,hold:true});hold=true}}
+  return Object.assign(C,{today,hold,recent,behind:!!(lastL&&lastL.t>=day0(g.start)&&recent<lastL.L*.8)});
 }
 function fitTips(d,k){
-  const t=["Riscaldamento: i primi 5-10 minuti al passo lento, lasciandolo annusare. Alla fine altri 5 minuti tranquilli.",
+  const t=["Per vedere i risultati servono circa 6-8 settimane di uscite regolari: non avere fretta.",
+    "Riscaldamento: i primi 5-10 minuti al passo lento, lasciandolo annusare. Alla fine altri 5 minuti tranquilli.",
     "Aumenta una cosa alla volta: distanza, salita o velocità. Mai tutte insieme.",
     "Erba e terra battuta pesano meno sulle articolazioni dell'asfalto e allenano l'equilibrio.",
     "Nei giorni leggeri fai giochi di fiuto: stancano la testa senza pesare su zampe e cuore."];
@@ -3956,7 +4287,7 @@ function showGoals(){
   if(k.puppy){const mins=Math.max(10,Math.round(d.age*12)*5);
     box.innerHTML=`<div class="note" style="margin-top:14px"><b>${nm} è ancora in crescita: niente programmi di resistenza per ora.</b><p style="margin-top:6px">Le ossa e le articolazioni dei cuccioli si stanno ancora formando. Una regola prudente usata da molti veterinari: circa <b>5 minuti di passeggiata per ogni mese di età</b>, una o due volte al giorno. Per ${nm} vuol dire circa <b>${mins} minuti</b> a uscita, più il gioco libero.</p><p style="margin-top:6px">Intanto è il momento perfetto per l'<a href="#addestramento">Addestramento</a>. Quando sarà adulto, qui potrai creare il suo calendario.</p></div>
     ${fold("Come si allena bene un cane","Consigli pratici per "+dn(),`<ul class="plain">${fitTips(d,k).map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`)}`;
-  }else if(k.p.conv){box.innerHTML=`<div class="note" style="margin-top:14px"><b>${nm} è in convalescenza.</b> Niente programmi di allenamento finché il veterinario non dà il via libera. Quando sarà guarito, togli la spunta «Convalescenza» nei <a href="#cane">dati del cane</a>.</div>`}
+  }else if(k.p.conv&&convState(d).attiva){box.innerHTML=`<div class="note" style="margin-top:14px"><b>${nm} è in convalescenza.</b> Niente programmi di allenamento finché il veterinario non dà il via libera. Quando sarà guarito, togli la spunta «Convalescenza» nei <a href="#cane">dati del cane</a>.</div>`}
   else if(!GOAL||S.goalDraft||S.goalEdit){const dr=S.goalDraft;box.innerHTML=goalForm(d,k,dr);
     if(dr&&dr.dow!=null)$("g-dow").value=dr.dow;else if(GOAL)$("g-dow").value=GOAL.longDow;
     const c=$("g-cancel");if(c)c.onclick=()=>{S.goalDraft=null;S.goalEdit=false;showGoals()};
@@ -3972,7 +4303,7 @@ function showGoals(){
       store.set(GK,GOAL);S.goalDraft=null;S.goalEdit=false;calSel=null;toast("Calendario creato");showGoals();window.scrollTo(0,0)};
   }else showPlan(d,k);
   miniChat("ob",{host:"ob-chat",ph:"Chiedi qualcosa sul suo allenamento",
-    hello:()=>`Ciao! Sono l'allenatore di AllDogs. Chiedimi come allenare ${dog().name||"il tuo cane"} nel modo giusto, o come cambiare il programma.`,
+    hello:()=>`Ciao! Sono l'allenatore di Wagabondo. Chiedimi come allenare ${dog().name||"il tuo cane"} nel modo giusto, o come cambiare il programma.`,
     sugg:()=>GOAL?["Oggi è stanco, cosa faccio?","Fa caldo: come cambio la passeggiata?","Quali giochi lo allenano?"]:["Come lo alleno a camminare di più?","Quanti km può fare un cane come lui?","Quali giochi lo allenano?"],
     sys:goalSys});
 }
@@ -4039,12 +4370,12 @@ function showPlan(d,k){
 }
 function goalSys(){
   const d=dog(),k=dogKind(d),cap=capacity(d),g=GOAL;let plan="nessun obiettivo ancora";
-  if(g&&!k.puppy&&!k.p.conv){const G=goalNow(g,d,k),t0=day0(Date.now());
+  if(g&&!k.puppy&&!convState(d).attiva){const G=goalNow(g,d,k),t0=day0(Date.now());
     plan=`${g.title?g.title+": ":""}da ${g.from} km a ${g.target} km in una passeggiata entro il ${fmtDay(G.end)}${G.late?" (data spostata in avanti per prudenza)":""}; aumento massimo circa ${Math.round(G.r*100)}% a settimana.
 Prossimi giorni del calendario: ${G.days.filter(x=>x.t>=t0).slice(0,7).map(x=>`${new Date(x.t).toLocaleDateString("it-IT",{weekday:"long",day:"numeric"})}: ${SESS[x.kd].t} ${x.km} km`).join("; ")||"finito"}.`}
   const last=S.acts.slice(0,10).map(x=>`${fmtDay(x.t)}: ${km(x.dist)} km in ${fmtDur(x.dur)}`).join("; ")||"nessuna";
   const W=weightState(d),M=moveNeed(d,k);
-  return `Sei l'allenatore di AllDogs, un'app per passeggiate ed escursioni col cane in Italia. Parli in italiano semplice, frasi brevi, tono gentile.
+  return `Sei l'allenatore di Wagabondo, un'app per passeggiate ed escursioni col cane in Italia. Parli in italiano semplice, frasi brevi, tono gentile.
 Il tuo compito: aiutare a migliorare piano piano la resistenza e la forma fisica del cane, in modo prudente e adatto a razza, età, taglia e salute.
 Profilo del cane: ${dogLine(d)}.
 Peso e forma secondo l'app: ${W.s==null?"non valutato":["magro","nella norma","in sovrappeso","obeso"][W.s+1]}. Movimento consigliato: ${M.puppy?"cucciolo, 5 minuti per mese di età":`${M.a}-${M.b} minuti al giorno`}.
@@ -4078,8 +4409,11 @@ const PUP_KM={piccola:[[3,.5],[4,1],[5,1.5],[6,2],[8,3],[10,4.5],[12,6]],media:[
 function puppyLimit(d){let r=null;try{r=breedRange(d)}catch(e){}const adulto=r?(r.min+r.max)/2:Math.max(+d.weight||10,(+d.weight||10)*(d.age<.5?3:d.age<.8?1.6:1.2));
   const t=adulto>=45?"gigante":adulto>=25?"grande":adulto>=10?"media":"piccola",T=PUP_KM[t],m=Math.max(0,(+d.age||0)*12);
   let km=T[T.length-1][1];if(m<=T[0][0])km=T[0][1];else for(let i=1;i<T.length;i++)if(m<=T[i][0]){const a=T[i-1],b=T[i];km=a[1]+(b[1]-a[1])*(m-a[0])/(b[0]-a[0]);break}
-  return {km:Math.round(km*10)/10,up:m<6?100:250,mesi:m,taglia:t}}
-function breedRange(d){const b=(d.breed||"").toLowerCase(),x=BREEDS.find(r=>b.includes(r[0]));return x?{n:x[0],min:x[1],max:x[2]}:null}
+  // anche in minuti (al passo di un cucciolo, circa 20 minuti al km): il gioco libero non conta
+  return {km:Math.round(km*10)/10,up:m<6?100:250,mesi:m,sett:m*4.345,min:Math.max(10,Math.round(km*20/5)*5),taglia:t}}
+// peso tipico della razza: dall'elenco completo (tools/razze.csv); per i nomi non in elenco, la vecchia lista corta
+function breedRange(d){const e=breedEntry(d.breed);if(e)return {n:e.n.toLowerCase(),min:e.min,max:e.max};
+  const b=(d.breed||"").toLowerCase();if(MIX_RE.test(nrmB(b)))return null;const x=BREEDS.find(r=>b.includes(r[0]));return x?{n:x[0],min:x[1],max:x[2]}:null}
 const sizeName=w=>w<10?"piccola":w<25?"media":w<40?"grande":"gigante";
 // -1 magro, 0 giusto, 1 sovrappeso, 2 obeso, null non si sa. La prova delle costole conta più del peso di razza.
 function weightState(d){
@@ -4105,7 +4439,7 @@ function moveNeed(d,k){
 function moveNow(){const now=Date.now(),A=actsIn(addDays(now,-14),now+DAY);return {n:A.length,min:A.reduce((m,x)=>m+x.dur,0)/60000/14}}
 function healthGoals(d,k){
   const cap=capacity(d),now=Date.now(),best=r1(bestIn(addDays(now,-30),now+DAY)),from=best||r1(Math.min(3,Math.max(1,cap.km*.4))),W=weightState(d),M=moveNeed(d,k),mv=moveNow(),out=[];
-  if(k.puppy||k.p.conv)return out;
+  if(k.puppy||convState(d).attiva)return out;
   const up=f=>r1(Math.min(cap.km,Math.max(from+.5,from*f))),base={from,est:!best};
   if(W.s>=1&&!k.heart){const target=up(W.s===2?1.3:1.4);
     out.push(Object.assign({},base,{title:"Rimettersi in forma",target,weeks:W.s===2?10:8,why:`${W.s===2?"Sembra obeso":"Sembra in sovrappeso"}: camminare un po' di più, con aumenti piccoli, lo aiuta a tornare in forma (da ${kmN(from)} a ${kmN(target)} km). Il peso però si perde soprattutto con la dieta: chiedi al veterinario quanto deve mangiare.`}))}
@@ -4277,7 +4611,7 @@ function remDone(r){const h=Object.assign({},dog().health||{});
   saveDogHealth(h);toast(r.ev?"Fatto! Prossima volta: "+new Date(next+"T12:00").toLocaleDateString("it-IT",{day:"numeric",month:"long"}):"Fatto");renderRem();homeExtra()}
 function icsFor(r){const d=r.d.replace(/-/g,""),nm=(dog().name||"cane").replace(/[,;\\]/g," "),t=(r.n+" per "+nm).replace(/[,;\\]/g," ");
   const rr=r.ev===30?"RRULE:FREQ=MONTHLY\r\n":r.ev===90?"RRULE:FREQ=MONTHLY;INTERVAL=3\r\n":r.ev===180?"RRULE:FREQ=MONTHLY;INTERVAL=6\r\n":r.ev===365?"RRULE:FREQ=YEARLY\r\n":"";
-  const ics=`BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//AllDogs//IT\r\nBEGIN:VEVENT\r\nUID:${Date.now()}-${Math.random().toString(36).slice(2)}@alldogs\r\nDTSTAMP:${new Date().toISOString().replace(/[-:]/g,"").slice(0,15)}Z\r\nDTSTART;VALUE=DATE:${d}\r\nSUMMARY:${t}\r\n${rr}BEGIN:VALARM\r\nACTION:DISPLAY\r\nDESCRIPTION:${t}\r\nTRIGGER:-PT15H\r\nEND:VALARM\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n`;
+  const ics=`BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Wagabondo//IT\r\nBEGIN:VEVENT\r\nUID:${Date.now()}-${Math.random().toString(36).slice(2)}@alldogs\r\nDTSTAMP:${new Date().toISOString().replace(/[-:]/g,"").slice(0,15)}Z\r\nDTSTART;VALUE=DATE:${d}\r\nSUMMARY:${t}\r\n${rr}BEGIN:VALARM\r\nACTION:DISPLAY\r\nDESCRIPTION:${t}\r\nTRIGGER:-PT15H\r\nEND:VALARM\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n`;
   const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([ics],{type:"text/calendar"}));a.download="promemoria-"+r.n.toLowerCase().replace(/[^a-z0-9]+/g,"-").slice(0,30)+".ics";document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},2000);
   toast("Aprilo per aggiungerlo al calendario: ti avviserà il giorno prima")}
 function renderRem(){
@@ -4480,7 +4814,7 @@ const TOPO_KEY=t=>`https://tile.opentopomap.org/${t}.png`;
 const GLYPHS=["DIN Pro Bold,Arial Unicode MS Bold","DIN Pro Medium,Arial Unicode MS Regular"];
 async function offDownload(o,onp){
   const key=offKeyOf(o);if(!key||offBusy[key])return;
-  if(!offCan()){toast("Questo browser non permette di salvare le mappe. Apri AllDogs da Safari o Chrome.");return}
+  if(!offCan()){toast("Questo browser non permette di salvare le mappe. Apri Wagabondo da Safari o Chrome.");return}
   if(!navigator.onLine){toast("Per scaricare serve internet: fallo prima di partire");return}
   offBusy[key]=1;
   try{
@@ -4912,7 +5246,7 @@ function sharePub(o){if(!nav||!nav.share)return Promise.resolve();return fetch(R
 function shareLink(){return location.origin+location.pathname+"#segui-"+nav.share.id}
 async function shareGo(){
   const name=dog().name||"il cane",url=shareLink(),text=`Segui in tempo reale la passeggiata con ${name}`;
-  try{if(navigator.share){await navigator.share({title:"AllDogs",text,url});return}}catch(e){if(e&&e.name==="AbortError")return}
+  try{if(navigator.share){await navigator.share({title:"Wagabondo",text,url});return}}catch(e){if(e&&e.name==="AbortError")return}
   try{await navigator.clipboard.writeText(url);toast("Link copiato: incollalo in un messaggio")}catch(e){prompt("Copia questo link e mandalo a chi vuoi:",url)}
 }
 $("nav-share").onclick=()=>{
@@ -4963,10 +5297,29 @@ function paintFollow(){
 }
 
 // ================= Il mio cane =================
-const DF=["name","breed","mix","age","weight","train","agil","coat","brachy"];
+const DF=["name","breed","mix","tipo","age","weight","train","agil","coat","brachy"];
 const HF=[["chip","h-chip"],["vet","h-vet"],["vettel","h-vettel"],["antip","h-antip"],["antipdate","h-antipdate"],["note","h-note"]];
 $("pat").innerHTML=PATS.map(p=>`<label><input type="checkbox" data-p="${p[0]}">${p[1]}</label>`).join("");
 $("pat").querySelector('[data-p="altro"]').onchange=e=>$("pat-other-l").hidden=!e.target.checked;
+// domande in più: tipo del meticcio, stadio del cuore, convalescenza, ultime 4 settimane (tutte facoltative)
+const opts=(L,vuoto)=>(vuoto?`<option value="">${vuoto}</option>`:"")+L.map(x=>`<option value="${x[0]}">${esc(x[1])}</option>`).join("");
+$("d-tipo").innerHTML=opts(MIX_TIPI,"Non so");$("c-stadio").innerHTML=opts(CUORE_ST,"Scegli…");$("conv-sett").innerHTML=opts(CONV_SETT,"Scegli…");$("conv-tipo").innerHTML=opts(CONV_TIPO,"Scegli…");
+$("a-uscite").innerHTML=opts(ATT_USCITE,"Non rispondo");$("a-sport").innerHTML=ATT_SPORT.map(x=>`<label><input type="checkbox" data-sp="${x[0]}">${esc(x[1])}</label>`).join("");
+$("a-sport").querySelectorAll("input").forEach(i=>i.addEventListener("change",()=>{if(!i.checked)return;$("a-sport").querySelectorAll("input").forEach(j=>{if(j!==i&&(i.dataset.sp==="no"||j.dataset.sp==="no"))j.checked=false})}));
+$("a-min").innerHTML=opts(ATT_MIN,"Non rispondo");$("a-lungo").innerHTML=opts(ATT_LUNGO,"Non rispondo");$("a-salita").innerHTML=opts(ATT_SALITA,"Non rispondo");$("a-dopo").innerHTML=opts(ATT_DOPO,"Non rispondo");
+const patSub=()=>{const on=k=>{const i=$("pat").querySelector(`[data-p="${k}"]`);return !!(i&&i.checked)};$("c-stadio-l").hidden=!on("cuore");$("conv-tipo-l").hidden=$("conv-sett-l").hidden=$("conv-ok-l").hidden=!on("conv")};
+$("pat").querySelectorAll('[data-p="cuore"],[data-p="conv"]').forEach(i=>i.addEventListener("change",patSub));
+const tipoSub=()=>{$("d-tipo-l").hidden=!MIX_RE.test(nrmB($("d-breed").value))};$("d-breed").addEventListener("input",tipoSub);
+// risposte "ultime 4 settimane" dal modulo: se cambiano, si riparte dalle 6 settimane e il livello di allenamento segue i minuti
+function attRead(d0){const a={min:$("a-min").value,lungo:$("a-lungo").value,salita:$("a-salita").value,dopo:$("a-dopo").value,uscite:$("a-uscite").value,
+    sport:[...$("a-sport").querySelectorAll("input:checked")].map(i=>i.dataset.sp)},old=d0&&d0.att||{};
+  if(!a.min&&!a.lungo&&!a.salita&&!a.dopo&&!a.uscite&&!a.sport.length)return null;
+  const same=["min","lungo","salita","dopo","uscite"].every(k=>(old[k]||"")===a[k])&&(old.sport||[]).join()===a.sport.join();a.t=same&&old.t?old.t:Date.now();a.same=same;return a}
+// convalescenza: dalla fascia di settimane alla data (si prende l'inizio della fascia, per prudenza)
+function convRead(d,d0){const s=$("conv-sett").value,o=d0||{};if(!d.pat.conv){delete d.convDa;delete d.convOk;delete d.convOkT;delete d.convTipo;return}
+  d.convTipo=$("conv-tipo").value||o.convTipo||"";if(!d.convTipo)delete d.convTipo;
+  const w=attVal(CONV_SETT,s);d.convDa=s===(o.convSett||"")&&o.convDa?o.convDa:w!=null?Date.now()-w*SETT:o.convDa;d.convSett=s||o.convSett||"";
+  d.convOk=$("conv-ok").checked;d.convOkT=d.convOk?(o.convOk&&o.convOkT?o.convOkT:Date.now()):0;if(!d.convDa)delete d.convDa}
 function vaxRow(v){const div=document.createElement("div");div.className="vax";div.innerHTML=`<input placeholder="Es. polivalente" value="${esc(v.n||"")}" aria-label="Vaccino"><input type="date" value="${esc(v.d||"")}" aria-label="Data del richiamo"><button class="round" type="button" aria-label="Togli"><svg><use href="#i-x"/></svg></button>`;div.querySelector("button").onclick=()=>div.remove();$("vax").appendChild(div)}
 $("vax-add").onclick=()=>vaxRow({});
 const fmtD=s=>new Date(s+"T12:00").toLocaleDateString("it-IT",{day:"numeric",month:"long",year:"numeric"});
@@ -5007,7 +5360,7 @@ $("dog-del").onclick=()=>{const nm=S.dog&&S.dog.name||"questo cane";if(DOGS.list
 function bookTodo(d){const h=d.health||{},miss=[!d.breed&&"razza",!(d.pat&&Object.keys(d.pat).length)&&!d.healthOk&&"salute",!h.chip&&"microchip",!h.vet&&"veterinario",!(h.vax&&h.vax.length)&&"vaccini"].filter(Boolean);
   if(miss.length<3)return "";
   return `<span class="box" style="display:block;margin-top:10px"><b>Completa il libretto di ${esc(d.name||"del cane")}</b><br><span class="small muted">Mancano ${miss.join(", ")}. Servono per consigli più giusti e da avere a portata di mano in caso di emergenza.</span><br><button class="btn sm" type="button" style="margin-top:8px" onclick="const f=document.getElementById('fold-dog');f.open=true;f.scrollIntoView({behavior:'smooth'})">Completa ora</button></span>`}
-function showDog(){
+function showDog(){try{levelCheck()}catch(e){}
   syncPhoto();
   const first=!S.dog||!!S.addDog,d=S.addDog?DEF_DOG:dog();renderPick();
   $("onb-t").textContent=S.addDog?"Parlami del nuovo cane":"Parlami del tuo cane";$("add-cancel").hidden=!S.addDog;$("dog-del").hidden=first||DOGS.list.length<2;
@@ -5018,10 +5371,12 @@ function showDog(){
   DF.forEach(f=>{const el=$("d-"+f);if(el.type==="checkbox")el.checked=!!d[f];else el.value=first&&["name","breed","age","weight"].includes(f)?"":(d[f]??"")});
   $("pat").querySelectorAll("input").forEach(i=>i.checked=!first&&!!(d.pat&&d.pat[i.dataset.p]));
   $("pat-other").value=first?"":d.patOther||"";$("pat-other-l").hidden=!(d.pat&&d.pat.altro)||first;
+  const a=first?{}:d.att||{};$("a-min").value=a.min||"";$("a-lungo").value=a.lungo||"";$("a-salita").value=a.salita||"";$("a-dopo").value=a.dopo||"";$("a-uscite").value=a.uscite||"";$("a-sport").querySelectorAll("input").forEach(i=>i.checked=!!(a.sport&&a.sport.includes(i.dataset.sp)));
+  $("c-stadio").value=first?"":d.cuoreStadio||"";$("conv-sett").value=first?"":d.convSett||"";$("conv-tipo").value=first?"":d.convTipo||"";$("conv-ok").checked=!first&&!!d.convOk;patSub();tipoSub();
   const h=first?{}:d.health||{};HF.forEach(([k,id])=>$(id).value=h[k]||"");
   $("vax").innerHTML="";(h.vax||[]).forEach(vaxRow);
   if(!first){const c=capacity(d);$("avatar").textContent=(d.name||"?").trim().charAt(0).toUpperCase();$("dog-title").textContent=d.name||"Il mio cane";
-    $("dog-cap").textContent=`Fino a circa ${kmN(c.km)} km e ${c.up} m di salita`;$("dog-alert").innerHTML=healthAlerts(d)+bookTodo(d)}
+    $("dog-cap").textContent=`Fino a circa ${kmN(c.km)} km e ${c.up} m di salita · ${c.puppy?"cucciolo":`${c.stepName} (gradino ${c.step} di 6)`}`;$("dog-alert").innerHTML=dogQuestions(d)+healthAlerts(d)+bookTodo(d)}
   else $("dog-alert").innerHTML="";
 }
 $("dog-save").onclick=()=>{
@@ -5031,6 +5386,13 @@ $("dog-save").onclick=()=>{
   if(!(d.age>=0)||!(d.weight>0)){toast("Inserisci età e peso");return}
   d.pat={};$("pat").querySelectorAll("input").forEach(i=>{if(i.checked)d.pat[i.dataset.p]=true});
   d.patOther=d.pat.altro?$("pat-other").value.trim():"";
+  const d0=S.addDog?null:S.dog;
+  // campi che il modulo non mostra (domande iniziali, risposte del giorno dopo...): restano come erano
+  if(d0)for(const k of ["id","sex","birth","energy","orari","orariSlots","durata","obiettivo","caldo","onb","brachyAsked","healthOk","ageT","senzaApp","photo","trainAuto","trainTired","trainStep","trainStepOf","convTipo"])if(d0[k]!==undefined&&d[k]===undefined)d[k]=d0[k];
+  if(!MIX_RE.test(nrmB(d.breed)))d.tipo="";
+  const att=attRead(d0);if(att){const same=att.same;delete att.same;d.att=att;if(!same)attApply(d)}
+  if(d.pat.cuore){d.cuoreStadio=$("c-stadio").value;if(d.cuoreStadio==="respiro"){delete d.pat.cuore;d.pat.resp=true;d.cuoreStadio=""}}
+  convRead(d,d0);
   d.health={};HF.forEach(([k,id])=>{const v=$(id).value.trim();if(v)d.health[k]=v});
   d.health.vax=[...$("vax").querySelectorAll(".vax")].map(r=>{const i=r.querySelectorAll("input");return {n:i[0].value.trim(),d:i[1].value}}).filter(v=>v.n||v.d);
   if(S.addDog){DOGS.cur="d"+Date.now().toString(36);DOGS.walk=[DOGS.cur];dogsSave();store.set("alldogs-dog",d);toast("Nuovo cane aggiunto");location.hash="cane";location.reload();return}
@@ -5068,14 +5430,17 @@ const WSTEPS=[
     img.onerror=()=>{URL.revokeObjectURL(u);toast("Non riesco a leggere questa immagine")};img.src=u}},read:()=>true},
  {k:"breed",t:()=>`Di che razza è ${wzN()}?`,sub:()=>"Scrivi per cercare. Se è un meticcio, scegli la sua taglia.",
   html:()=>`<input class="field" id="wz-in" type="search" autocomplete="off" placeholder="Cerca la razza" value="${esc(W.q||W.d.breed||"")}" aria-label="Razza"><div class="wz-list" id="wz-list"></div>`,
-  bind:()=>{const paint=()=>{const raw=$("wz-in").value.trim(),q=norm(raw),L=(q?RAZZE.filter(r=>norm(r).includes(q)):RAZZE).slice(0,9);
+  bind:()=>{const paint=()=>{const raw=$("wz-in").value.trim(),q=norm(raw),L=razzeCerca(raw,q?12:9);
      $("wz-list").innerHTML=L.map(r=>`<button type="button" aria-pressed="${W.d.breed===r}">${esc(r)}</button>`).join("")+(q&&!RAZZE.some(r=>norm(r)===q)?`<button type="button" data-own="1">Usa «${esc(raw)}»</button>`:"");
      $("wz-list").querySelectorAll("button").forEach(b=>b.onclick=()=>{W.d.breed=b.dataset.own?$("wz-in").value.trim():b.textContent;W.q="";wzGo(1)})};
    $("wz-in").oninput=()=>{W.q=$("wz-in").value;paint()};paint()},
-  read:()=>{const v=$("wz-in").value.trim();if(v)W.d.breed=RAZZE.find(r=>norm(r)===norm(v))||v;return true}},
+  read:()=>{const v=$("wz-in").value.trim();if(v){const e=breedEntry(v);W.d.breed=RAZZE.find(r=>norm(r)===norm(v))||(e&&nrmB(e.n)===nrmB(v)?e.n:v)}return true}},
  {k:"mix",show:()=>/meticci/i.test(W.d.breed||""),t:()=>`Sai che incrocio può essere ${wzN()}?`,sub:()=>"Facoltativo. Mi aiuta a capire quanto può camminare: uso la razza più delicata dell'incrocio.",
   html:()=>`<input class="field" id="wz-in" autocomplete="off" enterkeyhint="next" placeholder="Es. pastore tedesco e labrador" value="${esc(W.d.mix||"")}" aria-label="Incrocio">`,
   read:()=>{W.d.mix=$("wz-in").value.trim();return true},skip:()=>{W.d.mix=""}},
+ {k:"tipo",show:()=>MIX_RE.test(nrmB(W.d.breed||"")),t:()=>`A che tipo somiglia di più ${wzN()}?`,sub:()=>"Facoltativo. Insieme al peso mi dice quanto può camminare. Se ha il muso schiacciato, segnalo tra i limiti.",
+  html:()=>`<div class="wz-opts">${MIX_TIPI.map(([v,b])=>`<button class="pill" type="button" data-tp="${v}" aria-pressed="${W.d.tipo===v}">${esc(b)}</button>`).join("")}<button class="pill" type="button" data-tp="" aria-pressed="${!W.d.tipo}">Non so</button></div>`,
+  bind:()=>document.querySelectorAll("[data-tp]").forEach(b=>b.onclick=()=>{W.d.tipo=b.dataset.tp;wzGo(1)}),read:()=>true,skip:()=>{W.d.tipo=""}},
  {k:"age",t:()=>`Quanti anni ha ${wzN()}?`,sub:()=>"Puoi scrivere gli anni oppure la data di nascita.",
   html:()=>`<div class="wz-seg"><button class="pill" type="button" data-am="anni" aria-pressed="${W.ageMode==="anni"}">Anni</button><button class="pill" type="button" data-am="data" aria-pressed="${W.ageMode==="data"}">Data di nascita</button></div>
    ${W.ageMode==="anni"?`<input class="field" id="wz-in" type="number" inputmode="decimal" min="0" max="25" step="0.5" placeholder="Es. 4" value="${W.d.age!=null&&W.d.age!==""?esc(W.d.age):""}" aria-label="Età in anni"><p class="small muted" style="margin-top:8px">Per un cucciolo: 6 mesi = 0,5.</p>`
@@ -5093,6 +5458,17 @@ const WSTEPS=[
   html:()=>ENERGIA.map(([v,b,s])=>`<button class="wz-card" type="button" data-v="${v}" aria-pressed="${W.d.energy===v}"><b>${b}</b><small>${s}</small></button>`).join(""),
   bind:()=>document.querySelectorAll("#wz-body [data-v]").forEach(b=>b.onclick=()=>{W.d.energy=b.dataset.v;wzGo(1)}),
   read:()=>{if(!W.d.energy){toast("Scegli una risposta, oppure tocca Salta");return false}return true}},
+ {k:"att",t:()=>`Nelle ultime 4 settimane, ${wzN()}…`,sub:()=>"Facoltativo: tocca una risposta per riga, o salta. Mi serve per partire da quello che fa davvero, invece che da una stima prudente.",
+  html:()=>{const a=W.d.att||{},row=(k,t,L)=>`<p class="wz-q">${t}</p><div class="wz-opts">${L.map(x=>`<button class="pill" type="button" data-ak="${k}" data-av="${x[0]}" aria-pressed="${a[k]===x[0]}">${esc(x[1])}</button>`).join("")}</div>`;
+   return row("min","Quanto cammina al giorno, in tutto?",ATT_MIN)+row("lungo","L'uscita più lunga?",ATT_LUNGO)+row("salita","Quanta salita aveva?",ATT_SALITA)+row("dopo","Come stava il giorno dopo?",ATT_DOPO)+row("uscite","Quante uscite di più di un'ora fa a settimana?",ATT_USCITE)
+     +`<p class="wz-q">Fa sport con te?</p><div class="wz-opts">${ATT_SPORT.map(x=>`<button class="pill" type="button" data-sp="${x[0]}" aria-pressed="${!!(a.sport&&a.sport.includes(x[0]))}">${esc(x[1])}</button>`).join("")}</div>`},
+  bind:()=>{document.querySelectorAll("[data-ak]").forEach(b=>b.onclick=()=>{const k=b.dataset.ak,on=b.getAttribute("aria-pressed")!=="true";
+   document.querySelectorAll(`[data-ak="${k}"]`).forEach(x=>x.setAttribute("aria-pressed","false"));b.setAttribute("aria-pressed",String(on))});
+   document.querySelectorAll("[data-sp]").forEach(b=>b.onclick=()=>{const on=b.getAttribute("aria-pressed")!=="true";b.setAttribute("aria-pressed",String(on));
+    if(on)document.querySelectorAll("[data-sp]").forEach(x=>{if(x!==b&&(b.dataset.sp==="no"||x.dataset.sp==="no"))x.setAttribute("aria-pressed","false")})})},
+  read:()=>{const a={};for(const k of ["min","lungo","salita","dopo","uscite"]){const b=document.querySelector(`[data-ak="${k}"][aria-pressed="true"]`);if(b)a[k]=b.dataset.av}
+   const sp=[...document.querySelectorAll('[data-sp][aria-pressed="true"]')].map(b=>b.dataset.sp);if(sp.length)a.sport=sp;
+   if(Object.keys(a).length){a.t=Date.now();W.d.att=a}else delete W.d.att;return true},skip:()=>{delete W.d.att}},
  {k:"limits",t:()=>`${wzNC()} ha qualche limite?`,sub:()=>"Ne tengo conto per i giri e per il caldo. Puoi sceglierne più di uno, o nessuno.",
   html:()=>{const L=wzLim();return `<div class="wz-opts">${LIMITI.map(([k,t])=>`<button class="pill" type="button" data-l="${k}" aria-pressed="${!!L[k]}">${t}</button>`).join("")}</div>
    <div class="form" style="margin-top:12px" id="wz-altro" ${L.altro?"":"hidden"}><label class="w">Quale?<input id="wz-altro-in" autocomplete="off" value="${esc(W.d.patOther||"")}"></label></div>
@@ -5102,6 +5478,19 @@ const WSTEPS=[
    for(const k of ["art","cuore","peso","conv","altro"]){if(on(k))p[k]=true;else delete p[k]}if(!on("cuore"))delete p.resp;
    W.d.brachyAsked=true;W.d.pat=p;W.d.patOther=on("altro")?$("wz-altro-in").value.trim():"";W.d.brachy=on("brachy");W.d.caldo=on("caldo");
    if(on("salti"))W.d.agil="bassa";else if(W.d.agil==="bassa")W.d.agil="media";W.d.healthOk=!Object.keys(p).length;return true}},
+ {k:"cuore",show:()=>!!(W.d.pat&&W.d.pat.cuore),t:()=>`Cuore o respiro: cosa ha detto il veterinario?`,sub:()=>"Cambia molto i consigli: con sintomi o farmaci per il cuore l'app non propone sentieri da sola.",
+  html:()=>`<div class="wz-opts">${CUORE_ST.map(([v,b])=>`<button class="pill" type="button" data-cs="${v}" aria-pressed="${W.d.cuoreStadio===v}">${esc(b)}</button>`).join("")}</div>`,
+  bind:()=>document.querySelectorAll("[data-cs]").forEach(b=>b.onclick=()=>{const v=b.dataset.cs;if(v==="respiro"){W.d.pat=Object.assign({},W.d.pat);delete W.d.pat.cuore;W.d.pat.resp=true;W.d.cuoreStadio=""}else W.d.cuoreStadio=v;wzGo(1)}),
+  read:()=>true,skip:()=>{W.d.cuoreStadio=W.d.cuoreStadio||"nonso"}},
+ {k:"conv",show:()=>!!(W.d.pat&&W.d.pat.conv),t:()=>`Da quanto ${wzN()} è stato operato o si è fatto male?`,sub:()=>"Ossa o articolazioni: nelle prime 8-12 settimane solo passeggiate brevi al guinzaglio. Per gli altri interventi basta il via del veterinario.",
+  html:()=>`<p class="wz-q">Che intervento o problema?</p><div class="wz-opts">${CONV_TIPO.map(([v,b])=>`<button class="pill" type="button" data-ct="${v}" aria-pressed="${W.d.convTipo===v}">${esc(b)}</button>`).join("")}</div>
+   <p class="wz-q">Da quanto tempo?</p><div class="wz-opts">${CONV_SETT.map(([v,b])=>`<button class="pill" type="button" data-cw="${v}" aria-pressed="${W.d.convSett===v}">${esc(b)}</button>`).join("")}</div>
+   <p class="wz-q">Il veterinario ha dato il via libera per camminare di più?</p><div class="wz-opts"><button class="pill" type="button" data-co="1" aria-pressed="${W.d.convOk===true}">Sì</button><button class="pill" type="button" data-co="0" aria-pressed="${W.d.convOk===false}">No, o non ancora</button></div>`,
+  bind:()=>{document.querySelectorAll("[data-ct]").forEach(b=>b.onclick=()=>{document.querySelectorAll("[data-ct]").forEach(x=>x.setAttribute("aria-pressed","false"));b.setAttribute("aria-pressed","true")});
+   document.querySelectorAll("[data-cw]").forEach(b=>b.onclick=()=>{document.querySelectorAll("[data-cw]").forEach(x=>x.setAttribute("aria-pressed","false"));b.setAttribute("aria-pressed","true")});
+   document.querySelectorAll("[data-co]").forEach(b=>b.onclick=()=>{document.querySelectorAll("[data-co]").forEach(x=>x.setAttribute("aria-pressed","false"));b.setAttribute("aria-pressed","true")})},
+  read:()=>{const w=document.querySelector('[data-cw][aria-pressed="true"]'),o=document.querySelector('[data-co][aria-pressed="true"]'),ct=document.querySelector('[data-ct][aria-pressed="true"]');if(ct)W.d.convTipo=ct.dataset.ct;
+   if(w){W.d.convSett=w.dataset.cw;W.d.convDa=Date.now()-attVal(CONV_SETT,w.dataset.cw)*SETT}if(o){W.d.convOk=o.dataset.co==="1";W.d.convOkT=W.d.convOk?Date.now():0}return true}},
  {k:"orari",t:()=>"Quando siete liberi per uscire?",sub:()=>"Tocca le fasce in cui di solito potete fare una passeggiata. Più avanti potrò ricordartelo all'orario giusto.",
   html:()=>{const o=W.d.orari||{},has=(g,f)=>!!(o[g]&&o[g].includes(f));return `<div class="wz-grid" role="group" aria-label="Orari liberi"><span></span>${FASCE.map(f=>`<span>${f[1]}<br>${f[2]}</span>`).join("")}
    ${ORARI_GIORNI.map(([g,lb])=>`<span class="rl">${lb}</span>${FASCE.map(f=>`<button type="button" data-g="${g}" data-f="${f[0]}" aria-pressed="${has(g,f[0])}" aria-label="${lb}, ${f[1]}">${has(g,f[0])?"Sì":"–"}</button>`).join("")}`).join("")}</div>`},
@@ -5139,6 +5528,8 @@ function wzTip(d0){const d=Object.assign({},DEF_DOG,d0),c=capacity(d),k=dogKind(
   return out}
 function wzOpen(mode){W.mode=mode||"new";W.i=0;W.q="";W.ageMode="anni";W.photo=undefined;
   W.d=W.mode==="redo"?JSON.parse(JSON.stringify(dog())):{name:"",breed:"",age:"",weight:"",train:"medio",agil:"media",coat:"corto",brachy:false,pat:{},patOther:"",health:{}};
+  W.prevEnergy=W.mode==="redo"?W.d.energy:undefined;
+  W.prevAtt=W.mode==="redo"&&W.d.att?JSON.parse(JSON.stringify(W.d.att)):null;
   if(W.mode==="redo"){W.photo=store.get(PHK)||undefined;if(W.d.birth)W.ageMode="data"}
   W.on=true;$("wiz").hidden=false;document.body.style.overflow="hidden";wzPaint()}
 function wzClose(){W.on=false;$("wiz").hidden=true;document.body.style.overflow=""}
@@ -5158,7 +5549,10 @@ $("wz-back").onclick=()=>{if(W.i>0)wzGo(-1);else if(W.mode!=="new")wzClose()};
 $("wz-redo").onclick=()=>wzOpen("redo");
 function wzFinish(acc){const d=W.d;
   if(!d.name)d.name="Il mio cane";if(!(d.age>=0)||d.age==="")d.age=4;if(!(d.weight>0))WSTEPS.find(s=>s.k==="weight").skip();
-  const E=ENERGIA.find(e=>e[0]===d.energy);if(E)d.train=E[3];
+  const E=ENERGIA.find(e=>e[0]===d.energy);if(E&&(W.mode!=="redo"||W.prevEnergy!==d.energy))d.train=E[3];
+  // i minuti al giorno delle ultime 4 settimane dicono il livello meglio della parola "energia"
+  const ak=a=>a?JSON.stringify(Object.assign({},a,{t:0})):"";if(d.att&&ak(W.prevAtt)!==ak(d.att))attApply(d); // gradino di partenza dalle risposte
+  if(d.pat&&d.pat.cuore&&!d.cuoreStadio)d.cuoreStadio="nonso";
   if(!d.pat)d.pat={};if(d.patOther==null)d.patOther="";if(!d.health)d.health={};
   d.orariSlots=orariSlots(d.orari);d.onb=Date.now();
   if(W.mode==="add"){DOGS.cur="d"+Date.now().toString(36);DOGS.walk=[DOGS.cur];dogsSave()}
@@ -5172,6 +5566,7 @@ setTimeout(()=>{try{if(sessionStorage.getItem("alldogs-openacc")){sessionStorage
 // i dati del cane stanno in cima alla sua pagina
 $("fold-slot").replaceWith($("fold-dog"));
 // ================= Avvio =================
+setTimeout(()=>{try{levelCheck()}catch(e){}},1500); // livello di allenamento che si adatta alle uscite
 let geoT=null,geoSeq=0;
 function goPlace(c,z,bb){
   $("q").value="";$("place-row").hidden=true;S.near=null;
@@ -5306,7 +5701,7 @@ async function widen(){
   try{
     for(const r of [30,60,100]){
       const dLa=r/111,dLo=r/(111*Math.cos(c[0]*Math.PI/180)),keys=viewCells([[c[0]-dLa,c[1]-dLo],[c[0]+dLa,c[1]+dLo]]).filter(k=>IDX.cells[k]);
-      await Promise.all(keys.map(k=>loadCell(k).catch(()=>0)));
+      await Promise.all(keys.map(k=>loadLite(k).catch(()=>0)));
       const cand=S.trails.filter(t=>hav(t.start,c)<=r*1000);
       try{await loadWeather(cand.map(t=>t.start))}catch(e){}
       S.wide={r,c,keys};
@@ -5322,16 +5717,17 @@ async function refreshView(){
   if(!S.ready)return;
   if(S.wide){S.far=false;S.loadingView=false;if(onList())renderList();return} // cerchio allargato: i sentieri sono già caricati
   const my=++viewSeq,keys=viewCells(S.view.b);
-  S.far=keys.length>12; // troppo lontano: si mostrano solo i cerchi con i numeri
-  if(S.far){S.loadingView=false;if(onList())renderList();return}
-  if(keys.some(k=>!cellState[k]&&IDX.cells[k])){S.loadingView=true;if(onList())renderList()}
+  S.far=keys.length>LITE_MAX; // troppo lontano: le partenze di tutta Italia raggruppate in cerchi con il numero
+  if(S.far){S.loadingView=false;loadStarts();if(onList())renderList();return}
+  const near=S.view.z>=FULL_Z; // da vicino: la versione completa (tracciato preciso); altrimenti quella leggera
+  if(keys.some(k=>!cellState[k]&&!liteState[k]&&IDX.cells[k])){S.loadingView=true;if(onList())renderList()}
   keys.forEach(k=>loadPlaces(k).then(()=>{if(my===viewSeq&&onList())renderParks()}));
-  try{await Promise.all(keys.map(loadCell))}catch(e){console.warn("Sentieri:",e)}
+  try{await Promise.all(keys.map(near?loadCell:loadLite))}catch(e){console.warn("Sentieri:",e)}
   if(my!==viewSeq)return;S.loadingView=false;
-  if(TR.size>6000){ // libero memoria: tolgo i riquadri lontani (tranne i salvati e quello aperto)
+  if(TR.size>15000){ // libero memoria: tolgo i riquadri lontani (tranne i salvati e quello aperto)
     const keep=new Set(keys);
     for(const [id,t] of TR)if(!keep.has(t.cell)&&!S.saved.includes(id)&&!(cur&&cur.tr&&cur.tr.id===id)){TR.delete(id);delete elev[id];delete FT[id]}
-    for(const k in cellState)if(!keep.has(k))delete cellState[k];S.trails=visTrails()}
+    for(const k in cellState)if(!keep.has(k))delete cellState[k];for(const k in liteState)if(!keep.has(k))delete liteState[k];S.trails=visTrails()}
   if(onList())renderList();
   const pts=wxPoints();
   if(pts.some(p=>!wx[wxKey(p)])){

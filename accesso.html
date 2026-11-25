@@ -4,22 +4,22 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="referrer" content="no-referrer">
-<title>AllDogs · Accesso</title>
+<title>Wagabondo · Accesso</title>
 <link rel="stylesheet" href="legal.css">
 </head>
 <body>
 <main>
 <h1>Accesso fatto</h1>
-<p id="msg">Ti riporto nell'app AllDogs…</p>
-<p><a id="link" href="alldogs://accesso">Torna nell'app</a></p>
+<p id="msg">Ti riporto nell'app Wagabondo…</p>
+<p><a id="link" href="wagabondo://accesso">Torna nell'app</a></p>
 </main>
 <script>
 // Ponte per l'accesso con Google: Supabase torna qui (indirizzo https, sempre accettato) con i dati dell'accesso
-// nella parte dopo "#", e io li passo all'app. Solo verso indirizzi dell'app (alldogs:// o exp:// di Expo Go),
+// nella parte dopo "#", e io li passo all'app. Solo verso indirizzi dell'app (wagabondo://, il vecchio alldogs:// o exp:// di Expo Go),
 // mai verso siti: così i dati dell'accesso non possono finire altrove.
 (function () {
-  var q = new URLSearchParams(location.search), torna = q.get("torna") || "alldogs://accesso";
-  if (!/^(alldogs|exp|exps):\/\/[^\s#]*$/i.test(torna)) torna = "alldogs://accesso";
+  var q = new URLSearchParams(location.search), torna = q.get("torna") || "wagabondo://accesso";
+  if (!/^(wagabondo|alldogs|exp|exps):\/\/[^\s#]*$/i.test(torna)) torna = "wagabondo://accesso";
   var dati = location.hash || "";
   if (!dati && q.get("code")) dati = "?code=" + encodeURIComponent(q.get("code"));
   if (q.get("error_description")) document.getElementById("msg").textContent = "Accesso non riuscito: " + q.get("error_description");

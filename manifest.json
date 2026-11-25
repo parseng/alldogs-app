@@ -1,6 +1,6 @@
 {
-  "name": "AllDogs",
-  "short_name": "AllDogs",
+  "name": "Wagabondo",
+  "short_name": "Wagabondo",
   "description": "Sentieri e passeggiate adatti al tuo cane",
   "start_url": "./",
   "scope": "./",

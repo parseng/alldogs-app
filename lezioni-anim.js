@@ -1,4 +1,4 @@
-/* AllDogs: animazioni delle lezioni di addestramento.
+/* Wagabondo: animazioni delle lezioni di addestramento.
    Ogni lezione è una piccola scena (cane, persona, mano, premio) descritta da una sequenza di fotogrammi chiave.
    Uso: AllDogsAnim.mount(contenitore, nomeCane) trasforma ogni <div data-anim="id"> in un'animazione. */
 (function(){

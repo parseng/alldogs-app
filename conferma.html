@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<meta name="robots" content="noindex">
+<title>Wagabondo · Email confermata</title>
+<link rel="stylesheet" href="legal.css">
+<style>
+main{max-width:460px;padding-top:56px;text-align:center}
+.ok{width:72px;height:72px;border-radius:50%;background:var(--accent);color:var(--bg);display:flex;align-items:center;justify-content:center;margin:0 auto 18px}
+.btn{display:block;background:var(--accent);color:var(--bg);text-decoration:none;font-weight:700;border-radius:999px;padding:15px 20px;margin:26px 0 0;font-size:17px}
+.no .ok{background:var(--warn-bg);color:var(--ink)}
+</style>
+</head>
+<body>
+<main id="box">
+<div class="ok" aria-hidden="true"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
+<h1 id="tit">Email confermata</h1>
+<p id="msg">Il tuo account Wagabondo è pronto. Ti riporto nell'app…</p>
+<a class="btn" id="link" href="wagabondo://conferma">Apri Wagabondo</a>
+<p class="small" id="pc">Se hai aperto questa email dal computer: apri Wagabondo sul telefono e accedi con la tua email e la password.</p>
+</main>
+<script>
+// Ponte per i link delle email (conferma dell'account, nuova password): Supabase torna qui (indirizzo https, sempre
+// accettato) con i dati dell'accesso dopo "#", e io li passo all'app. Solo verso indirizzi dell'app
+// (wagabondo:// nell'app vera, exp:// in Expo Go), mai verso siti: così i dati dell'accesso non possono finire altrove.
+(function () {
+  var q = new URLSearchParams(location.search), h = new URLSearchParams(location.hash.slice(1));
+  var torna = q.get("torna") || "wagabondo://conferma";
+  if (!/^(wagabondo|alldogs|exp|exps):\/\/[^\s#]*$/i.test(torna)) torna = "wagabondo://conferma";
+  var err = h.get("error_description") || q.get("error_description");
+  var dati = location.hash || (q.get("code") ? "?code=" + encodeURIComponent(q.get("code")) : "");
+  if (err) {
+    document.getElementById("box").className = "no";
+    document.querySelector(".ok").innerHTML = "!";
+    document.getElementById("tit").textContent = "Il link non è più valido";
+    document.getElementById("msg").textContent = "Forse è scaduto o l'hai già usato. Apri l'app e accedi con email e password: se l'account non è ancora confermato, registrati di nuovo e ti mando un link nuovo.";
+  } else if (h.get("type") === "recovery") {
+    document.getElementById("tit").textContent = "Scegli la nuova password";
+    document.getElementById("msg").textContent = "Ti riporto nell'app, dove puoi scrivere la nuova password…";
+    document.getElementById("pc").textContent = "Se hai aperto questa email dal computer: chiedi di nuovo la password dal telefono e apri il link lì.";
+  }
+  var dove = torna + (err ? "" : dati);
+  document.getElementById("link").href = dove;
+  history.replaceState(null, "", location.pathname);
+  if (!err) location.replace(dove);
+})();
+</script>
+</body>
+</html>

@@ -1,4 +1,4 @@
-// AllDogs: lavoratore di sfondo (service worker) per usare l'app anche senza internet.
+// Wagabondo: lavoratore di sfondo (service worker) per usare l'app anche senza internet.
 // - L'app (pagina, script, icone, libreria della mappa, caratteri) resta salvata nel telefono.
 // - I file dei sentieri già aperti restano disponibili offline.
 // - Le mappe dei sentieri scaricati (cache "ad-off-...") vengono servite dal telefono.
